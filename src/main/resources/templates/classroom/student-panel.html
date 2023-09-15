@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/classroomLayout}">
+
+<head>
+  <title>Student Panel</title>
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+  <link href="/css/profile.css" rel="stylesheet">
+</head>
+
+<body th:style="'--bodyBgColor:' + ${classroomStudent.classRoomId.bodyBgColor}
+		+ ';--fontColor:' + ${classroomStudent.classRoomId.fontColor}	
+		+ ';--bodyFontFamily:' + ${classroomStudent.classRoomId.bodyFontFamily}	
+		+ ';--cardBgColor:' + ${classroomStudent.classRoomId.cardBgColor}	
+		+ ';--cardSideColor1:' + ${classroomStudent.classRoomId.cardSideColor}	
+		+ ';--cardSelectedColor:' + ${classroomStudent.classRoomId.cardSelectedColor}">
+	<div layout:fragment="content" th:remove="tag">
+		<main id = "main" class = "main" style="margin-left: 0px;">
+			
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-9">
+						<div class = "class">
+							
+						</div>          				          
+					</div>
+					<div class="col-lg-9">
+						<div class="col-lg-12">
+						<a type="button" th:href="@{/viewStudentClassRoomResult(classroomId=${classroomStudent.classRoomId.classroomId},studentId=${classroomStudent.studentId.studentId})}" class="btn btn-primary">Past Attempts</a>
+						<div class = "row" style="margin:5%">
+							
+							<div class="divCard card col-lg-3 col-sm-4" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;"  th:each="paper : ${paperList}" th:if="${paper.paperID} != null">
+							  	<a  th:href="@{/classroom/viewPaper(paperId=${paper.paperID.paperId},classroomId = ${classroomStudent.classRoomId.classroomId},classRoomStudentId = ${classroomStudent.classRoomStudentId} , activeSessionId = ${activeSession.csId})}" >
+								    <div class="card-body">
+								    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-calendar2-event"></i></label><br>
+								    	<table width = 100% style = "width: 100%;height:100%;color:black" >
+											<tr>
+											    <b><td class = "paperName" th:text="${paper.paperID.name}"></td></b>
+											</tr>
+											
+											<tr>
+											    <td class = "subjectName" th:text="${paper.paperID.subjectId.subjectName}"></td>
+											</tr>
+											
+											<tr>
+											    <td class = "gradeName" th:text="${paper.paperID.grade.gradeName}"></td> 
+											</tr>
+											
+											<tr>
+											    <td class = "paperTime" th:text="'Time : ' + ${paper.paperID.time} + ' minutes'"></td> 
+											</tr>
+										</table>
+								    </div>
+							    </a>
+							</div>
+							
+							<div class="divCard card col-lg-3 col-sm-4" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;"  th:each="paper : ${paperList}" th:if="${paper.bundleId} != null">
+							  	<a  th:href="@{/classroom/viewBundle(bundleId=${paper.bundleId.bundleId},classroomId = ${classroomStudent.classRoomId.classroomId},classRoomStudentId = ${classroomStudent.classRoomStudentId} , activeSessionId = ${activeSession.csId})}" >
+								    <div class="card-body">
+								    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-calendar2-event"></i></label><br>
+								    	<table width = 100% style = "width: 100%;height:100%;color:black" >
+											<tr>
+											    <b><td th:text="${paper.bundleId.name}"></td></b>
+											</tr>
+											<tr>
+											    <td th:text="${paper.bundleId.Publisher.name}"></td> 
+											</tr>
+											<tr>
+											    <td th:text="${paper.bundleId.grade.gradeName}"></td> 
+											</tr>
+											<tr>
+											    <td th:text="${paper.bundleId.paperCount} + ' Papers available'"></td>
+											</tr>
+										</table>
+								    </div>
+							    </a>
+							</div>
+							
+						</div>
+				        </div><!-- End Card with titles, buttons, and links -->		          
+					</div>
+					
+					<div class="col-lg-3">
+						<div class="card">
+							<!-- <a style="text-align:right" th:href = "'/showClassRoomMessages?classroomId=' + ${classroomStudent.classRoomId.classroomId} + '&email=' + ${classroomStudent.studentId.userId.email}"><i title="Message" style="font-size:24px;margin:10%" class="bi bi-envelope"></i></a> -->
+							<div class="card-body rounded" >
+								<input type="text" th:value = "${classroomStudent.classRoomId.classroomId}" id = "classroomId" hidden>
+								<br>
+								<table width=90% style="padding: 15px;">
+								  <tr>
+								    <th class="card-title">Name</th>
+								    <th th:text = "${classroomStudent.classRoomId.name}"></th>
+								  </tr>
+								  <tr>
+								    <td class="card-title">Grade</td>
+								    <td th:text = "${classroomStudent.classRoomId.grade.gradeName}"></td>
+								  </tr>
+								  <tr>
+								    <td class="card-title">Subject</td>
+								    <td th:text = "${classroomStudent.classRoomId.subjectId.subjectName}"></td>
+								  </tr>
+								  <tr>
+								    <td class="card-title">Lecturer</td>
+								    <td th:text = "${classroomStudent.classRoomId.lecturerId.userId.name}"></td>
+								  </tr>
+								  <tr>
+								    <td rowspan=2 class="card-title">Contact</td>
+								    <td th:text = "${classroomStudent.classRoomId.lecturerId.userId.mobile}"></td>
+								  </tr>
+								  <tr>
+								    <td th:text = "${classroomStudent.classRoomId.lecturerId.userId.email}"></td>
+								  </tr>
+								</table>								
+				            </div>
+							<h5 class="card-title">&nbsp;&nbsp; Active Sessions</h5>
+							<div class="card-body scrollit">
+				                <div class="card-body">
+				                    <div th:each="student : ${loggedstudents}" >
+				                      <div class="d-flex flex-row align-items-center" >
+				                        <div>
+				                          <span class="dot"></span>
+				                        </div>
+				                        <div class="ms-3">
+				                          <h4 th:text = "${student.studentId.userId.email}"></h4>
+				                        </div>
+				                      </div>
+				                    </div>
+								</div>
+							</div>
+					</div>
+					
+				</div>
+				</div>
+				
+				<!-- Banner Display -->
+				<div class="row" >
+					<div class="col-md-11">
+						<div id="news-slider">
+							<div th:each="banner : ${bannerList}" class="card"  style = "margin:1%;text-align:center;border: 1px solid;">
+						  		<div class="card-deck row"  style = "margin:1%;">
+									<div class="col-lg-5 col-sm-6" th:if="${banner.bannerId.image} != null">
+								  		<img th:src="${banner.bannerId.image}" alt="Banner Image" style = "width:18rem;height:10rem;">
+								  	</div>
+								  	<div class="col-lg-6 col-sm-6" style="text-align: justify;">
+							  			<h5 class="text-dark card-title" th:text="${banner.bannerId.header}"></h5>
+										<h4 th:text="${banner.bannerId.header}"></h4>
+								  		<p class="card-text" th:text="${banner.bannerId.content}">
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			
+		</main><!-- End #main -->	
+		<script type="text/javascript" src="/js/classroom.management.js"></script>
+		<script type="text/javascript" src="/js/classroom/student.panel.js"></script>
+  	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

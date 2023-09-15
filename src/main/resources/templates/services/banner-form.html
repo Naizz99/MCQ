@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Banner Management</title>
+
+<style>
+	.imgContent { 
+	  position: relative;
+	}
+	
+	.center {
+	  margin: 0;
+	  position: absolute;
+	  top: 50%;
+	  left: 50%;
+	  -ms-transform: translate(-50%, -50%);
+	  transform: translate(-50%, -50%);
+	}
+	
+	#role:hover {background-color: #3399ff}
+</style>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Banner Managements</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Banner Management</li>
+						<li class="breadcrumb-item active"><a href="/listBanners">Banners</a></li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Banner Details</h5>
+								<div class="alert alert-success" id="success-alert" style="display:none"> Success Message</div>
+								<form class="row g-3" id = "newBanner" th:object="${banner}" enctype="multipart/form-data">									
+					                <!-- 
+						                <div class="col-sm-3">
+						                	<label for="contentType" class="form-label">Content Type<span class="asterisk_input"></span></label>
+					                    	<select class="form-select form-control" th:field="*{contentType}" aria-label="Default select example" onChange="showContentDiv(this.value)" required>
+						                    	<option value=''>-- SELECT TYPE --</option>
+						                      	<option th:each="type : ${T(com.rcs2.mcqsys.model.Banner.ContentType).values()}" 
+		       											th:value="${type}" 
+		       											th:text="${type}">
+		 										</option>
+					                    	</select>
+						                </div>
+					                 -->
+					                
+					                <!-- 
+					                <div class="col-sm-12">
+					                	<label for="publisher" class="form-label">Publisher<span class="asterisk_input"></span></label>
+				                    	<select class="form-select form-control" th:field="*{publisherId}" name="publisherId" id="publisherId" aria-label="Default select example" required>
+					                    	<option value=''>-- SELECT PUBLISHER --</option>
+					                      	<option th:each="log:${publisherList}"
+				                                    th:value="${log.poId}"
+				                                    th:text="${log.name}"
+				                                    th:if="${publisherList} != ''">
+				                            </option>
+				                            <option value='0'>No Publisher</option>
+				                    	</select>
+					                </div>
+					                 -->
+					                 
+					                <div class="col-sm-12" th:if="${#arrays.contains(session.loggedRolesName, 'ADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+					                  	<select class="form-select form-control" th:field="*{publisherId}" name="publisherId" id="publisherId" aria-label="Default select example" placeholder = "SELECT PUBLISHER">
+				                            <option value=''>-- SELECT PUBLISHER --</option>
+				                            <option th:each="log:${publisherList}"
+				                                    th:value="${log.poId}"
+				                                    th:text="${log.name}"
+				                                    th:if="${publisherList} != ''">
+				                            </option>
+				                        </select>
+                                	</div>
+
+                                	<div class="col-sm-12" th:if="((${publisherId} == null) OR (${publisherId} == '')) AND (${#arrays.contains(session.loggedRolesName, 'AUTHOR')} OR ${#arrays.contains(session.loggedRolesName, 'EDITOR')})">
+					                  	<input type="hidden" name="publisherId" id="publisherId" th:value="${publisher.poId}" class="form-control" readonly>
+							           	<input type="text" th:value="${publisher.name}" class="form-control" placeholder="PUBLISHER" readonly>
+                                	</div>
+                                	<div class="col-sm-12" th:if="((${publisherId} == null) OR (${publisherId} == '')) AND ${#arrays.contains(session.loggedRolesName, 'LECTURER')}">
+					                  	<input type="hidden" name="publisherId" id="publisherId" value="0" class="form-control" readonly>
+                                	</div>
+                                	
+                                	<div class="col-sm-12" th:if="((${publisherId} != null) AND (${publisherId} != '')) AND ( ${#arrays.contains(session.loggedRolesName, 'AUTHOR')} OR ${#arrays.contains(session.loggedRolesName, 'EDITOR')} OR ${#arrays.contains(session.loggedRolesName, 'LECTURER')})">
+					                  	<input type="hidden" name="publisherId" id="publisherId" th:field="*{publisherId}" class="form-control" readonly>
+                                	</div>
+                                	
+					                <div class="col-md-12">
+										<label for="grade" class="form-label">Grade<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{grade}" id="grade">
+				                            <option value=''>-- SELECT GRADE --</option>
+				                            <option th:each="log:${gradeList}"
+				                                    th:value="${log.gradeId}"
+				                                    th:text="${log.gradeName}">
+				                            </option>
+				                            <option value='0'>All Grades</option>
+				                        </select>
+									</div>
+									
+					                <!-- 
+					                	<div class="col-sm-3">
+						                	<label for=resolution class="form-label">Resolusion (Width% X Height%)<span class="asterisk_input"></span></label>
+					                    	<select class="form-select form-control" aria-label="Default select example" onChange="changeResolusion(this.value)">
+						                    	<option value='1'>100 X 100</option>
+					                            <option value='2'>50 X 50</option>
+					                            <option value='3'>75 X 100</option>
+					                            <option value='4'>40 X 75</option>
+					                            <option value='5'>150 X 100</option>
+					                            <option value='6'>50 X 100</option>
+					                    	</select>
+						                </div> 
+					                 -->
+				                    <!-- 
+				                    	<div class="col-md-1">
+											<label for="resolution" class="form-label">Resolusion<span class="asterisk_input"></span></label><br>
+										</div>
+						                <div class="col-md-3 row">
+											<div class="col-md-6">
+												<label for="width" class="form-label">Width</label>
+												<input type="text" th:field="*{width}" class="form-control" required>
+											</div>
+											<div class="col-md-6">
+												<label for="height" class="form-label">Height</label>
+												<input type="text" th:field="*{height}" class="form-control" required>
+											</div>
+										</div>
+				                     -->
+									<div class="col-sm-12">
+					                	<label for="header" class="form-label">Header<span class="asterisk_input"></span></label>
+				                    	<input type="text" th:field="*{header}" name="header" class="form-control" id="mainHeader" required>
+					                </div>
+					                
+					                <div class="col-sm-12">
+					                	<label for="subHeader" class="form-label">Sub Header</label>
+				                    	<input type="text" th:field="*{subHeader}" name="subHeader" class="form-control" id="subHeader">
+					                </div>
+					                
+					                <div class="col-sm-12">
+					                	<label for="content" class="form-label">Content<span class="asterisk_input"></span></label>
+				                    	<textarea rows="3" th:field="*{content}" class="form-control" id="content" required></textarea>
+					                </div>
+					                
+					                <div class="col-sm-6">
+					                	<label for="image" class="form-label">Image</label>
+				                    	<input type="file" class="form-control" id="uploadImage" onchange="imageUploaded(event)" accept=".png, .jpg, .jpeg, .mp4, .webm, .mkv" title="Accept .png, .jpg, .jpeg, .mp4, .webm, .mkv">
+					                </div>
+					                
+					                <div class="col-sm-6" style="height:200px;border:1px solid;" >
+					                	<img th:src="${banner.image}" alt="Image Upload" id="imagePreview" style="height:100%;width:100%">
+					                </div>
+					                
+					                <!-- 
+					                	<div class="col-sm-12">
+						                	<label for="roles" class="form-label">User Roles</label>
+					                    	<input type="text" th:field="*{roles}" name="roles" class="form-control" id="roles">
+						                </div>
+						                
+					                	<div class="col-sm-12">
+						                	<label for="roles" class="form-label">Publish for Roles</label>
+						                	<table class="table table-bordered" style="width:20%">
+						                		<tr th:each="role:${roles}">
+						                			<td style="background-color: #e6f2ff" th:text="${role.role}"></td>
+						                			<td>
+						                				<div class="form-check form-switch">
+														  <input class="form-check-input" type="checkbox" th:id="${role.role}" onChange="alert(this.id)">
+														</div>
+						                			</td>
+						                		</tr>
+						                	</table>
+					                    	<input type="text" th:field="*{roles}" name="roles" class="form-control" id="roles" readonly>
+						                </div>
+					                 -->
+					                
+					                <input type="hidden" th:field="*{bannerId}" name="bannerId" id="bannerId" class="form-control" readonly>
+									<input type="hidden" th:field="*{image}" name="image" id="bannerImage" class="form-control" readonly>
+									<input type="hidden" th:field="*{active}" name="active" id = "active" class="form-control" readonly>
+									<input type="hidden" th:field="*{userId}" name="userId" id = "createBy" class="form-control" readonly>
+									<input type="hidden" th:field="*{createDate}" name="createDate" id = "createDate" class="form-control" readonly>
+									<input type="hidden" th:field="*{updateBy}" name="updateBy" id = "updateBy" class="form-control" readonly>
+									<input type="hidden" th:field="*{updateDate}" name="updateDate" id = "updateDate" class="form-control" readonly>
+									<input type="hidden" th:field="*{width}" name="width" id="width" class="form-control" readonly>
+									<input type="hidden" th:field="*{height}" name="height" id="height" class="form-control" readonly>
+									<input type="hidden" th:field="*{content}" name="content" id="content" class="form-control" readonly>
+									<input type="hidden" th:field="*{contentType}" name="contentType" id="contentType" class="form-control" readonly>
+									
+									<div class="col-sm-12" >
+										<button type="button" id = "saveBanner" class="btn btn-primary" onClick="saveBannerContent()">Submit</button> &nbsp;&nbsp;&nbsp;
+										<button type="reset" class="btn btn-secondary">Reset</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-6" th:if="(${banner.bannerId} != null) AND (${banner.bannerId} != '')">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Published Group List</h5>
+								<div class="row g-3">									
+					                <div class="col-sm-12">
+					                	<label for="classroomList" class="form-label">Select Group</label>
+				                    	<select class="form-select form-control" id="classroomList" onChange="addClassRoomBanner(this.value)">
+					                    	<option value=''>-- ADD GROUP --</option>
+					                      	<option th:each="log:${listClassrooms}"
+				                                    th:value="${log.classroomId}"
+				                                    th:text="${log.name}">
+				                            </option>
+				                    	</select>
+					                </div>
+								</div>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-body">
+								<div class="row g-3">									
+					                
+					                <div class="col-md-12" th:each="banner:${listBanners}">
+										<h3>
+											<label for="banner" class="form-label" th:text="${banner.classroomId.name}"></label>
+											<i class="bi bi-power" title ="Stop playing" th:onclick="|removeClassRoomBanner('${banner.classroomId.classroomId}','${banner.bannerId.bannerId}')|"></i>
+										</h3>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+	</main>
+	<!-- End #main -->
+	</div>
+	<script src="js/grade.management.js"></script>
+	<script src="js/services/banner.management.js"></script>
+</body>
+
+</html>
+

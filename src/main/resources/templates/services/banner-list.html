@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Banner Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Banner Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Banner Management</li>
+						<li class="breadcrumb-item active"><a href="/listBanners">Banners</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+
+			<a type = "button" class="btn btn-primary" th:href="@{/addBanner}">Add New Banner</a>
+			
+			<br/><br/>
+			<table class="table datatable" >
+				<thead>
+					<tr>
+						<th>Banner ID</th>
+						<th>Header</th>
+						<th>Sub Header</th>
+						<th>Content</th>
+						<th>Status</th>
+						<th>Create User</th>
+						<th>Publisher</th>
+						<th>Create Date</th>
+						<th>Last Update User</th>	
+						<th>Last Update Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					
+					<tr th:each="banner : ${listBanners}">
+						<td th:text="${banner.bannerId}"></td>
+						<td th:text="${banner.header}"></td>
+						<td th:text="${banner.subHeader}"></td>
+						<td th:text="${banner.content}" th:if="${#strings.length(banner.content)} <= 30"></td>
+						<td th:text="${#strings.substring(banner.content,0,30)} + '.......'" th:if="${#strings.length(banner.content)} > 30"></td>
+						<td th:if="${!(banner.active)}"> <span class="label label-danger">Deactive</span> </td>
+						<td th:if="${banner.active}"><span class="label label-success">Active</span></td>
+						<td th:text="${banner.userId.username}"></td>
+						<td th:text="${banner.publisherId.name}" th:if="${banner.publisherId} != ''"></td>
+						<td text="-" th:if="${banner.publisherId.name} == ''"></td>
+						<td th:text="${banner.createDate}"></td>
+						<td th:text="${banner.updateBy}"></td>
+						<td th:text="${banner.updateDate}"></td>
+						<td colspan=2 style="letter-spacing: 10px;">
+							<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showBannerUpdate(bannerId=${banner.bannerId})}" ></a>
+							<a type = "button" class="bi bi-trash" title="Delete" th:onclick="|deleteBanner('${banner.bannerId}')|"></a>
+							<a type = "button" class="bi bi-clipboard-x"  title = "Deactivate" th:href="@{/bannerDeactive(bannerId=${banner.bannerId})}" th:if="${banner.active}"> </a>	
+							<a type = "button" class="bi bi-clipboard-check" title = "Activate" th:href="@{/bannerActive(bannerId=${banner.bannerId})}" th:if="${!(banner.active)}"></a>	
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+		</main><!-- End #main -->	
+		<script src="js/grade.management.js"></script>
+		<script src="js/services/banner.management.js"></script>
+  	</div>
+  	
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

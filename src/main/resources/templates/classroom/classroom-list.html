@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Group Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Group Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Lecturers & Groups</li>
+						<li class="breadcrumb-item active"><a href="/listClassRooms">Groups</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+			
+			<a type = "button" class="btn btn-primary" th:href="@{/addClassRoom}">Add New Group</a>
+			<br/><br/>
+			<table class="table datatable">
+				<thead>
+					<tr>
+						<th>Status</th>
+						<th>Group ID</th>
+						<th>Name</th>
+						<th>Grade</th>
+						<th>Subject</th>
+						<th>Lecturer</th>
+						<!-- <th>Package</th> -->
+						<th>Start Date</th>
+						<th>End Date</th>
+						<th>Status</th>
+						<!-- <th>Create User</th> -->
+						<th>Create Date</th>
+						<!-- <th>Last Update User</th> -->
+						<th>Last Update Date</th>
+					</tr>
+				</thead>
+				<tbody> 
+					<tr th:each="classroom : ${listClassRooms}" >
+						<td th:if="${!(classroom.status)}" style = "color:#cc0000;font-weight: bold;"> Offline </td>
+						<td th:if="${classroom.status}" style = "color:#009900;font-weight: bold;"> Online </td>
+						<td th:text="${classroom.classroomId}">Group ID</td>
+						<td th:text="${classroom.name}">Name</td>
+						<td th:text="${classroom.grade.gradeName}">Grade</td>
+						<td th:text="${classroom.subjectId.subjectName}">Subject</td>
+						<td th:text="${classroom.lecturerId.userId.name}">Lecturer</td>
+						<!-- 
+						<td th:if="${classroom.packageId} != null">Paid</td>
+						<td th:if="${classroom.packageId} == null" title="Click here to Pay"><a th:href="@{/paymentCheckout(type='classroom',id=${classroom.classroomId})}" class="text-dark"><b>Pay Now</b></a></td>
+						 -->
+						<td th:text="${classroom.startDate}">Start Date</td>
+						<td th:text="${classroom.endDate}">End Date</td>
+						<td th:if="${!(classroom.active)}"> <span class="label label-danger">Deactive</span> </td>
+						<td th:if="${classroom.active}"><span class="label label-success">Active</span></td>
+						<!-- <td th:text="${classroom.createBy}">Create User</td> -->
+						<td th:text="${classroom.createDate}">Create Date</td>
+						<!-- <td th:text="${classroom.updateBy}">Last Update User</td> -->
+						<td th:text="${classroom.updateDate}">Last Update Date</td>
+						<td th:if="${classroom.packageId} != null">
+							<a type = "button" class="btn btn-dark"  title="Got to ClassRoom" th:href="@{/viewClassRoom(classroomId=${classroom.classroomId})}" ><i class="bi bi-box-arrow-in-up-right"></i>&nbsp; View</a>
+						</td>
+						<td th:if="${classroom.packageId} == null">
+							<a type = "button" class="btn btn-warning text-danger"  title="Pay Now" th:href="@{/paymentCheckout(type='classroom',id=${classroom.classroomId})}">Pay Now</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</main><!-- End #main -->	
+		<script src="js/classroom.management.js"></script>
+  	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

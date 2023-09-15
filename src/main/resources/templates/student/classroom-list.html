@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Group Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Group Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item active"><a href="/listStudentClassroom">My Groups</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+			
+			<div class="col-lg-8 col-sm-12">
+				<div class="card-deck row" >
+				  <div class="divCard card col-lg-3 col-sm-4" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;"  th:each="classroom : ${listClassrooms}">
+				  	<a data-toggle="modal" data-target="#groupLoginModel" th:data-id="${classroom.classRoomId.classroomId}" th:data-name="${classroom.classRoomId.name}" onclick="setGroupDetails(this)">
+				  	<!-- <a th:href="@{/student/classroomLogin(classroomStudentId=${classroom.classRoomStudentId})}" th:if="${classroom.classRoomId.status}"> -->
+					    <div class="card-body" style="text-align:right">
+					    	<span class="label label-success" th:if="${classroom.classRoomId.status}">Started</span>
+					    	<span class="label label-danger" th:if="${!classroom.classRoomId.status}">Not Started</span>
+					    </div>
+					    <div class="card-body">
+					    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-box-arrow-up-right"></i></label><br>
+					      	<label style = "font-size:20px;" class="card-title" th:text="${classroom.classRoomId.name}"></label><br>
+					    </div>
+				    </a>
+				    <a href="" th:if="${!classroom.classRoomId.status}">
+					    <div class="card-body" style="text-align:right">
+					    	<span class="label label-success" th:if="${classroom.classRoomId.status}">Started</span>
+					    	<span class="label label-danger" th:if="${!classroom.classRoomId.status}">Not Started</span>
+					    </div>
+					    <div class="card-body">
+					    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-box-arrow-up-right"></i></label><br>
+					      	<label style = "font-size:20px;" class="card-title" th:text="${classroom.classRoomId.name}"></label><br>
+					    </div>
+				    </a>
+				  </div>
+				</div>	
+			</div>
+			
+			<!-- Adding Paper Modal -->
+			<div class="modal fade" id="groupLoginModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="card-title">Login to Group</h5>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="text-align:right">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body row">
+				        <div class="col-12"> 
+							<input type="hidden" id = "groupId" class="form-control"><br>
+							<input type="text" id = "groupName" class="form-control"><br>
+							<input type="password" id = "groupPassword" class="form-control" placeholder="ENTER PASSWORD" required><br>
+						</div>
+						<div class="col-12" style="text-align:right">
+							<button type="button" class="btn btn-primary" onClick = "groupLogin(document.getElementById('groupId').value,document.getElementById('groupPassword').value)">Login</button>
+						</div>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			
+		</main><!-- End #main -->	
+		<script src="js/classroom.management.js"></script>
+  	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

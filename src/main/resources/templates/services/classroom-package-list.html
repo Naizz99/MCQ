@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Group Packages</title>
+  
+  <style>
+	  	.card:hover { 
+	 		transform: scale(1.05);
+	  		box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px;
+		}
+  </style>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Packages</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item"><a href="">Lecturers & Groups</a></li>
+						<li class="breadcrumb-item active"><a href="/listClassRoomPackages">Group Packages</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+			
+			<a th:if="${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'ADMIN')}" type = "button" class="btn btn-primary" href="/addClassRoomPackages">Add New</a>
+			
+			<div class="card-deck row" >
+				<div th:if="${param.dupplicate}" class="col-12" style = "margin:1%">
+					<div class="alert alert-danger">Can not delete package. Package has relative data.</div>
+				</div>
+				<div class="card col-lg-3 col-sm-4" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;" th:each="package : ${listPackages}">
+				    <a type = "button" class="bi bi-eye-fill" title="Click for Deactive" th:href="@{/classRoomPackageDeactive(packageId=${package.packageId})}" style="text-align:right" th:if="${package.active} AND (${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'ADMIN')})"></a>
+				    <a type = "button" class="bi bi-eye-slash-fill" title="Click for Active" th:href="@{/classRoomPackageActive(packageId=${package.packageId})}" style="text-align:right" th:if="${!package.active} AND (${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'ADMIN')})"></a>
+				    <a type = "button" class="bi bi-trash-fill" title="Remove Package" th:href="@{/deleteClassRoomPackage(packageId=${package.packageId})}" style="text-align:right" th:if="(${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'ADMIN')})"></a>
+				    
+				    <div class="card-body">
+				      <sup class="card-title">Rs.</sup><label style = "font-size:30px;" class="card-title" th:text = "${package.price}"></label><sub>/Group</sub><br>
+				      <div style = "text-align:left;">
+				      	<table>
+				      		<tr>
+				      			<td  VALIGN=TOP><i class="bi bi-check-circle-fill text-success font-size:24;"></i>&nbsp;&nbsp;&nbsp;</td>
+				      			<td th:text = "'Number of ' + ${package.studentCount} + ' students can access a Group same time.'"></td>
+				      		</tr>
+				      		<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+				      		<tr>
+				      			<td  VALIGN=TOP><i class="bi bi-check-circle-fill text-success"></i>&nbsp;&nbsp;&nbsp;</td>
+				      			<td th:text = "'Unlimited access within ' + ${package.duration} + ' days.'"></td>
+				      		</tr>
+				      		<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+				      		<tr th:if = "(${package.description} != '') AND (${package.description} != null)">
+				      			<td  VALIGN=TOP><i class="bi bi-check-circle-fill text-success"></i>&nbsp;&nbsp;&nbsp;</td>
+				      			<td th:text = ${package.description}></td>
+				      		</tr>
+				      	</table>
+				      	  
+				      </div>
+				    </div>
+				</div>
+			</div>
+						
+		</main><!-- End #main -->	
+  	</div>
+</body>
+</html>
+
+<script src="js/classroom.management.js"></script>
+<script src="js/paper.management.js"></script>
+<script>
+	
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

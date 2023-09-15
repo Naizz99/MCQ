@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Grade Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Grade Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Content Management</li>
+						<li class="breadcrumb-item active"><a href="/listGrades">Grades</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+
+			<a type = "button" class="btn btn-primary" th:href="@{/addGrade}">Add New Grade</a>
+			
+			<br/><br/>
+			<table class="table datatable">
+				<thead>
+					<tr>
+						<th>Grade ID</th>
+						<th>Grade</th>
+						<th>Grade Name</th>
+						<th>Status</th>
+						<!-- <th>Create User</th> -->
+						<th>Create Date</th>
+						<!-- <th>Last Update User</th> -->
+						<th>Last Update Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					
+					<tr th:each="grade : ${listGrades}">
+						<td th:text="${grade.gradeId}">Grade ID</td>
+						<td th:text="${grade.grade}">Grade</td>
+						<td th:text="${grade.gradeName}">Grade Name</td>
+						<td th:if="${!(grade.active)}"> <span class="label label-danger">Deactive</span> </td>
+						<td th:if="${grade.active}"><span class="label label-success">Active</span></td>
+						<!-- <td th:text="${grade.createBy}">Create User</td> -->
+						<td th:text="${grade.createDate}">Create Date</td>
+						<!-- <td th:text="${grade.updateBy}">Last Update User</td> -->
+						<td th:text="${grade.updateDate}">Last Update Date</td>
+						<td colspan=2 style="letter-spacing: 10px;">
+							<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showGradeUpdate(gradeId=${grade.gradeId})}" ></a>
+							<a type = "button" class="bi bi-trash" title="Delete" th:onclick="|deleteGrade('${grade.gradeId}')|"></a>
+							<a type = "button" class="bi bi-clipboard-x"  title = "Deactivate" th:href="@{/gradeDeactive(gradeId=${grade.gradeId})}" th:if="${grade.active}"></a>
+							<a type = "button" class="bi bi-clipboard-check" title = "Activate" th:href="@{/gradeActive(gradeId=${grade.gradeId})}" th:if="${!(grade.active)}"></a>	
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+		</main><!-- End #main -->	
+  	</div>
+  	
+</body>
+</html>
+
+<script src="js/grade.management.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

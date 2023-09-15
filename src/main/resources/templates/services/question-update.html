@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Question Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Question Managements</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Material Management</li>
+						<li class="breadcrumb-item"><a href="/listPapers">Papers</a></li>
+						<li class="breadcrumb-item active"><a th:href="@{/listQuestionsByPaperId(paperId=${paperId.paperId})}">Questions</a></li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+			<section class="section" id = "section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Question Details</h5>
+								<form class="row g-3" id = "newQuestion" enctype="multipart/form-data" th:object="${question}">
+									<div class="col-md-6">
+										<i class="bi bi-question-circle"></i>&nbsp;
+										<label for="questionId" class="form-label">Question No. : </label> <span class="asterisk_input"></span>&nbsp;
+										<input  th:field="*{questionId}" class="form-control" type="text" id = "questionID" style = "width:30%;" required readonly>
+										<input  th:field="*{pqId}" class="form-control" type="hidden" id = "questionID" style = "width:30%;" required readonly>
+								    </div>
+								    
+								    <div class="col-md-4">
+										<label class="form-label">Paper<span class="asterisk_input"></span></label>
+										<input type="text" th:field="*{paperID.name}" class="form-control" readonly>
+										<input type="hidden" th:field="*{paperID.answersPerQuestion}" id = "answersPerQuestion" class="form-control" readonly>
+										<input type="hidden" th:field="*{PaperID}" class="form-control" id = "PaperID" readonly>
+									</div>
+								    		
+									<div class="col-md-4">
+										<label for="module" class="form-label">Module<span class="asterisk_input"></span></label>
+										<select class="form-select" aria-label="Default select example" th:field="*{moduleId}" id="moduleId">
+				                            <option value=''>Select a module</option>
+				                            <option th:each="log:${moduleList}"
+				                                    th:value="${log.moduleId}"
+				                                    th:text="${log.name}">
+				                            </option>
+				                        </select>
+									</div>
+														    
+									<div class="col-md-12">
+										<label for="question" class="form-label">Question</label>
+										<textarea th:field="*{question}" class="form-control" id="question" rows="3" required></textarea>
+								    </div>
+									<div class="col-md-6" th:if="${question.active}">
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Active" class="form-control" readonly>
+									</div>
+									<div class="col-md-6" th:if="${!question.active}">
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Deactive" class="form-control" readonly>
+									</div>
+									<input type="hidden" th:field="*{active}" id = "active" class="form-control" readonly>
+									
+									<div class="col-md-6">
+										<label for="createBy" class="form-label">Create By</label> 
+										<input type="text" th:field="*{createBy}" id = "createBy" class="form-control" readonly>
+									</div>
+									<div class="col-md-6">
+										<label for="createDate" class="form-label">Create Date</label> 
+										<input type="text" th:field="*{createDate}" id = "createDate" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="updateBy" class="form-label">Update By</label> 
+										<input type="text" th:field="*{updateBy}" id = "updateBy" class="form-control" readonly>
+									</div>
+									<div class="col-md-6">
+										<label for="updateDate" class="form-label">Update Date</label> 
+										<input type="text" th:field="*{updateDate}" id = "updateDate" class="form-control" readonly>
+									</div>
+									
+									<div class="text-center">
+										<button type="button" id = "saveQuestion" class="btn btn-primary">Submit</button>
+										<button type="reset" class="btn btn-secondary">Reset</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>				
+				</div>
+			</section>
+	</main>
+	
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>
+
+<script>
+	$("#saveQuestion").click(function(){
+		
+		var pqId = null;
+		
+		var a = new FormData(); // using additional FormData object
+		var b = [];             // using an array
+		
+		for(var i = 0; i < document.forms.length; i++){
+			var f = document.forms[i];
+			if(f.id == "newQuestion"){
+				var form = new FormData(document.forms[i]);
+				$.ajax({
+					url: '/secure/updateQuestion',
+					type: 'POST',
+					data: form,
+					processData: false,
+			        contentType: false,
+					cache: false,
+			        success:function (response) {
+			        	Swal.fire({
+			  			  position: 'top-end',
+			  			  icon: 'success',
+			  			  title: 'Question has been updated!',
+			  			  showConfirmButton: false,
+			  			  timer: 1500
+			  			}).then((result) => {
+			  				window.location = "/listQuestionsByPaperId?paperId=" + document.getElementById("PaperID").value;
+			  			})
+					},
+					error:function(status, error){
+						Swal.fire({
+						  position: 'top-end',
+						  icon: 'error',
+						  title: 'Something went wrong!',
+						  showConfirmButton: false,
+						  timer: 15000
+						})
+					}
+				});	
+				
+			}
+		}
+	});
+</script>
+

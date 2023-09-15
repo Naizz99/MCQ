@@ -1,0 +1,134 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Paper Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				
+				<h1 th:if="${poId.name == null}">Paper Management</h1>
+				<h1 th:if="${poId.name != null}" th:text = " 'Paper Managements - ' + ${poId.name}">Paper Management</h1>
+    			    			
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Paper Management</li>
+						<li class="breadcrumb-item active"><a href="/listPapers">Papers</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+
+			<!-- <a type = "button" class="btn btn-primary" th:href="@{/addPaper}">Add New Paper</a> -->
+			<!-- <a sec:authorize="hasRole('ADMIN') || hasRole('EDITOR') || hasRole('LECTURER')" type = "button" class="btn btn-primary" href="/contentWizard">Add Paper</a> -->
+			<a th:if="${#arrays.contains(session.loggedRolesName, 'ADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'EDITOR')} OR ${#arrays.contains(session.loggedRolesName, 'LECTURER')}" type = "button" class="btn btn-primary" href="/contentWizard">Add Paper</a>
+			
+			<br/><br/>
+			
+			<table class="table datatable">
+				<thead>
+					<tr>
+						<th>Paper ID</th>
+						<th>Subject</th>
+						<th>Name</th>
+						<th>Grade</th>
+						<th>Time</th>
+						<th>Publisher</th>
+						<th>Active</th>
+						<!-- <th>Create User</th> -->
+						<th>Create Date</th>
+						<!-- <th>Last Update User</th> -->
+						<th>Last Update Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="paper : ${listPapers}" >
+						<td th:text="${paper.paperId}">Paper ID</td>
+						<td th:text="${paper.subjectId.subjectName}">Subject</td>
+						<td th:text="${paper.name}">Name</td>
+						<td th:text="${paper.grade.gradeName}">Grade</td>
+						<td th:text="${paper.time}">Time</td>
+						<td th:text="${paper.publisher.name}">Publisher</td>
+						<td th:if="${!(paper.active)}"> <span class="label label-danger">Deactive</span> </td>
+						<td th:if="${paper.active}"><span class="label label-success">Active</span></td>
+						<!-- <td th:text="${paper.createBy}">Create User</td> -->
+						<td th:text="${paper.createDate}">Create Date</td>
+						<!-- <td th:text="${paper.updateBy}">Last Update User</td> -->
+						<td th:text="${paper.updateDate}">Last Update Date</td>
+						<td colspan=2 style="letter-spacing: 10px;">
+							<a type = "button" class="bi bi-send" title="Got to Questions" th:href="@{/listQuestionsByPaperId(paperId=${paper.paperId})}" ></a>
+							<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showPaperUpdate(paperId=${paper.paperId})}" ></a>
+							<a type = "button" class="bi bi-trash" title="Delete" th:onclick="|deletePaper('${paper.paperId}')|" th:if="${#arrays.contains(session.loggedRolesName, 'ADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'AUTHOR')} OR ${#arrays.contains(session.loggedRolesName, 'LECTURER')}"></a>
+							<a type = "button" class="bi bi-clipboard-x"  title = "Deactivate" th:href="@{/paperDeactive(paperId=${paper.paperId})}" th:if="(${#arrays.contains(session.loggedRolesName, 'ADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'AUTHOR')} OR ${#arrays.contains(session.loggedRolesName, 'LECTURER')}) AND ${(paper.active)}"></a>	
+							<a type = "button" class="bi bi-clipboard-check" title = "Activate" th:href="@{/paperActive(paperId=${paper.paperId})}" th:if="(${#arrays.contains(session.loggedRolesName, 'ADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'AUTHOR')} OR ${#arrays.contains(session.loggedRolesName, 'LECTURER')}) AND ${!(paper.active)}"></a>
+						</td>
+						
+						<td >
+							
+						</td>
+						<td >
+							
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</main><!-- End #main -->	
+  	</div>
+</body>
+</html>
+
+<script src="js/paper.management.js"></script>
+
+<script>
+	function addQuestion(paperId,totQuestion,addedQuestion){
+		if(totQuestion > addedQuestion){
+			$.ajax({
+				url: '/addQuestionByPaperId',
+				type: 'GET',
+				traditional: true,
+				data: {paperId: paperId},
+				success: function (response) {
+				    
+				},
+				error:function(status, error){
+					Swal.fire(
+				      'Can not add!',
+				      'Question Count Exceed!',
+				      'error'
+				    ) 
+				}
+			});
+		}else{
+			Swal.fire(
+		      'Can not add!',
+		      'Question Count Exceed!',
+		      'error'
+		    ) 
+		}
+	}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

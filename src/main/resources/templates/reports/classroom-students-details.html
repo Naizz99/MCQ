@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Report Center</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1 id = "rptName">Students Details</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item"><a th:href="@{/viewClassRoom(classroomId=${classroom.classroomId})}">Group Management</a></li>
+						<li class="breadcrumb-item active">Student Details</li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+
+			<div class="row">
+				<div class="col-lg-12">
+					<a type="button" class="btn btn-danger" style="background-color: #990000;" id="printButton">Export</a>
+					<br><br>
+					<div class="card">
+						<div class="card-body" id="rptDiv">
+							<table class="table table-striped" id = "rptTable">
+							  <thead>
+							    <tr>
+							      <th scope="col">Email</th>
+							      <th scope="col">Status</th>
+							      <th scope="col">Completed Attempts</th>
+							      <!-- <th scope="col">Total Marks</th> -->
+							      <th scope="col">Total Attended Time</th>
+							    </tr>
+							  </thead>
+							  <tbody id="rptData">
+							  	<tr th:each="student : ${studentList}">
+									<td th:text="${student.email}">Email</td>
+									<td th:if="${!(student.status)}" > <span class="label label-danger">Offline</span> </td>
+									<td th:if="${student.status}"> <span class="label label-success">Online</span> </td>
+									<td th:text="${student.totalAttendPapers}">Papers done</td>
+									<!-- <td th:text="${student.totalMarks}">Total Marks</td> -->
+									<td th:text="${student.totalAttendTime}" th:if = "${student.totalAttendTime} != null">Total Attended Time</td>									
+									<td th:if = "${student.totalAttendTime} == null">Not Attended</td>									
+								</tr>					    
+							  </tbody>
+							</table>	
+								
+							
+						</div>
+					</div>
+				</div>
+			</div>
+	</main>
+	<!-- End #main -->
+	<script src="/js/report.management.js"></script>
+	</div>
+</body>
+
+</html>
+
+

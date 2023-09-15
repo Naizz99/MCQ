@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Publisher Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Publisher Request</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item active"><a href="/listPublishers">Publisher Management</a></li>
+						<li class="breadcrumb-item active"><a href="/viewPublisherRequests">Publisher Requests</a></li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<form class="row g-3" id = "publisher" th:object="${publisher}">
+									<input type="hidden" th:field="*{active}" id = "active" class="form-control" readonly>
+									<input type="hidden" th:field="*{updateBy}" id = "updateBy" class="form-control" readonly>
+									<input type="hidden" th:field="*{updateDate}" id = "updateDate" class="form-control" readonly>
+									<div class="col-md-9">
+										<label for="name" class="form-label">Company Name</label>
+										<input type="text" th:field="*{name}" id = "name" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-3">
+										<label for="poId" class="form-label">Company Id</label>
+										<input type="text" th:field="*{poId}" id = "poId" class="form-control" readonly>  
+									</div>
+									
+									<div class="col-md-12">
+										<label for="author" class="form-label">Description</label>
+										<textarea th:field="*{description}" id = "description" class="form-control" rows="2" required></textarea>
+									</div>
+									
+									<div class="col-md-7">
+										<label for="author" class="form-label">Email</label>
+										<input type="email" th:field="*{email}" id = "email" class="form-control" oninput="validateEmail(this.value,0)"  readonly>
+									</div>
+									
+									<div class="col-md-5">
+										<label for="author" class="form-label">Mobile No.</label>
+										<input type="mobile" th:field="*{mobile}" id = "mobile" class="form-control" maxlength="10" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" readonly>
+									</div>
+									
+									<div class="col-md-12">
+										<label for="author" class="form-label">Address</label>
+										<textarea th:field="*{address}" id = "address" class="form-control" rows="2" readonly></textarea>
+									</div>
+									
+									<!-- 
+									<div class="col-md-12" th:if="${publisher.active}">
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Active" class="form-control" readonly>
+									</div>
+									 
+									 
+									<div class="col-md-12" th:if="${!publisher.active}" >
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Deactive" class="form-control" readonly>
+									</div>
+									-->
+									
+									<div class="col-md-12">
+										<label for="createBy" class="form-label">Registered Author</label> 
+										<input type="text" th:field="*{createBy}" id = "createBy" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-12">
+										<label for="createDate" class="form-label">Registered Date</label> 
+										<input type="text" th:field="*{createDate}" id = "createDate" class="form-control" readonly>
+									</div>
+									
+									<!-- 
+									<div class="col-md-6">
+										<label for="updateBy" class="form-label">Update By</label> 
+										<input type="text" th:field="*{updateBy}" id = "updateBy" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="updateDate" class="form-label">Update Date</label> 
+										<input type="text" th:field="*{updateDate}" id = "updateDate" class="form-control" readonly>
+									</div>
+									 -->
+									 
+									 <div class="col-md-12">
+										<label for="note" class="form-label">Approval / Reject Note</label>
+										<textarea id = "note" class="form-control" rows="3" required></textarea>
+									 </div>
+									 
+									<div class="text-center">
+										<button type="button" class="btn btn-success" onClick="approvePublisher()">Approve</button>
+										<button type="button" class="btn btn-danger" onClick="rejectPublisher()">Reject</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-6">						
+						<div class="card">
+							<div class="card-body">
+			                    <div class="d-flex justify-content-between">
+			                      <div class="d-flex flex-row align-items-center">
+			                      	<div class="activite-label"><h5 class="card-title">User Accounts</h5></div>  
+			                      </div>
+			                      <div class="d-flex flex-row align-items-center">
+			                      		<button type="button" class="btn btn-success" onClick="activeAllPublisherUsers()">Activate All</button>&nbsp;&nbsp;
+			                      		<button type="button" class="btn btn-warning" onClick="deactiveAllPublisherUsers()">Deactivate All</button>&nbsp;&nbsp;
+			                      		<!-- <button type="button" class="btn btn-danger" onClick="removeAllPublisherUsers()">Remove All</button> -->  
+			                      </div>
+			                    </div>
+			                </div>
+						</div>
+						<div class="card" th:each="pbUser : ${listUsers}">
+							<div class="card-body">
+			                    <div class="d-flex justify-content-between">
+			                      <div class="d-flex flex-row align-items-center">
+			                        <div>
+			                          	<i class="bi bi-person-circle"></i><br>
+			                          	<span class="label label-success" th:if="${pbUser.userId.active}">Active</span>
+			                        	<span class="label label-danger" th:if="${!pbUser.userId.active}">Deactive</span>&nbsp;&nbsp;&nbsp;&nbsp;
+			                        </div>
+			                        <div>
+			                          <h4 th:text = "${pbUser.userId.userId} + '|' + ${pbUser.userId.name} + ' | ' + ${pbUser.role.role}">Name</h4>
+			                          <p class="small mb-0" th:text = "${pbUser.userId.mobile}"></p>
+			                          <p class="small mb-0" th:text = "${pbUser.userId.email}"></p>
+			                        </div>
+			                      </div>
+			                      <div class="d-flex flex-row align-items-center">
+			                        <div>
+			                          <i class="bi bi-check-circle-fill" th:if="${!pbUser.userId.active}" title="Activate" th:onClick="|activePublisherUser(${pbUser.pbUserId})|"></i>
+			                          <i class="bi bi-x-circle-fill" th:if="${pbUser.userId.active}" title="Deactivate" th:onClick="|deactivePublisherUser(${pbUser.pbUserId})|"></i>
+			                        </div>
+			                        &nbsp;&nbsp;&nbsp;
+			                        <div>
+			                          <i class="bi bi-trash-fill" th:onClick="|removePublisherUser(${pbUser.pbUserId})|"></i>
+			                        </div>
+			                      </div>
+			                    </div>
+			                </div>
+						</div>
+					</div>
+				</div>
+			</section>
+	</main>
+	<!-- End #main -->
+	
+	<script src="js/publisher.management.js"></script>
+	
+	</div>
+</body>
+
+</html>
+

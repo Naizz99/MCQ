@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Paper Bundle Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Paper Bundle Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Paper Management</li>
+						<li class="breadcrumb-item active">Bundle Management</li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-9">
+						<div class="card">
+							<div class="card-body scrollit">
+								<div class="divCard card col-lg-3 col-sm-4" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;" th:each="paper : ${listPapers}" th:if="${paper.paperId} != null">
+									<a th:href="@{/student/viewPaper(paperId=${paper.paperId.paperId})}" >
+									    <div class="card-body">
+									    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-calendar2-event"></i></label><br>
+									    	<table width = 100% style = "width: 100%;height:100%;color:black" >
+												<tr>
+												    <b><td class = "paperName" th:text="${paper.paperId.name}"></td></b>
+												</tr>
+												
+												<tr>
+												    <td class = "subjectName" th:text="${paper.paperId.subjectId.subjectName}"></td>
+												</tr>
+												
+												<tr>
+												    <td class = "gradeName" th:text="${paper.paperId.grade.gradeName}"></td> 
+												</tr>
+												
+												<tr>
+												    <td class = "paperTime" th:text="'Time : ' + ${paper.paperId.time} + ' minutes'"></td> 
+												</tr>
+											</table>
+										</div>
+								    </a>
+								</div>
+				                
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-lg-3">
+						<div class="card">
+							<div class="card-body">
+								<form class="row g-3" id = "newBundle" th:object="${bundle}" >
+								<br>
+									<div class="col-md-12">
+										<div style="width:18rem;height:10rem">
+											<img th:src="${bundle.image}" style="width:100%;height:100%">
+										</div>
+									</div>
+									
+									<div class="col-md-12" >
+										<b><p th:text="${bundle.name}"></p></b>
+									</div>
+									
+									<div class="col-md-12">
+										<p th:text="${bundle.description}"></p>
+									</div>
+									
+									<div class="col-md-12">
+										<p th:text="${bundle.grade.gradeName}"></p>
+									</div>
+										
+									<div class="col-md-12">
+										<p th:text="${bundle.publisher.name}"></p>
+									</div>&nbsp;&nbsp;&nbsp;&nbsp;
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+	</main>
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>
+
+<script src="js/services/paper.bundle.management.js"></script>

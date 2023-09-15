@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Checkout</title>
+  
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+		<input type="hidden" th:value="${user.userId}" id = "userId">
+		<nav>
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="/home">Home</a></li>
+				<li class="breadcrumb-item">Checkout</li>
+			</ol>
+		</nav>
+		<section class="section">
+			<div class="row">
+				<div class="col-lg-6">
+					<div class="card">
+						<div class="card-body">
+							<form class="mt-4" id = "ceckoutForm">
+								<div class="form-outline mb-4 row">
+			                    	<label class="form-label" for="typeName">Package</label>
+			                        <select name='classroomPackage' id='packageId' class="form-control" >
+									    <option value=''>-- Select Package --</option>
+									    <option th:each="log:${listClassRoomPackages}"
+			                                    th:value="${log.packageId}"
+			                                    th:text = "${log.duration} + ' Days for ' + ${log.studentCount} + ' Students    (Rs. ' + ${log.price} + '/=)'"
+			                                    th:title="${log.description}" th:onClick = "|document.getElementById('totValue').innerHTML = 'Rs. ' + '${log.price}' + '/=' ; document.getElementById('checkout').innerHTML = 'Rs. ' + '${log.price}' + '/=' ;|">
+			                            </option>
+									</select>
+			                    </div>
+			                      
+			                    <label class="form-label" for="typeName">Card Type</label>
+			                    <br>
+			                   
+	                    		<input type="radio" name="card" value="mastercard" id = "mastercard">
+								<label for="mastercard">
+								    <i type = "button" style = "font-size:50px;color:#0088cc;" class="fa fa-cc-mastercard"></i>
+								</label>&nbsp;&nbsp;&nbsp;
+								
+								<input type="radio" name="card" value="visa"  id = "visa">
+								<label for="visa">
+								    <i style = "font-size:50px;color:#0088cc;" class="fa fa-cc-visa"></i> 
+								</label>&nbsp;&nbsp;&nbsp;
+								
+								<input type="radio" name="card" value="amex" id = "amex">
+								<label for="amex">
+								    <i type = "button" style = "font-size:50px;color:#0088cc;" class="fa fa-cc-mastercard"></i>
+								</label>&nbsp;&nbsp;&nbsp;
+								
+								<input type="radio" name="card" value="paypal" id = "paypal">
+								<label for="paypal">
+								    <i style = "font-size:50px;color:#0088cc" class="fa fa-cc-paypal"></i>
+								</label>&nbsp;&nbsp;&nbsp;
+								
+			                      <div class="form-outline mb-4 row">
+			                      	<label class="form-label" for="typeName">Cardholder's Name</label>
+			                        <input type="text" id="typeName" class="form-control form-control-lg" siez="17" placeholder="Cardholder's Name" />
+			                      </div>
+			
+			                      <div class="mb-4 row">
+			                      	<label class="form-label" for="typeText">Card Number</label>
+			                        <input type="text" id="typeText" class="form-control form-control-lg" siez="17" placeholder="1234 5678 9012 3457" minlength="19" maxlength="19" />
+			                      </div>
+			                      
+									
+			                      <div class="mb-4">
+			                        <div class = "row">
+			                        	<div class="col-md-6">
+				                          <div class="form-outline row">
+				                          	<label class="form-label" for="typeExp">Expiration</label>
+				                            <!-- <input type="text"  class="form-control form-control-lg" placeholder="MM/YYYY" size="7" id="exp" minlength="7" maxlength="7" /> -->
+				                            <div class="col-6">
+				                            	<select name='expireMM' id='expireMM' class="form-control">
+												    <option value='' >Month</option>
+												    <option value='01'>January</option>
+												    <option value='02'>February</option>
+												    <option value='03'>March</option>
+												    <option value='04'>April</option>
+												    <option value='05'>May</option>
+												    <option value='06'>June</option>
+												    <option value='07'>July</option>
+												    <option value='08'>August</option>
+												    <option value='09'>September</option>
+												    <option value='10'>October</option>
+												    <option value='11'>November</option>
+												    <option value='12'>December</option>
+												</select>
+				                            </div> 
+											<div class="col-6">
+												<select name='expireYY' id='expireYY' class="form-control">
+												    <option value=''>Year</option>
+												    <option value='20'>2020</option>
+												    <option value='21'>2021</option>
+												    <option value='22'>2022</option>
+												    <option value='23'>2023</option>
+												    <option value='24'>2024</option>
+												</select>
+											</div> 
+				                          </div>
+				                        </div>
+				                        <div class="col-md-6">
+				                          <div class="form-outline form-white">
+				                          	<label class="form-label" for="typeText">CVV</label>
+				                            <input type="password" id="typeText" class="form-control form-control-lg" placeholder="&#9679;&#9679;&#9679;" size="1" minlength="3" maxlength="3" />
+				                          </div>
+				                        </div>
+			                        </div>
+			                      </div>
+			                    <hr class="my-4">
+			
+			                    <div class="d-flex justify-content-between">
+			                      <p class="mb-2" th:text = ${classroom.name}></p>
+			                      <p class="mb-2" id = "totValue" >0/=</p>
+			                    </div>
+			
+			                   <br>
+			
+			                    <button type="button" class="btn btn-primary btn-block btn-lg" id = "checkoutBtn" th:onclick="|checkout('${classroom.classroomId}','c')|">
+			                      <div class="d-flex justify-content-between">
+			                        <span >Checkout</span>
+			                        <span id = "checkout"> <i class="fas fa-long-arrow-alt-right ms-2">Rs. 0 /=</i></span>
+			                      </div>
+			                    </button>
+			                    
+		                    </form>
+						</div>
+					</div>
+				</div>	
+			</div>
+		</section>			
+			
+		</main><!-- End #main -->	
+		<script src="js/services/purchase.management.js"></script>
+  	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

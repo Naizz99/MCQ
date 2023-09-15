@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Editor Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Editor Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="index">Home</a></li>
+						<li class="breadcrumb-item">Editor Management</li>
+						<li class="breadcrumb-item active"><a href="/listSystemEditors">Editors</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+
+			<a type = "button" class="btn btn-primary" th:href="@{/addEditor}">Add New Editor</a>
+			
+			<br/><br/>
+			<div class="col-12">
+				<div th:if="${param.error}">
+					<div class="alert alert-danger">Can not delete record</div>
+				</div>
+				<div th:if="${param.success}">
+					<div class="alert alert-info">Record deleted successfully</div>
+				</div>
+			</div>
+			
+			<table class="table datatable">
+				<thead>
+					<tr>
+						<th>User ID</th>
+						<th>Publisher</th>
+						<th>Name</th>
+						<th>Gender</th>
+						<th>Email</th>
+						<th>Mobile</th>
+						<th>Username</th>
+						<th>Status</th>
+						<!-- <th>Create User</th> -->
+						<th>Create Date</th>
+						<!-- <th>Last Update User</th> -->
+						<th>Last Update Date</th>
+					</tr>
+				</thead>	
+				<tbody>
+					<tr th:each="user : ${listUsers}">
+						<td th:text="${user.userId.userId}">User ID</td>
+						<td th:text="${user.poId.name}">Publisher</td>
+						<td th:text="${user.userId.name}">Name</td>
+						<td th:if = "${user.userId.gender == 'male'}" th:text = "Male" >Gender</td>
+						<td th:if = "${user.userId.gender == 'female'}" th:text = "Female">Gender</td>
+						
+						<td th:text="${user.userId.email}">Email</td>
+						<td th:text="${user.userId.mobile}">Mobile</td>
+						<td th:text="${user.userId.username}">Username</td>
+						<td th:if="${!(user.userId.active)}"> <span class="label label-danger">Deactive</span> </td>
+						<td th:if="${user.userId.active}"><span class="label label-success">Active</span></td>
+						<!-- <td th:text="${user.userId.createBy}">Create User</td> -->
+						<td th:text="${user.userId.createDate}">Create Date</td>
+						<!-- <td th:text="${user.userId.updateBy}">Last Update User</td> -->
+						<td th:text="${user.userId.updateDate}">Last Update Date</td>
+						<td colspan=2 style="letter-spacing: 10px;">
+							<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showEditorUpdate(editorId=${user.userId.userId})}"></a>
+							<a type = "button" class="bi bi-trash" title="Delete" th:onclick="|deleteEditor('${user.userId.userId}')|"></a>
+							<a type = "button" class="bi bi-clipboard-x"  title = "Deactivate" th:href="@{/systemEditorDeactive(userId=${user.userId.userId})}" th:if="${user.userId.active}"></a>
+							<a type = "button" class="bi bi-clipboard-check" title = "Activate" th:href="@{/systemEditorActive(userId=${user.userId.userId})}" th:if="${!(user.userId.active)}"></a>	
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</main><!-- End #main -->	
+  	</div>
+</body>
+</html>
+
+<script src="js/user.management.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

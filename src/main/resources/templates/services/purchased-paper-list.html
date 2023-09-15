@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Paper Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Purchased Papers</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Purchase Paper</li>
+						<li class="breadcrumb-item active"><a href="/listPurchasePapers">Papers</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+			
+			<a type = "button" class="btn btn-danger" th:href="@{/paperMarket}"><i class="bi bi-bag"></i> &nbsp; Buy</a>
+			<a type = "button" class="btn btn-info" href="/listPaperPackages"><i class="bi bi-box"></i> &nbsp; Packages</a>
+			<!-- <a type = "button" class="btn btn-warning" href="/paperCart"><i class="bi bi-cart"></i> &nbsp; Cart</a> -->
+
+			<br/><br/>
+			<table class="table datatable" th:if="${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')} OR 
+													${#arrays.contains(session.loggedRolesName, 'ADMIN')} OR 
+													${#arrays.contains(session.loggedRolesName, 'AUTHOR')} OR 
+													${#arrays.contains(session.loggedRolesName, 'EDITOR')} OR
+													${#arrays.contains(session.loggedRolesName, 'LECTURER')} OR
+													${#arrays.contains(session.loggedRolesName, 'PARENT')}">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Grade</th>
+						<th>Publisher</th>
+						<th>Expire Date</th>
+						<th>Type</th>
+						<th>No. of Papers</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="paper : ${listPapers}" th:if="${paper.paperId} != null">
+						<td th:text="${paper.paperId.name}">Name</td>
+						<td th:text="${paper.paperId.grade.gradeName}">Grade</td>
+						<td th:text="${paper.paperId.publisher.name}">Publisher</td>
+						<td th:if="${(paper.expired)}"> Expired </td>
+						<td th:if="${!(paper.expired)}" th:text="${paper.endDate}">  </td>
+						<td>Paper</td>
+						<td>1</td>
+						<td colspan=2 style="letter-spacing: 10px;" th:if="${!paper.expired}">
+							<a type = "button" class="bi bi-eye-fill" title="Preview Paper" th:href="@{/viewPaper(paperId=${paper.paperId.paperId})}" ></a>
+							<a type = "button" class="bi bi-person-plus" title="Allocate for student" data-toggle="modal" data-target="#StudentModal" th:onclick="|document.getElementById('type').value='paper';document.getElementById('id').value='${paper.paperId.paperId}';document.getElementById('pckg').value='${paper.paperPackageId.packageId}'|"></a>
+							<!-- 
+								<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showPaperUpdate(paperId=${paper.paperId.paperId})}" ></a>
+								<a type = "button" class="bi bi-trash" title="Delete" th:onclick="|deleteUserPaper('${paper.UserPaperId}')|" disabled></a>
+							 -->
+						</td>
+						<td th:if="${paper.expired}">
+							<a type = "button" class="bi bi-trash" title="Remove" th:onclick="|deleteUserPurchase('${paper.UserPaperId}')|"></a>
+							<span class="label label-danger">EXPIRED</span>
+						</td>
+					</tr>
+					<tr th:each="bundle : ${listPapers}" th:if="${bundle.bundleId} != null">
+						<td th:text="${bundle.bundleId.name}">Name</td>
+						<td th:text="${bundle.bundleId.grade.gradeName}">Grade</td>
+						<td th:text="${bundle.bundleId.publisher.name}">Publisher</td>
+						<td th:if="${(bundle.expired)}"> Expired </td>
+						<td th:if="${!(bundle.expired)}" th:text="${bundle.endDate}" >  </td>
+						<td>Bundle</td>
+						<td th:text="${bundle.bundleId.paperCount}" >  </td>
+						<td colspan=2 style="letter-spacing: 10px;" th:if="${!bundle.expired}">
+							<a type = "button" class="bi bi-eye-fill" title="Preview Paper" th:href="@{/viewBundle(bundleId=${bundle.bundleId.bundleId})}" ></a>
+							<a type = "button" class="bi bi-person-plus" title="Allocate for student" data-toggle="modal" data-target="#StudentModal" th:onclick="|document.getElementById('type').value='bundle';document.getElementById('id').value='${bundle.bundleId.bundleId}';document.getElementById('pckg').value='${bundle.paperPackageId.packageId}'|"></a>
+							<!-- 
+								<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showBundleUpdate(bundleId=${bundle.bundleId.bundleId})}" ></a>
+								<a type = "button" class="bi bi-trash" title="Delete" th:onclick="|deleteUserPaper('${bundle.UserPaperId}')|" disabled></a>
+							 -->
+						</td>
+						<td th:if="${bundle.expired}">
+							<a type = "button" class="bi bi-trash" title="Remove" th:onclick="|deleteUserPurchase('${bundle.UserPaperId}')|"></a>
+							<span class="label label-danger">EXPIRED</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			
+			
+			<div class="divCard card col-lg-3 col-sm-4" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;" th:each="paper : ${listPapers}" th:if="${paper.paperId} != null AND ${!paper.expired} AND ${#arrays.contains(session.loggedRolesName, 'STUDENT')}">
+				<a th:href="@{/student/viewPaper(paperId=${paper.paperId.paperId})}" >
+				    <div style="text-align:right" th:if="${paper.availableDates} >= 10">
+				    	<span class="label label-success" th:text="'Expire in ' + ${paper.availableDates} + ' Days'"></span>
+				    </div>
+				    <div style="text-align:right" th:if="${paper.availableDates} < 10 AND ${paper.availableDates} > 0">
+				    	<span class="label label-warning" th:text="'Expire in ' + ${paper.availableDates} + ' Days'"></span>
+				    </div>
+				    <div style="text-align:right" th:if="${paper.availableDates} == 0">
+				    	<span class="label label-danger">Expire Today</span>
+				    </div>
+				    <div class="card-body">
+				    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-calendar2-event"></i></label><br>
+				    	<table width = 100% style = "width: 100%;height:100%;color:black" >
+							<tr>
+							    <b><td class = "paperName" th:text="${paper.paperId.name}"></td></b>
+							</tr>
+							
+							<tr>
+							    <td class = "subjectName" th:text="${paper.paperId.subjectId.subjectName}"></td>
+							</tr>
+							
+							<tr>
+							    <td class = "gradeName" th:text="${paper.paperId.grade.gradeName}"></td> 
+							</tr>
+							
+							<tr>
+							    <td class = "paperTime" th:text="'Time : ' + ${paper.paperId.time} + ' minutes'"></td> 
+							</tr>
+						</table>
+					</div>
+			    </a>
+			</div>
+			
+			<div class="divCard card col-lg-3 col-sm-4" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;" th:each="bundle : ${listPapers}" th:if="${bundle.bundleId} != null AND ${!bundle.expired} AND ${#arrays.contains(session.loggedRolesName, 'STUDENT')}">
+				<a th:href="@{student/viewBundle(bundleId=${bundle.bundleId.bundleId})}" >
+				    <div style="text-align:right" th:if="${bundle.availableDates} >= 10">
+				    	<span class="label label-success" th:text="'Expire in ' + ${bundle.availableDates} + ' Days'"></span>
+				    </div>
+				    <div style="text-align:right" th:if="${bundle.availableDates} < 10 AND ${bundle.availableDates} > 0">
+				    	<span class="label label-warning" th:text="'Expire in ' + ${bundle.availableDates} + ' Days'"></span>
+				    </div>
+				    <div style="text-align:right" th:if="${bundle.availableDates} == 0">
+				    	<span class="label label-danger">Expire Today</span>
+				    </div>
+				    <div class="card-body">
+				    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-calendar2-event"></i></label><br>
+				    	<table width = 100% style = "width: 100%;height:100%;color:black" th:title="${description}">
+							<tr>
+							    <b><td class = "paperName" th:text="${bundle.bundleId.name}"></td></b>
+							</tr>
+							
+							<tr>
+							    <td class = "subjectName" th:text="${bundle.bundleId.Publisher.name}"></td>
+							</tr>
+							
+							<tr>
+								<td class = "gradeName" th:text="${bundle.bundleId.grade.gradeName}"></td> 
+							</tr>
+							
+							<tr>
+							    <td class = "paperTime" th:text="${bundle.bundleId.paperCount} + 'X Papers Available'"></td> 
+							</tr>
+						</table>
+					</div>
+			    </a>
+			</div>
+		
+			<!-- Student Modal -->
+			<div class="modal fade" id="StudentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">	
+			        <h5 class="modal-title" id="exampleModalLabel">Select Student</h5>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body row">
+			      	
+				  	<div class="col-md-8"> 
+					<input type="text" id = "type" class="form-control" hidden>
+					<input type="text" id = "id" class="form-control" hidden>
+					<input type="text" id = "pckg" class="form-control" hidden>
+						<select class="form-select form-control" aria-label="Default select example" id="student">
+	                    	<option value=''>-- SELECT STUDENT --</option>
+	                        <option th:each="log:${listStudents}"
+	                                th:value="${log.userId.userId}"
+	                                th:text="${log.userId.name} + ' | ' + ${log.grade.gradeName}">
+	                        </option>
+	                    </select>
+					</div>
+					<!-- 
+					<div class="col-md-4">
+						<button type="button" class="btn btn-warning" onClick = "getPaper(document.getElementById('paperId').value)">Search</button>
+					</div>
+					 
+					<div class="col-md-10">
+						<label class="form-label">Name</label>
+						<input type="text" id = "stdName" class="form-control">
+					</div>
+					<div class="col-md-10" >
+						<label class="form-label">Grade</label> 
+						<input type="text" id = "stdGrade" class="form-control">
+					</div>
+					-->
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			        <button type="button" id="addPaper" class="btn btn-primary" onClick = "allocatePurchased1()"> Add</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+		</div>
+		</main><!-- End #main -->
+		<script src="js/services/purchase.management.js"></script>
+		<script>
+					
+			function addQuestion(paperId,totQuestion,addedQuestion){
+				if(totQuestion > addedQuestion){
+					$.ajax({
+						url: '/addQuestionByPaperId',
+						type: 'GET',
+						traditional: true,
+						data: {paperId: paperId},
+						success: function (response) {
+						    
+						},
+						error:function(status, error){
+							Swal.fire(
+						      'Can not add!',
+						      'Question Count Exceed!',
+						      'error'
+						    ) 
+						}
+					});
+				}else{
+					Swal.fire(
+				      'Can not add!',
+				      'Question Count Exceed!',
+				      'error'
+				    ) 
+				}
+			}
+		</script>
+  	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

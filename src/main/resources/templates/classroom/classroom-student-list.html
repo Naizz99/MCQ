@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Group Students</title>
+</head>
+
+<body th:style="'--bodyBgColor:' + ${classroom.bodyBgColor}
+		+ ';--fontColor:' + ${classroom.fontColor}	
+		+ ';--bodyFontFamily:' + ${classroom.bodyFontFamily}	
+		+ ';--cardBgColor:' + ${classroom.cardBgColor}	
+		+ ';--cardSideColor1:' + ${classroom.cardSideColor}	
+		+ ';--cardSelectedColor:' + ${classroom.cardSelectedColor}">
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Group Students</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item"><a th:href="@{/viewClassRoom(classroomId=${classroom.classroomId})}">Group Management</a></li>
+						<li class="breadcrumb-item active"><a th:href="@{/listClassromStudents(classroomId=${classroom.classroomId})}">Group Students</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+
+			<a type="button" data-toggle="modal" data-target="#studentModalCenter" class="btn btn-primary" href="" th:if="${classroom.packageId.studentCount > classroom.studentCount}"> Add New Student </a>	
+			<a type="button" class="btn btn-primary" href="" th:if="${classroom.packageId.studentCount <= classroom.studentCount}" disabled> Add New Student </a>	
+			<p style="color:red;" th:if="${classroom.packageId} != null AND ${classroom.packageId.studentCount <= classroom.studentCount}">Maximum student count has been exceed. Please upgrade group.</p>
+			<br/><br/>
+			<div class="col-12">
+				<div th:if="${param.error}">
+					<div class="alert alert-danger">Can not delete record</div>
+				</div>
+				<div th:if="${param.success}">
+					<div class="alert alert-info">Record deleted successfully</div>
+				</div>
+			</div>
+			
+			<table class="table datatable" id="aa" data-display-length='-1'>
+				<thead>
+					<tr>
+						<th>User ID</th>
+						<th>Name</th>
+						<th>Email</th>
+						<th>Mobile</th>
+						<th>Joined Date</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					<tr th:each="student : ${studentList}">
+						<td th:if="${student.status}"><span class="label label-success" th:text="${student.studentId.userId.userId}" title="Online"></span></td>
+						<td th:if="${!student.status}" th:text="${student.studentId.userId.userId}">User ID</td>
+						<td th:text="${student.studentId.userId.name}">Name</td>
+						<td th:text="${student.studentId.userId.email}">Email</td>
+						<td th:text="${student.studentId.userId.mobile}">Mobile</td>
+						<td th:text="${student.createDate}">Mobile</td>
+						<td colspan=2 style="letter-spacing: 10px;">
+							<a type = "button" class="bi bi-power" title="Session Close" th:onClick = "|sessionClose('${student.classRoomStudentId}')|" th:if = "${student.status}"></a>
+							<a type = "button" class="bi bi-send-plus" title="Send Join Request" th:onClick = "|sendRequest('${student.classRoomStudentId}')|" th:if = "${!student.status}"></a>
+							<a type = "button" class="bi bi-trash" title="Remove" th:onClick = "|removeStudent('${student.classRoomStudentId}')|"></a>
+							<a th:href="@{/viewStudentClassRoomResult(classroomId=${classroom.classroomId},studentId=${student.studentId.studentId})}" type = "button" class="bi bi-eye" title="Previous Results"></a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+		</main><!-- End #main -->
+		<script src="js/classroom.management.js"></script>	
+		
+		<!-- Adding Student Modal -->
+		<div class="modal fade" id="studentModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="exampleModalLongTitle">Add New Student</h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+		      <div class="modal-body">
+		        <div class="col-md-12">
+					<label for="studentEmail" class="form-label">Student Email</label> 
+					<input type="email" id = "stdEmail" class="form-control" onInput="getStudents(this.value)">
+					<input type="hidden" id = "stdId" class="form-control">
+				</div>
+				<div class="col-md-12 scrollit" id="studentDiv" >
+					
+				</div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		        <button id = "add" type="button" class="btn btn-primary" th:onClick = "|addClassRoomStudent(${classroom.classroomId})|"> Add</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+  	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

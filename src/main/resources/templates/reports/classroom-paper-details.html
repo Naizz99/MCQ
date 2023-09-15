@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Report Center</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1 id = "rptName">Paper Details</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item"><a th:href="@{/viewClassRoom(classroomId=${classroom.classroomId})}">Group Management</a></li>
+						<li class="breadcrumb-item active">Paper Details</li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body" id="rptDiv">
+							<table class="table table-striped" id = "rptTable">
+							  <thead>
+							    <tr>
+							      <th scope="col">Name</th>
+							      <th scope="col">Attended Count</th>
+							      <th scope="col">Status</th>
+							      <th scope="col">Expire Date</th>
+							    </tr>
+							  </thead>
+							  <tbody id="rptData">
+							  	<tr th:each="paper : ${papers}">
+									<td th:text="${paper.paperName}">Name</td>
+									<td th:text="${paper.attendCount}">Attended Count</td>
+									<td th:if="${!(paper.active)}" > <span class="label label-danger">Deactive</span> </td>
+									<td th:if="${paper.active}"> <span class="label label-success">Active</span> </td>
+									<td th:text="${paper.expireDate}">Expire Date</td>
+								</tr>						    
+							  </tbody>
+							</table>	
+								
+							
+						</div>
+					</div>
+				</div>
+	</main>
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>
+
+<script type="text/javascript" src="/js/report.management.js"></script>
+

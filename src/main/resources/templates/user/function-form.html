@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>User Function Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>User Function Managements</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item"><a href="">Settings</a></li>
+						<li class="breadcrumb-item"><a href="/listFunctions">Function Management</a></li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">User Function Details</h5>
+								<form class="row g-3" id = "newFunction" th:object="${function}" >
+									<div class="col-md-12">
+										<label for="functionId" class="form-label">Function Id</label>
+										<input type="text" th:field="*{functionId}" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-12">
+										<label for="functionName" class="form-label">Name<span class="asterisk_input"></span></label>
+										<input type="text" th:field="*{functionName}" id="functionName" class="form-control" required>
+									</div>
+									
+									<div class="col-md-12">
+										<label for="functionAction" class="form-label">Function Action<span class="asterisk_input"></span></label>
+										<input type="text" th:field="*{functionAction}" id="functionAction" class="form-control" required>
+									</div>
+									
+									<div class="col-md-12">
+										<label for="functionControl" class="form-label">Function Control<span class="asterisk_input"></span></label>
+										<input type="text" th:field="*{functionControl}" id="functionControl" class="form-control" required>
+									</div>
+									
+									<div class="col-md-6">
+					                    <input class="form-check-input" th:field="*{Parent}" type="checkbox" id="gridCheck">
+					                    <label class="form-label" for="gridCheck">Is Parent</label>
+					                </div>
+					                
+					                <div class="col-md-6">
+										<label for="parentId" class="form-label">Parent ID</label>
+										<select class="form-select form-control" aria-label="Default select example" id="parentId" th:field="*{parentId}">
+				                            <option value=0>-- SELECT PARENT --</option>
+				                            <option th:each="log:${listParentFunctions}"
+				                                    th:value="${log.functionId}"
+				                                    th:text="${log.functionName}">
+				                            </option>
+				                        </select>
+									</div>
+									
+									<div class="col-md-6" th:if="${function.active}">
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Active" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6" th:if="${!function.active}" >
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Deactive" class="form-control" readonly>
+									</div>
+									
+									<input type="hidden" th:field="*{active}" id="active" class="form-control" readonly>
+									
+									<div class="col-md-6">
+										<label for="createBy" class="form-label">Create By</label> 
+										<input type="text" th:field="*{createBy}" id="createBy" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="createDate" class="form-label">Create Date</label> 
+										<input type="text" th:field="*{createDate}" id="createDate" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="updateBy" class="form-label">Update By</label> 
+										<input type="text" th:field="*{updateBy}" id="updateBy" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="updateDate" class="form-label">Update Date</label> 
+										<input type="date" th:field="*{updateDate}" id="updateDate" class="form-control" readonly>
+									</div>
+									
+									<div class="text-center">
+										<button type="button" id = "saveFunction" class="btn btn-primary">Submit</button>
+										<button type="reset" class="btn btn-secondary">Reset</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<script src="js/function.management.js"></script>
+	</main>
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>

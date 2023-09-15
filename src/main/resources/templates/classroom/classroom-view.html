@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+	<head>
+		<title th:text="${classroom.name}">Group</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+			
+	<style>
+		.paperCard:hover { 
+	 		transform: scale(0.90);
+	  		box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px;
+		}
+		
+	</style>
+	
+</head>
+
+<body th:style="'--bodyBgColor:' + ${classroom.bodyBgColor}
+		+ ';--fontColor:' + ${classroom.fontColor}	
+		+ ';--bodyFontFamily:' + ${classroom.bodyFontFamily}	
+		+ ';--cardBgColor:' + ${classroom.cardBgColor}	
+		+ ';--cardSideColor1:' + ${classroom.cardSideColor}	
+		+ ';--cardSelectedColor:' + ${classroom.cardSelectedColor}">
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-8">
+						<div class = "class" style="text-align:right" th:if="${classroom.active} AND ${classroom.type == T(com.rcs2.mcqsys.model.ClassRoom.ClassroomType).PUBLIC}">
+							<br>
+							<a type="button" data-toggle="modal" data-target="#studentModalCenter" class="btn btn-primary" href="" th:disabled="${classroom.packageId.studentCount <= classroom.studentCount}">JOIN NOW </a>	
+							<br>
+							<img src="img/click.gif" alt="click" width=40 height=40 style="margin-top:-1%;margin-right:-2%">
+							<p style="color:red" th:disabled="${classroom.packageId.studentCount > classroom.studentCount}">New registrations are currently not available for this class.Please contact the Lecturer.</p>
+						</div>          				          
+					</div>
+					<div class="col-lg-9">
+						<div class="col-lg-12 scrollit">
+							<div class = "row">
+								<div class="divCard card col-lg-3 col-sm-4" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;"  th:each="paper : ${paperList}" th:if="${paper.paperID} != null AND ${paper.active}">
+								  	<a href="" >
+									    <div class="card-body">
+									    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-calendar2-event"></i></label><br>
+									    	<table width = 100% style = "width: 100%;height:100%;color:black" >
+												<tr>
+												    <b><td class = "paperName" th:text="${paper.paperID.name}"></td></b>
+												</tr>
+												
+												<tr>
+												    <td class = "subjectName" th:text="${paper.paperID.subjectId.subjectName}"></td>
+												</tr>
+												
+												<tr>
+												    <td class = "gradeName" th:text="${paper.paperID.grade.gradeName}"></td> 
+												</tr>
+												
+												<tr>
+												    <td class = "paperTime" th:text="'Time : ' + ${paper.paperID.time} + ' minutes'"></td> 
+												</tr>
+											</table>
+									    </div>
+								    </a>
+								</div>
+							</div>
+				        </div><!-- End Card with titles, buttons, and links -->		          
+					</div>
+					
+					<div class="col-lg-3">
+						<div class="card">
+							<div class="card-body">
+								<br>
+								<div style="text-align:right" th:if="${classroom.availableDates} >= 10">
+							    	<span class="label label-success" th:text="'Expire in ' + ${classroom.availableDates} + ' Days'"></span>
+							    </div>
+							    <div style="text-align:right" th:if="${classroom.availableDates} < 10 AND ${classroom.availableDates} > 0">
+							    	<span class="label label-warning" th:text="'Expire in ' + ${classroom.availableDates} + ' Days'"></span>
+							    </div>
+							    <div style="text-align:right" th:if="${classroom.availableDates} == 0">
+							    	<span class="label label-danger">Expire Today</span>
+							    </div>
+				                <div class="card-body rounded" >
+									<input type="text" th:value = "${classroom.classroomId}" id = "classroomId" hidden>
+									<br>
+									<table width=90% style="padding: 15px;">
+									  <tr>
+									    <th class="card-title">Name</th>
+									    <th th:text = "${classroom.name}"></th>
+									  </tr>
+									  <tr>
+									    <td class="card-title">Grade</td>
+									    <td th:text = "${classroom.grade.gradeName}"></td>
+									  </tr>
+									  <tr>
+									    <td class="card-title">Subject</td>
+									    <td th:text = "${classroom.subjectId.subjectName}"></td>
+									  </tr>
+									  <tr>
+									    <td class="card-title">Lecturer</td>
+									    <td th:text = "${classroom.lecturerId.userId.name}"></td>
+									  </tr>
+									  <tr>
+									    <td rowspan=2 class="card-title">Contact</td>
+									    <td th:text = "${classroom.lecturerId.userId.mobile}"></td>
+									  </tr>
+									  <tr>
+									    <td th:text = "${classroom.lecturerId.userId.email}"></td>
+									  </tr>
+									</table>								
+					            </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			
+			<!-- Adding Student Modal -->
+			<div class="modal fade" id="studentModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+			    <div class="modal-content">
+			      <div class="modal-body">
+			        <div class="col-md-12">
+						<label for="studentEmail" class="form-label">Email</label> 
+						<input type="email" id = "stdEmail" class="form-control" onInput="checkClassRoomStudentAvailability(this.value)" th:if="${user.userId} == null">
+						<input type="email" th:value="${user.email}" id = "stdEmail" class="form-control" th:if="${user.userId} != null" disabled>
+					</div>
+					<div class="col-md-12">
+						<p style="color:#a6a6a6" id="sts">Enter valid email address. Login details will be send to this email.</p>
+					</div>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			        <button id = "add" type="button" class="btn btn-primary" th:onClick = "|registerClassRoomStudent(${classroom.classroomId},document.getElementById('stdEmail').value)|">Add</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			
+			<script src="js/classroom.management.js"></script>
+	</main>
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>

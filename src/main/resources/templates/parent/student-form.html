@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Student Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Student Managements</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item active">Student Management</li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								
+								<form class="row g-3" id = "newStudent" th:object="${student}">
+								
+									<h5 class="card-title">Student Details</h5>	
+																			
+										<input type = "hidden" id = "parentName" th:field="${user.name}" class="form-control" readonly>
+										<input type = "hidden" id = "parentGender" th:field="${user.gender}" class="form-control" readonly>
+										<input type = "hidden" id = "parentEmail" th:field="${user.email}" class="form-control" readonly>
+										<input type = "hidden" id = "parentMobile" th:field="${user.mobile}" class="form-control" readonly>
+										<input type = "hidden" id = "studentId" th:field="*{userId.userId}" class="form-control" readonly>
+										<input type = "hidden" th:field="*{studentId}" class="form-control" readonly>	
+									<div class="col-md-12" >
+										<label for="name" class="form-label">Student's Name<span class="asterisk_input"></span></label>
+										<input type = "text" id = "studentName" th:field="*{userId.name}" class="form-control" required>
+									</div>
+									 
+									<div class="col-md-6">
+										<label for="username" class="form-label">Student's Username<span class="asterisk_input"></span></label>
+										<input type="text" id="username" th:field="*{userId.username}" class="form-control" oninput="validateUserName(this.value,document.getElementById('studentId').value)">
+									</div>
+									<div class="col-md-6">
+										<label for="email" class="form-label">Student's Email<span class="asterisk_input"></span></label>
+										<input type="email" id="studentEmail" th:field="*{userId.email}" class="form-control" oninput="validateEmail(this.value,document.getElementById('studentId').value)" required>
+									</div>
+									<div class="col-md-12">
+										<p id="sts"><p>
+									</div>
+									<div class="col-md-6">
+										<label for="mobile" class="form-label">Student's Mobile<span class="asterisk_input"></span></label>
+										<input type="text" id="studentMobile" th:field="*{userId.mobile}" class="form-control" maxlength="10" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="mobile" class="form-label">Student's Gender<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{userId.gender}" id="studentGender">
+											<option value="male" th:text="Male"></option>
+											<option value="female" th:text="Female"></option>
+										</select>
+									</div>
+									
+					                <div class="col-md-6">
+				                      <label for="grade" class="form-label">Grade<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{grade}" id="grade">
+				                            <option th:each="log:${gradeList}"
+				                                    th:value="${log.gradeId}"
+				                                    th:text="${log.gradeName}">
+				                            </option>
+				                        </select>
+				                    </div>
+				                    <div class="col-md-6">
+										<label for="mobile" class="form-label">GPA</label>
+										<input type="text" id="studentGPA" th:field="*{gpa}" class="form-control" placeholder="GPA" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" readonly>
+									</div>
+					                
+									<input type="hidden" th:field="*{userId.active}" class="form-control" readonly>
+									<input type="hidden" th:field="*{userId.createBy}" class="form-control" readonly>
+									<input type="hidden" th:field="*{userId.createDate}" class="form-control" readonly>
+									<input type="hidden" id="loggedUser" th:field="*{userId.updateBy}" class="form-control" readonly>
+									<input type="hidden" th:field="*{userId.updateDate}" class="form-control" readonly>
+									
+									<div class="col-md-6">
+										<button id = "updateStudent" type="button" class="btn btn-primary" onclick="enableUpdate()">Update</button>
+										<button id = "saveStudent" type="button" class="btn btn-primary">Save</button>
+										<button id = "cancel" type="button" class="btn btn-secondary" onclick="cancelUpdate()">Cancel</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-lg-6">
+						<div class="card">
+								
+							<h5 class="card-title">&nbsp;&nbsp; Results</h5>
+							
+							<div class="row">
+								<div class="col-4" th:each="review : ${listReviews}">
+									<a th:href="'/reviewPaper?reviewId=' + ${review.sprId}">
+										<div class="card">
+											<div class="card-body row">
+												<div class="col-3">
+													<h1 th:text="${#strings.capitalize(#strings.substring(review.paperID.name, 0,1))}" style="border: 1px solid #CCC;border-radius:50%;text-align:center;font-weight: bold;">A</h1>
+												</div>
+												<div class="col-9 activity card">
+													<div>
+														<h4 th:text="${review.paperID.name}"></h4>
+														<h4 th:text="${review.paperID.subjectId.subjectName}"></h4>
+														<p th:text="${review.result} + '%'" th:if="${review.result} <= 20" style="color:red;"></p>
+														<p th:text="${review.result} + '%'" th:if="${review.result} > 20"></p>
+														<p th:text = "${review.createDate} + ' | ' + ${review.updateDate}"></p>
+													</div>
+												</div>
+											</div>
+										</div>
+									</a>
+								</div>
+								<div class="col-12" style="text-align:right;">
+									<a  th:href="'/viewStudentResult?studentId=' + ${student.studentId}">
+										Read More........
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-lg-12 row" th:if="(${student.userId.userId} != null)">
+						<h5 class="card-title">&nbsp;&nbsp; Groups</h5>
+						<div class="divCard card col-lg-2 col-sm-3" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;" th:each="classroom : ${listClassRooms}">
+							<a th:href="@{/viewClassRoomStudentResult(classroomStudentId=${classroom.classRoomStudentId})}" >
+								<div class="card-body">
+							    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-calendar2-event"></i></label>
+							    	<br>
+							    	<table width = 100% style = "width: 100%;height:100%;color:black" >
+										<tr>
+											<b><td th:text="${classroom.classRoomId.name}"></td></b>
+										</tr>
+										<tr>
+											<td th:text="${classroom.classRoomId.subjectId.subjectName}"></td>
+										</tr>
+										<tr>
+											<td th:text="${classroom.classRoomId.grade.gradeName}"></td> 
+										</tr>
+										<tr>
+											<td class = "paperTime" th:text="${classroom.classRoomId.lecturerId.userId.name}"></td> 
+										</tr>
+									</table>
+								</div>
+							</a>
+						</div>
+						<h5 th:if="${#lists.isEmpty(listClassRooms)}" class="text-dark card-title">There are no groups</h5>
+					</div>
+					<div class="col-lg-12" th:if="(${student.userId.userId} != null) AND ${#lists.isEmpty(listReviews)}">
+						<div class="card">
+							<h5 class="card-title">&nbsp;&nbsp;Still No Exam Attempts</h5>
+						</div>
+					</div>
+					
+				</div>
+			</section>
+	</main>
+	<!-- End #main -->
+	<script src="js/user.management.js"></script>
+	</div>
+</body>
+
+</html>
+
+
+
+<script>
+	$(document).ready(function(){
+		document.getElementById("studentName").disabled = true;
+		document.getElementById("studentEmail").disabled = true;
+		document.getElementById("studentMobile").disabled = true;
+		document.getElementById("studentGender").disabled = true;
+		document.getElementById("username").disabled = true;
+		document.getElementById("grade").disabled = true;
+		document.getElementById("save").disabled = true;
+		document.getElementById("cancel").disabled = true;
+	});
+	
+	function enableUpdate(){
+		document.getElementById("studentName").disabled = false;
+		document.getElementById("studentEmail").disabled = false;
+		document.getElementById("studentMobile").disabled = false;
+		document.getElementById("studentGender").disabled = false;
+		document.getElementById("username").disabled = false;
+		document.getElementById("grade").disabled = false;
+		document.getElementById("save").disabled = false;
+		document.getElementById("cancel").disabled = false;
+		document.getElementById("updateStudent").disabled = true;
+	}
+	
+	function cancelUpdate(){
+		document.getElementById("studentName").disabled = true;
+		document.getElementById("studentEmail").disabled = true;
+		document.getElementById("studentMobile").disabled = true;
+		document.getElementById("studentGender").disabled = true;
+		document.getElementById("username").disabled = true;
+		document.getElementById("grade").disabled = true;
+		document.getElementById("save").disabled = true;
+		document.getElementById("cancel").disabled = true;
+	}
+	
+	function saveGrade(grade,userId){
+		$.ajax({
+			url: '/updateGrade',
+			type: 'GET',
+			traditional: true,
+			data: {grade:grade,userId:userId},
+			success: function (response) {
+				
+			},
+			error:function(status, error){
+				
+			}
+		});
+	}
+</script>

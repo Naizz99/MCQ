@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Result Summery</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1 id = "rptName">Subject Wise Summery Report</h1>
+				<nav style="float:left">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item active">Results</li>
+					</ol>
+				</nav>
+				<br><br><br>
+			</div>
+			<!-- End Page Title -->
+		
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<a type="button" class="btn btn-danger" style="width:10%;margin:1%;background-color:#990000;" id="exportPdf">Export PDF</a>
+						<div class="card-body" id="rptDiv">
+							<table class="table table-striped" id="rptTable" border=1>
+								<tbody>
+									<tr>
+										<td colspan="7">
+											<table>
+												<tr>
+													<td>Name </td>
+													<td th:text="' : ' + ${student.userId.name}"></td>
+												</tr>
+												<tr>
+													<td>Grade  </td>
+													<td th:text="' : ' + ${student.grade.gradeName}"></td>
+												</tr>
+												<tr>
+													<td>Printed Date </td>
+													<td th:text="' : ' + ${#temporals.format(localDateTime, 'dd-MM-yyyy HH:mm')}"></td>
+												</tr>
+											</table>
+										</td>
+									</tr>	
+									<tr style="font-size:1.25em;font-waight:2em;">
+										<th>Subject</th>
+										<th>Paper Count</th>
+										<th colspan="5" style="text-align:center">Modules</th>
+										
+									</tr>
+									<tr th:each="subject : ${listSubjectWiseResult}">
+										<td width="20%" th:text="${subject.subjectId.subjectName}">AAAA</td>
+										<td width="5%" th:text="${subject.paperCount}">12</td>
+										<td>
+											<table width="100%">
+												<tr>
+													<th>Name</th>
+													<th>All Question Count</th>
+													<th>Attended Question Count</th>
+													<th>Correct Question Count</th>
+													<th>Result</th>
+												</tr>
+												<tr th:each="module : ${subject.moduleResultList}">
+													<td width="30%" th:text="${module.module.name}"></td>
+													<td th:text="${module.allQuestionCount}"></td>
+													<td th:text="${module.attendQuestionCount}"></td>
+													<td th:text="${module.correctQuestionCount}"></td>
+													<td th:text="${module.result} + '%'"></td>
+												</tr>
+											</table>
+										</td>
+									</tr>				    
+								</tbody>
+							</table>		
+						</div>
+						<div id="editor"></div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<!-- End #main -->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+		<script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+		<script src="js/services/result.management.js"></script>
+	</div>
+</body>
+</html>
+
+

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+	
+	<title>Login - MCQ System</title>
+	<meta content="" name="description">
+	<meta content="" name="keywords">
+	
+	<!-- Favicons -->
+	<link href="/img/favicon.png" rel="icon">
+	<link href="/img/apple-touch-icon.png" rel="apple-touch-icon">
+	
+	<!-- Google Fonts -->
+	<link href="https://fonts.gstatic.com" rel="preconnect">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+	
+	<!-- Vendor CSS Files -->
+	<link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+	<link href="/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+	<link href="/vendor/quill/quill.snow.css" rel="stylesheet">
+	<link href="/vendor/quill/quill.bubble.css" rel="stylesheet">
+	<link href="/vendor/remixicon/remixicon.css" rel="stylesheet">
+	<link href="/vendor/simple-datatables/style.css" rel="stylesheet">
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.17/sweetalert2.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+	  
+	<!-- Template Main CSS File -->
+	<link href="/css/style.css" rel="stylesheet">
+	<link href="/css/profile.css" rel="stylesheet">
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	  
+	<script src=”https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js”></script>
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+	<main>
+		<div class="container">
+
+			<section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-6">
+							
+						</div>
+						
+						<div class="col-12">
+							<div th:if="${param.error}">
+								<div class="alert alert-danger">Invalid username or password.</div>
+							</div>
+							<div th:if="${param.userNotActive}">
+								<div class="alert alert-danger">Your account has been deactivated. Please contact the admin.</div>
+							</div>
+							<div th:if="${param.notSSO}">
+								<div class="alert alert-warning">You are not registered as SSO user. Please login to the system using username & password and change the profile as SSO user. Then you will be able to login with SSO.</div>
+							</div>
+							<div th:if="${param.sso}">
+								<div class="alert alert-warning">You are registered as SSO user. Please login to the system using SSO and remove the profile settings of SSO user. Then you will be able to login with your username & password.</div>
+							</div>
+							<div th:if="${param.logout}">
+								<div class="alert alert-success">You have been logged out.</div>
+							</div>
+							<!--  <div th:if="${param.logout}">
+								<div class="alert alert-warning">You're not active in system. Please contact page admin.</div>
+							</div>
+							-->
+						</div>
+						
+						<div class="col-lg-7 col-md-6 d-flex flex-column align-items-center justify-content-center" >
+							<a href = "/">
+								<img src = "/img/studentLogin.jpg" width = "100%" Hegiht = "100%">
+							</a>
+						</div>
+
+						<!-- ------------------------------------------------------------------------------------ -->
+
+						<div class="col-lg-5 col-md-6 d-flex flex-column align-items-center justify-content-center">
+							<div class="card" style = "width: -moz-available;height: -moz-available;">
+				            <div class="card-body">
+				              
+				
+				              <!--
+				              <h5 class="card-title">Login to QuizzMart</h5>
+				              <ul class="nav nav-tabs nav-tabs-bordered d-flex" id="borderedTabJustified" role="tablist">
+				                <li class="nav-item flex-fill" role="presentation">
+				                  <button class="nav-link w-100 active" id="home-tab" data-bs-toggle="tab" data-bs-target="#bordered-justified-home" type="button" role="tab" aria-controls="home" aria-selected="true">Personal Login</button>
+				                </li>
+				                 
+				                <li class="nav-item flex-fill" role="presentation">
+				                  <button class="nav-link w-100" id="profile-tab" data-bs-toggle="tab" data-bs-target="#bordered-justified-profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Classroom Login</button>
+				                </li>
+				                
+				              </ul>
+				               -->
+				              <div class="tab-content pt-2" id="borderedTabJustifiedContent" >
+				                <div class="tab-pane fade show active" id="bordered-justified-home" role="tabpanel" aria-labelledby="home-tab">
+									<form class="row needs-validation" novalidate th:action="@{/login}" method="POST">
+										<div class="col-12">
+										<br>
+											<div class="input-group has-validation">
+												<span class="input-group-text" id="inputGroupPrepend"><i class="bi bi-person-circle"></i></span>
+												<input type="text" name="email" class="form-control" placeholder = "USERNAME"	required>
+											</div>
+										</div>
+	
+										<div class="col-12">
+											<br>
+											<div class="input-group has-validation">
+												<span class="input-group-text" id="inputGroupPrepend"><i class="bi bi-key-fill"></i></span>
+												<input type="password" id="password" name="password" class="form-control" placeholder = "PASSWORD" required>
+												<span toggle="#password-field" class="input-group-text"><i class="fa fa-fw fa-eye field-icon toggle-password"></i></span>
+											</div>
+										</div>
+										
+										<div class="col-12">
+											<br>
+											<button class="btn btn-primary w-100" type="submit">Login</button>
+										</div>
+										 <hr class="my-4"><h5>Or, login with</h5>
+										
+										<div class="col-12">
+											<h4><a th:href="@{/oauth2/authorization/google}" class="btn btn-lite border border-secondary w-100"><img src="/img/G.png">&nbsp;&nbsp;Google</a></h4>
+										</div>
+										<!--
+										<div class="col-12">
+											<h4><a th:href="@{/oauth2/code/azure-client}" class="btn btn-lite border border-secondary w-100"><img src="/img/Microsoft.png">&nbsp;&nbsp;Microsoft</a></h4>
+										</div>
+										-->
+										<!-- 
+										<div class="col-12">
+											<h4><a th:href="@{/oauth2/authorization/google}" class="btn btn-danger border w-100" style="background-color: #dd4b39;"><i class="bi bi-google"></i><b>+</b>&nbsp; Google</a></h4>
+										</div>
+										
+										<div class="col-12">
+											<h4><a th:href="@{/oauth2/authorization/github}" class="btn btn-dark w-100"><i class="bi bi-github"></i>&nbsp; GitHub</a></h4>
+										</div>
+										
+										<div class="col-12">
+											<h4><a th:href="@{/oauth2/authorization/facebook}" class="btn btn-primary w-100" style="background-color: #3b5998;"><i class="bi bi-facebook"></i>&nbsp; FaceBook</a></h4>
+										</div>
+										 -->
+										<div class="col-12 row">
+											<div class="col-6">
+											<br>
+												<p class="small mb-0">
+													Don't have account? <a href="/registration">Register</a>
+												</p>
+											</div>
+											
+											<div class="col-5" style = "text-align:right;">
+											<br>
+												<p class="small mb-0">
+													<a href="/forgottenPassword" style = "text-align:right;">Forgotten Password?</a>
+												</p>
+											</div>
+										</div>
+									</form>
+				                </div>
+				                <!-- 
+				                <div class="tab-pane fade" id="bordered-justified-profile" role="tabpanel" aria-labelledby="profile-tab">
+									<div class="col-12">
+										<br>
+										<div class="input-group has-validation">
+											<span class="input-group-text" id="inputGroupPrepend"><i class="bi bi-house-door-fill"></i></span>
+											<input type="text" class="form-control" placeholder = "CLASSROOM ID" id = "classroomId" required>
+										</div>
+									</div>
+									
+									<div class="col-12">
+									<br>
+										<div class="input-group has-validation">
+											<span class="input-group-text" id="inputGroupPrepend"><i class="bi bi-person-circle"></i></span>
+											<input type="text" class="form-control" placeholder = "USERNAME" id = "studentId"	required>
+										</div>
+									</div>
+
+									<div class="col-12">
+									<br>
+										<div class="input-group has-validation">
+											<span class="input-group-text" id="inputGroupPrepend"><i class="bi bi-key-fill"></i></span>
+											<input type="password" class="form-control" placeholder = "PASSWORD" id = "passcode" required>
+											<span toggle="#password-field" class="input-group-text"><i class=" fa fa-fw fa-eye field-icon toggle-password"></i></span>
+										</div>
+									</div>
+									
+									<div class="col-12">
+									<br>
+										<button class="btn btn-primary w-100" onClick = "classroomLogin()">Login</button>
+									</div>
+									
+									<div class="col-12 row">
+									<br>
+										<div class="col-6">
+										<br>
+											<p class="small mb-0">
+												Don't have account? <a href="/registration">Register</a>
+											</p>
+										</div>
+										
+										<div class="col-5">
+										<br>
+											<p class="small mb-0" style = "text-align:right;">
+												<a href="/forgottenPassword" style = "text-align:right;">Forgotten Password?</a>
+											</p>
+										</div>
+									</div>
+				                </div>
+				                 -->
+				              </div><!-- End Bordered Tabs Justified -->
+				
+				            </div>
+				          </div>
+							
+						</div>
+						
+					</div>
+				</div>
+
+			</section>
+
+		</div>
+	</main>
+	<!-- End #main -->
+
+	<a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+		<i class="bi bi-arrow-up-short"></i>
+	</a>
+
+	<!-- Vendor JS Files -->
+	<script src="/vendor/apexcharts/apexcharts.min.js"></script>
+	<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="/vendor/chart.js/chart.min.js"></script>
+	<script src="/vendor/echarts/echarts.min.js"></script>
+	<script src="/vendor/quill/quill.min.js"></script>
+	<script src="/vendor/simple-datatables/simple-datatables.js"></script>
+	<script src="/vendor/tinymce/tinymce.min.js"></script>
+	<script src="/vendor/php-email-form/validate.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.17/sweetalert2.all.min.js"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+	
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		
+	<!-- Template Main JS File -->
+	<script src="/js/main.js"></script>
+	<script src="js/login.management.js"></script>
+
+</body>
+
+</html>

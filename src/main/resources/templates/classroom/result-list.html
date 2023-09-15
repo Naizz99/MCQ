@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Student Management</title>
+</head>
+
+<body th:style="'--bodyBgColor:' + ${classroom.bodyBgColor}
+		+ ';--fontColor:' + ${classroom.fontColor}	
+		+ ';--bodyFontFamily:' + ${classroom.bodyFontFamily}	
+		+ ';--cardBgColor:' + ${classroom.cardBgColor}	
+		+ ';--cardSideColor1:' + ${classroom.cardSideColor}	
+		+ ';--cardSelectedColor:' + ${classroom.cardSelectedColor}">
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<a th:href="'/student/classroomLogin?classroomStudentId='+${classroomStudent.classRoomStudentId}"><h1 th:text="${classroom.name}"></h1></a>
+				
+				<h1 th:text="${student.userId.name}"></h1>
+				<nav style="float:right">
+					<a type="button" class="btn btn-danger" th:onclick="|location.href='moduleWiseSummeryReport?subjectId='+document.getElementById('subject').value+'&studentId='+${student.studentId}|">Summery</a>
+					<div class="col-md-6">
+						<select class="form-control" onchange="filterBySubject(this.value)" id="subject">
+							<option value="0">-- SELECT All --</option>
+							<option th:value="${subject.subjectId}" th:each="subject : ${listSubjects}" th:text="${subject.subjectName}"></option>
+						</select>
+                    </div>
+				</nav>
+			</div><br><br>
+			<!-- End Page Title -->
+			<hr>
+			<section class="section">
+				<input type="text" th:value="${student.studentId}" id="studentId" hidden readonly>
+				<div class="row" id="row">
+					<div class="col-3" th:each="review : ${listReviews}">
+						<a th:href="'/reviewClassRoomPaper?reviewId=' + ${review.cprId}">
+							<div class="card">
+								<div class="card-body row">
+									<div class="col-3">
+										<h1 th:text="${#strings.capitalize(#strings.substring(review.paperID.name, 0,1))}" style="border: 1px solid #CCC;border-radius:50%;text-align:center;font-weight: bold;">A</h1>
+									</div>
+									<div class="col-9 activity card">
+										<div>
+											<h4 th:text="${review.paperID.name}"></h4>
+											<h4 th:text="${review.paperID.subjectId.subjectName}"></h4>
+											<p th:text="${review.result} + '%'" th:if="${review.result} <= 20" style="color:red;"></p>
+											<p th:text="${review.result} + '%'" th:if="${review.result} > 20"></p>
+											<p th:text = "${review.createDate} + ' | ' + ${review.updateDate}"></p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+			</section>
+	</main>
+	<!-- End #main -->
+	<script src="js/user.management.js"></script>
+<script src="js/services/result.management.js"></script>
+	</div>
+</body>
+
+</html>
+
+

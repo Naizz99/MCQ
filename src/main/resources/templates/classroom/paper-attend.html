@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/classroomLayout}">
+
+<head>
+  <title>View Paper</title>
+  
+  <style>
+  	* {box-sizing: border-box}
+	
+	.mySlides {display: none}
+	
+	/* Slideshow container */
+	.slideshow-container {
+	  max-width: 1000px;
+	  position: relative;
+	  margin: auto;
+	}
+	.w3-animate-right{
+		position:relative;
+		animation:animateright 0.4s
+	}
+	@keyframes animateright{
+		from{right:-300px;opacity:0} 
+		to{right:0;opacity:1}
+	}
+	.prev , .next{
+		font-size: 18px;
+		color:#0066cc;
+	}
+  </style>
+</head>
+
+<body th:style="'--bodyBgColor:' + ${classroom.bodyBgColor}
+		+ ';--fontColor:' + ${classroom.fontColor}	
+		+ ';--bodyFontFamily:' + ${classroom.bodyFontFamily}	
+		+ ';--cardBgColor:' + ${classroom.cardBgColor}	
+		+ ';--cardSideColor1:' + ${classroom.cardSideColor}	
+		+ ';--cardSelectedColor:' + ${classroom.cardSelectedColor}">
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+		
+		<section class="section">
+			<div class="row">
+			
+				<div class="col-lg-12" style = "height:80px;">
+					<span id="count" class="card" style = "text-shadow:1px 1px 5px #fff,1px 1px 5px #fff,1px 1px 5px #fff, 1px 1px 5px #fff;">Available Time</span>
+				</div>	
+				
+				<input type="hidden" id = "classRoomStudentId" th:value = "${classroomStudent.classRoomStudentId}">
+				
+				<div class="col-lg-8" id="questionWizardDiv">
+					<div class="card">
+						<div class="card-body">
+							<div class="pagetitle" >
+								<br>
+								<div style= "float:left;"><h1 th:text="${paper.name}">
+									</h1><input type="hidden" th:value="${paper.paperId}" id = "paperId">
+									<input type="hidden" th:value="${paper.paperId}" id = "paperId">
+									<input type="hidden" th:value="${subject.subjectId}" id = "subjectId">
+									<input type="hidden" th:value="${publisher.poId}" id = "publisherId">
+								</div>
+								
+								<div style= "text-align:right;">
+									<button type="button" class="btn btn-outline-secondary" style = "border: none;" data-toggle="modal" data-target="#exampleModalLong">
+									  <i class="bi bi-info-circle"></i>
+									</button>
+								</div>
+								<br>
+								<nav>
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a th:href="'/student/classroomLogin?classroomStudentId='+${classroomStudent.classRoomStudentId}">Home</a></li>
+										<li class="breadcrumb-item">Paper View</li>
+									</ol>
+								</nav>
+								
+							</div><!-- End Page Title -->
+							
+							<div id="quizpage" >
+								<div name="quiz" id="quiz">
+									<div style = "max-height: 70%;" class="card-body">
+									<div style = "float:left;width:90%;"><a type = "button" id = "prev" class="prev" onclick="plusSlides(-1)">Prev</a></div>
+									<div style = "float:left;text-align:right;"><a type = "button" id = "next" class="next" onclick="plusSlides(1)">Next</a></div>
+									<br><br>
+									  <p>
+									  	<div th:each="question : ${listQuestions}" class="mySlides w3-animate-right">
+									    
+										    <div style="text-align:right;color:red;">
+										    	<a type="button" th:onclick="|flagQuestion('${question.questionId}')|" >
+										    		<!-- <i class="bi bi-flag-fill" title="Add or Remove Flag"></i> -->
+										    		<h4 th:id = "'flag' + ${question.questionId}">Do it later</h4>
+									    		</a>
+										    </div>
+										    <h3 class = "que" th:text="${'(' + question.questionId + ')'}"></h3><br>
+										    
+										    <h4 class = "que" th:text="${question.question}"></h4>
+										    <div class = "col-3" th:if="*{question.image != null}">
+										    	<img th:src = "${question.image}" width = "60%">
+										    </div>
+										    <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+										    
+										    <div style = "margin-left:10%;" th:if = "${paper.templateId.name == 'Single'}">
+										    	<div class = "col-md-12"  th:each="answer : ${listAnswers}" th:if="*{answer.pqId.pqId == question.pqId}">
+										    		<p class = "ans" style="width:90%">
+											    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}">
+											    		<br>
+											    		<img th:src = "${answer.image}" th:if = "${answer.image} != null" class = "col-2">
+											    	</p>
+										    	</div>
+										    </div>
+										    
+										    <div style = "margin-left:10%;" th:if = "${paper.templateId.name == 'Multiple'}">
+										    	<div class = "col-md-6"  th:each="answer : ${listAnswers}" th:if="*{answer.pqId.pqId == question.pqId}">
+										    		<p class = "ans" style="width:90%">
+											    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}">
+											    		<br>
+											    		<img th:src = "${answer.image}" th:if = "${answer.image} != null" class = "col-2">
+											    	</p>
+										    	</div>
+										    </div>
+										    
+										    <div style = "margin-left:10%;" th:if = "${paper.templateId.name == 'All'}">
+										    	<div class = "col-md-3"  th:each="answer : ${listAnswers}" th:if="*{answer.pqId.pqId == question.pqId}">
+										    		<p class = "ans" style="width:90%">
+											    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}">
+											    		<br>
+											    		<img th:src = "${answer.image}" th:if = "${answer.image} != null" class = "col-2">
+											    	</p>
+										    	</div>
+										    </div>
+										    
+										  </div>
+									  </p>
+									</div>
+								</div>								
+							</div>							
+						</div>
+					</div>
+				</div>	
+				
+				<div class="col-lg-4" style = "height:80px;" id="numberWizardDiv">
+					<div class="card">
+						<div class="card-body" style="border-style: groove;">
+							<br>
+							<div class="row">
+								<div class="col-3">
+									<i class="bi bi-eye-slash-fill" style="font-size:24px;" id="numberWizardView" onClick="hideShow(this.id)"></i>
+								</div>
+								<div class="col-9">
+									<h3 th:text = "'No. of Questions ' + ${questionCount}" ></h3>
+								</div>
+							</div>
+														
+							<br><br><br>
+							
+							<div th:each="question : ${listQuestions}" style = "float:left;margin:4%;">
+								<a type="button" class = "dot" th:onclick="|currentSlide('${question.questionId}')|" style = "display: inline-block;background-color: #e6faff;">
+									<b>
+										<input type="text" th:id = ${question.questionId} th:value = "${question.questionId}" style = "cursor: pointer;height:30px;width:30px;border: 1px outset ;text-align: center;" readonly>
+									</b>
+								</a>
+							</div>
+							
+							<br><br><br><br><br><br><br><br>
+							
+							<div class="input-group mb-3">
+								<a type="button" class="btn btn-success w-100" id = "done" th:onclick="|review('${paper.paperId}')|">Review &nbsp;<i class="bi bi-card-list"></i></a>
+								<br><br>
+								<a type="button" class="btn btn-primary w-100" id = "done" th:onclick="|mark('${paper.paperId}')|">Finish Attemp &nbsp;<i class="bi bi-check"></i></a>
+								<br><br>
+								<!-- <a type="hidden" class="btn btn-primary w-100" id = "try1" onclick="tryagain()">Try Again</a><br><br> -->
+								<a type="button" class="btn btn-secondary w-100" id = "close" th:href="'/student/classroomLogin?classroomStudentId='+${classroomStudent.classRoomStudentId}">Close &nbsp;X</a><br><br>
+						    </div>
+						</div>
+					</div>
+				</div>	
+				
+				<!-- Modal -->
+				<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+				  <div class="modal-dialog" role="document">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				          <span aria-hidden="true"> &nbsp;&nbsp;&nbsp;&nbsp; &times;</span>
+				        </button>
+				      </div>
+				      <div class="modal-body">
+				        <form id = "newReview" th:object="${review}">
+							<table width="100%">
+								<tbody>
+									
+									<tr>
+										<td>
+											<label for="questionId" class="form-label">Selected Paper </label> 
+										</td>
+										<td>
+											<input  type="text" id = "paperName" th:value="${paper.name}" style = "border: none;" disabled >
+											<input  type="hidden" id = "paperId" th:field="*{paperID}" style = "width:50%;" disabled >
+										</td>
+									</tr>
+									 
+									<tr>
+										<td>
+											<label for="questionId" class="form-label">Available Time (Minutes)</label>
+										</td>
+										<td>
+											<input  type="text" id = "paperTime" th:value="${paper.time}" style = "border: none;" disabled >
+										</td>
+									</tr>
+									
+									<tr>
+										<td>
+											<label for="questionId" class="form-label">Attempts User</label>
+										</td>
+										<td>
+											<input  type="text" id = "atpUser" style = "border: none;" th:field="*{createBy}" disabled >
+										</td>
+									</tr>
+									
+									<tr>
+										<td>
+											<label for="questionId" class="form-label">Attempts Date</label>	
+										</td>
+										<td>
+											<input  type="text" id = "atpDate" style = "border: none;" th:field="*{seatedDate}" disabled >
+										</td>
+									</tr>
+									
+									<tr>
+										<td>
+											<label for="questionId" class="form-label">Results</label>
+										</td>
+										<td>
+											<input  type="text" id = "atpResults1" style = "border: none;" disabled >
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<input  type="hidden" th:field="*{cprId}">
+							<input  type="hidden" th:field="*{paperID}">
+							<input  type="hidden" th:field="*{seatedDate}">
+							<input  type="hidden" th:field="*{createBy}">
+							<input  type="hidden" th:field="*{aneleticReport}">
+							<input  type="hidden" th:field="*{weakModules}">
+							<input  type="hidden" th:field="*{active}">
+							<input  type="hidden" th:field="*{createDate}">
+							<input  type="hidden" th:field="*{updateBy}">
+							<input  type="hidden" th:field="*{updateDate}">
+							<input  type="hidden" th:field="*{studentEmail}">
+							<input  type="hidden" th:field="*{classRoomId}">
+							<input  type="hidden" th:field="*{studentId}" id="studentId" >
+							<input id = "atpResults2" type="hidden" th:field="*{result}">
+						</form>	
+				      </div>
+				    </div>
+				  </div>
+				</div>
+					
+			</div>
+		</section>		
+		</main><!-- End #main -->
+		<script src="../js/classroom.student.js"></script>	
+  	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

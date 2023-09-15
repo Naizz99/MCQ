@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Publisher Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Publisher Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item active"><a href="/listPublishers">Publisher Management</a></li>
+						<li class="breadcrumb-item active"><a href="/viewPublisherRequests">Publisher Requests</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+			
+			<br/><br/>
+			
+			<table class="table datatable">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Description</th>
+						<th>Status</th>
+						<th>Requested User</th> 
+						<th>Requested Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="publisher : ${listPublishers}">
+						<td th:text="${publisher.tempId}">ID</td>
+						<td th:text="${publisher.poId.name}">Name</td>
+						<td th:text="${publisher.poId.description}" th:if="${#strings.length(publisher.poId.description)} <= 30"></td>
+						<td th:text="${#strings.substring(publisher.poId.description,0,30)} + '.......'" th:if="${#strings.length(publisher.poId.description)} > 30"></td>
+						<td th:if="${!(publisher.rejected)}"> <span class="label label-warning">Pending</span></td>
+						<td th:if="${publisher.rejected}"><span class="label label-danger">Rejected</span></td>
+						<td th:text="${publisher.poId.createBy}">Create User</td>
+						<td th:text="${publisher.poId.createDate}">Create Date</td>
+						<td colspan=2 >
+							<a type = "button" class="btn btn-success" th:href="@{/publisherApprovalRequest(poId=${publisher.tempId})}">Approve / Reject</a>
+							<a type = "button" class="btn btn-danger" th:onclick="|deleteTempPublisher('${publisher.tempId}')|"> Remove </a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</main><!-- End #main -->	
+		<script src="js/publisher.management.js"></script>
+  	</div>
+</body>
+
+</html>
+

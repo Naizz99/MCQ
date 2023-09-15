@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Report Center</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+
+			<div class="pagetitle">
+				<h1 id="rptName">Student Details Report</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Reports</li>
+						<li class="breadcrumb-item active">Students Details</li>
+					</ol>
+				</nav>
+			</div>
+
+			<div class="row" id="searchBar">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body row">
+							<div class="col-3">
+								<div class="input-group">
+									<br> <input type="text" class="form-control"
+										id="studentId" placeholder="STUDENT ID">
+								</div>
+							</div>
+							<div class="col-3">
+								<div class="input-group">
+									<br> <input type="text" class="form-control" id="name"
+										placeholder="NAME">
+								</div>
+							</div>
+							<div class="col-3">
+								<br> <select class="form-select form-control"
+									aria-label="Default select example" id="gender">
+									<option value=''>GENDER</option>
+									<option value='male'>Male</option>
+									<option value='female'>Female</option>
+								</select>
+							</div>
+							<div class="col-3">
+								<div class="input-group">
+									<br> <input type="email" class="form-control" id="email"
+										placeholder="Email">
+								</div>
+							</div>
+							<div class="col-3">
+								<div class="input-group">
+									<br> <input type="text" class="form-control" id="mobile"
+										placeholder="Mobile">
+								</div>
+							</div>
+							<div class="col-3">
+								<br> <select class="form-select form-control"
+									aria-label="Default select example" id="grade">
+									<option value=''>Grade</option>
+									<option th:each="log:${gradeList}" th:value="${log.gradeId}"
+										th:text="${log.gradeName}"></option>
+								</select>
+							</div>
+							<div class="col-2">
+								<div class="input-group">
+									<label>Total Attempts</label><br>
+									<div style="float: left; width: 20%;">
+										<input type="text" class="form-control" id="tatm1">
+									</div>
+									<div style="float: left; width: 10%; text-align: center;">
+										<label>To</label>
+									</div>
+									<div style="float: left; width: 20%;">
+										<input type="text" class="form-control" id="tatm2">
+									</div>
+								</div>
+							</div>
+							<div class="col-4">
+								<br>
+								<button class="btn btn-primary" onclick="searchStudentList()"
+									id="search">
+									<i class="bi bi-search"></i> &nbsp; Search
+								</button>
+								<!-- <a href="/secure/searchStudent?studentId=" + $('studentId') class="btn btn-primary"><i class="bi bi-search"></i> &nbsp; Search</a> -->
+								<a type="button" class="btn btn-danger"
+									style="background-color: #990000;" id="printButton">Export</a>
+								<a type="button" class="btn btn-secondary" id="cancelButton"
+									onClick="clearSearch()">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body" id="rptDiv">
+							<table class="table table-striped" id="rptTable">
+								<thead>
+									<tr>
+										<th scope="col">Id</th>
+										<th scope="col">Name</th>
+										<th scope="col">Gender</th>
+										<th scope="col">Email</th>
+										<th scope="col">Mobile</th>
+										<th scope="col">Grade</th>
+										<th scope="col">Attempts Done</th>
+										<th scope="col">Average Mark</th>
+										<th scope="col">Status</th>
+									</tr>
+								</thead>
+								<tbody id="rptData">
+									<tr th:each="student : ${students}"
+										th:data-id="${student.studentId}"
+										data-url='/viewStudentResult?studentId='
+										onclick="navigateToURL(this)">
+										<td th:text="${student.studentId}">ID</td>
+										<td th:text="${student.name}">Name</td>
+										<td th:text="${student.gender}">Gender</td>
+										<td th:text="${student.Email}">Email</td>
+										<td th:text="${student.Mobile}">Mobile</td>
+										<td th:text="${student.grade}">Grade</td>
+										<td th:text="${student.totalAttempts}">Attempts Done</td>
+										<td th:text="${student.averageMark}">Average Mark</td>
+										<td th:if="${!(student.active)}"><span
+											class="label label-danger">Deactive</span></td>
+										<td th:if="${student.active}"><span
+											class="label label-success">Active</span></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row" id="individualReport">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body">
+							<nav>
+								<div class="nav nav-tabs" id="nav-tab" role="tablist">
+									<button class="nav-link active" id="paperSummery"
+										data-bs-toggle="tab" data-bs-target="#studentPaperSummeryData"
+										type="button" role="tab" aria-controls="nav-home"
+										aria-selected="true">
+										<h3>Paper Summery</h3>
+									</button>
+									<button class="nav-link" id="moduleSummery"
+										data-bs-toggle="tab" data-bs-target="#studentModuleSummeryData"
+										type="button" role="tab" aria-controls="nav-profile"
+										aria-selected="false">
+										<h3>Module Summery</h3>
+									</button>
+								</div>
+							</nav>
+							<div class="tab-content" id="nav-tabContent">
+								<div class="tab-pane active" id="studentPaperSummeryData"
+									role="tabpanel" aria-labelledby="nav-home-tab">
+									<table class="table table-striped" id="rptTable2">
+										<caption>
+											<h2>Past Paper Attendance Review</h2>
+										</caption>
+										<thead>
+											<tr>
+												<th scope="col">Paper</th>
+												<th scope="col">Attended Date</th>
+												<!-- <th scope="col">Time</th> -->
+												<th scope="col">Question Count</th>
+												<th scope="col">Answered</th>
+												<th scope="col">Correct</th>
+												<th scope="col">Total Mark</th>
+											</tr>
+										</thead>
+										<tbody id="rptData2">
+
+										</tbody>
+									</table>
+								</div>
+								<div class="tab-pane" id="studentModuleSummeryData" role="tabpanel"
+									aria-labelledby="nav-profile-tab">
+									<table class="table table-striped" id="rptTable3">
+										<caption>
+											<h2>Module Wise Performance Report</h2>
+										</caption>
+										<thead class="table table-striped" id="rptTable3">
+											<tr>
+												<th>Subject</th>
+												<th>Paper Count</th>
+												<th>Module</th>
+												<th>All Ques</th>
+												<th>Attended Ques</th>
+												<th>Correct Ques</th>
+												<th>Result</th>
+											</tr>
+										</thead>
+										<tbody id="rptData3">
+
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</main>
+		<!-- End #main -->
+
+		<script src="/js/report.management.js"></script>
+
+	</div>
+</body>
+
+</html>
+
+

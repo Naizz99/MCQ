@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Answer Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Answer Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Material Management</li>
+						<li class="breadcrumb-item active"><a href="/listPapers">Papers</a></li>
+						<li class="breadcrumb-item"><a th:href="'listQuestionsByPaperId?paperId=' + ${paper.paperId}">Questions</a></li>
+						<li class="breadcrumb-item active"><a href="">Answers</a></li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Answer Details</h5>
+								<form class="row g-3" id = "newAnswer" th:object="${answer}">						
+									<input  th:field="*{paId}" class="form-control" type="hidden">
+									<div class="col-md-6">
+										<i class="bi bi-question-circle"></i>&nbsp;
+										<label for="pqId" class="form-label">Paper </label> <span class="asterisk_input"></span>&nbsp;
+										<input  th:field="*{pqId.paperID.name}" class="form-control" type="text" readonly required>
+								    </div>
+								    <input  th:field="*{pqId}" class="form-control" type="hidden" readonly>
+								    <input  th:field="*{paperID.paperId}" class="form-control" type="hidden" readonly>									
+								    <div class="col-md-12">
+										<i class="bi bi-question-circle"></i>&nbsp;
+										<label for="pqId" class="form-label">Question </label> <span class="asterisk_input"></span>&nbsp;
+										<textarea th:field="*{pqId.question}" class="form-control" rows="3" readonly required></textarea>
+								    </div>
+								    <input  th:field="*{pqId.pqId}" id = "pqId" class="form-control" type="hidden" readonly>
+																	    
+									<div class="col-md-12">
+										<label for="question" class="form-label">Answer</label>
+										<textarea th:field="*{answer}" class="form-control" id = "answer" rows="3" required></textarea>
+								    </div>
+								    
+									<div class="col-md-6">
+					                    <input class="form-check-input" th:field="*{answer_status}" type="checkbox" id="gridCheck">
+					                    <label class="form-label" for="gridCheck">Is Correct</label>
+					                </div>
+					                
+									<div class="col-md-6" th:if="${answer.active}">
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Active" class="form-control" readonly>
+									</div>
+									<div class="col-md-6" th:if="${!answer.active}">
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Deactive" class="form-control" readonly>
+									</div>
+									<input type="hidden" th:field="*{active}" id = "active" class="form-control" readonly>
+									
+									<div class="col-md-6">
+										<label for="createBy" class="form-label">Create By</label> 
+										<input type="text" th:field="*{createBy}" id = "createBy" class="form-control" readonly>
+									</div>
+									<div class="col-md-6">
+										<label for="createDate" class="form-label">Create Date</label> 
+										<input type="text" th:field="*{createDate}" id = "createDate" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="updateBy" class="form-label">Update By</label> 
+										<input type="text" th:field="*{updateBy}" id = "updateBy" class="form-control" readonly>
+									</div>
+									<div class="col-md-6">
+										<label for="updateDate" class="form-label">Update Date</label> 
+										<input type="text" th:field="*{updateDate}" id = "updateDate" class="form-control" readonly>
+									</div>
+									
+									<div class="text-center">
+										<button type="button" id = "updateAnswer" class="btn btn-primary">Submit</button>
+										<button type="reset" class="btn btn-secondary">Reset</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+	</main>
+	<script src="../js/answer.management.js"></script>
+	
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>

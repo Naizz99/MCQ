@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Purchase History Report</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1 id="rptName">Purchase History Report</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Reports</li>
+						<li class="breadcrumb-item active">Purchase History Report</li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+			<div class="row" id="searchBar">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="row card-body">
+							<div class="col-2">
+								<br><input type="text" class="form-control" id="userId" placeholder="USER ID">
+							</div>
+							<br>
+							<div class="col-2">
+								<br><input type="text" class="form-control" id="paperId" placeholder="PAPER/BUNDLE ID">
+							</div>
+							<div class="col-3">
+								<br><input type="date" class="form-control" id="purchasedDate" placeholder="FROM">
+							</div>
+							<div class="col-3">
+								<br><input type="date" class="form-control" id="expireDate" placeholder="TO">
+							</div>
+							
+							<div class="col-6"></div>
+							<div class="col-6">
+								<br>
+								<button class="btn btn-primary" onclick="searchPurchaseList()" id="search">
+									<i class="bi bi-search"></i> &nbsp; Search
+								</button>
+								<a type="button" class="btn btn-danger" style="background-color: #990000;" id="printButton">Export</a>
+								<a type="button" class="btn btn-secondary" id="cancelButton" onClick="clearSearch()">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body" id="rptDiv">
+							<table class="table table-striped" id="rptTable">
+								<thead>
+									<tr>
+										<th scope="col">User Id</th>
+										<th scope="col">User</th>
+										<th scope="col">Paper/Bundle Type</th>
+										<th scope="col">Paper/Bundle ID</th>
+										<th scope="col">Paper/Bundle</th>
+										<th scope="col">Purchased Date</th>
+										<th scope="col">Expire Date</th>
+										<th scope="col">Status</th>
+									</tr>
+								</thead>
+								<tbody id="rptData">
+									<tr th:each="purchase : ${purchases}">
+										<td th:text="${purchase.userId}"></td>
+										<td th:text="${purchase.userName}"></td>
+										<td th:text="${purchase.type}"></td>
+										<td th:text="${purchase.id}"></td>
+										<td th:text="${purchase.paperName}"></td>
+										<td th:text="${purchase.purchaseDate}"></td>
+										<td th:text="${purchase.expireDate}"></td>
+										<td th:if="${(purchase.status) == 'Deactive'}"><span class="label label-danger">Deactive</span></td>
+										<td th:if="${(purchase.status) == 'Expired'}"><span class="label label-warning">Expired</span></td>
+										<td th:if="${purchase.status == 'Active'}"><span class="label label-success">Active</span></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<!-- End #main -->
+	</div>
+</body>
+
+</html>
+
+<script src="js/report.management.js"></script>

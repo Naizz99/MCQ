@@ -1,0 +1,108 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Group Papers</title>
+  
+  <style>
+		* {box-sizing: border-box;}
+
+		#content {
+		  background-color: #004080;
+		  border: 1px solid #000;
+		  display: flex;
+		}
+
+		#mid{
+			color:white;
+			text-align: center;
+			font-weight: 1000;
+			font-size:20px;
+		}
+		
+		#left,
+		#right {
+		  background-color: white;
+		  border: 1px solid #000000;
+		  margin: 0.5rem;
+		  padding: 0.5rem;
+		  flex-grow: 1;
+		}
+		
+	</style>
+</head>
+
+<body th:style="'--bodyBgColor:' + ${classroom.bodyBgColor}
+		+ ';--fontColor:' + ${classroom.fontColor}	
+		+ ';--bodyFontFamily:' + ${classroom.bodyFontFamily}	
+		+ ';--cardBgColor:' + ${classroom.cardBgColor}	
+		+ ';--cardSideColor1:' + ${classroom.cardSideColor}	
+		+ ';--cardSelectedColor:' + ${classroom.cardSelectedColor}">
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Group Papers</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item"><a th:href="@{/viewClassRoom(classroomId=${classroom.classroomId})}">Group Management</a></li>
+						<li class="breadcrumb-item active"><a th:href="@{/listClassromPapers(classroomId=${classroom.classroomId})}">Group Papers</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+			<input type="hidden" th:value="${classroom.classroomId}" id="classroomId">			
+			<div class="row" id="content">
+				<div class="col-5 row" id="left">
+					<div class="card" style = "padding-right:1%;margin-bottom:1%;border: 1px solid; border-radius: 20px;" data-isselect="false" th:data-type="p" th:data-value="${paper.paperId.paperId}" onClick="selectDiv(this)" th:each="paper : ${lecturerPaperList}" th:if="${paper.paperId} != null">
+						<label style = "font-size:18px;" class="card-title" th:text = "${paper.paperId.name}" th:title="${paper.paperId.subjectId.subjectName} + '|' + ${paper.paperId.grade.gradeName}"></label>
+					</div>
+					<div class="card" style = "padding-right:1%;margin-bottom:1%;border: 1px solid; border-radius: 20px;" data-isselect="false" th:data-type="b" th:data-value="${paper.bundleId.bundleId}" onClick="selectDiv(this)" th:each="paper : ${lecturerPaperList}" th:if="${paper.bundleId} != null">
+						<label style = "font-size:18px;" class="card-title" th:text = "${paper.bundleId.name}" th:title="${paper.bundleId.Publisher.name} + '|' + ${paper.bundleId.grade.gradeName}"></label>
+					</div>
+				</div>
+				
+				<div class="col-1 row" id="mid">
+					<div><br><br>
+						<div id="addSelected" onClick="addPapers('selected')" title="Add Selected Paper"><input type="button" class="btn-dark" value=">"></div><br>
+			 			<div id="addAll" title="Add All" onClick="addPapers('all')"><input type="button" class="btn-dark" value=">>"></div>	
+					</div>
+				</div>
+				
+				<div class="col-5 row" id="right">
+					<div class="card" style = "padding-right:1%;margin-bottom:1%;border: 1px solid; border-radius: 20px;"  th:each="paper : ${paperList}">
+						<div th:if="${paper.paperID} != null">
+							<label style = "font-size:18px;" class="card-title" th:text = "${paper.paperID.name}" th:title="${paper.paperID.subjectId.subjectName} + '|' + ${paper.paperID.grade.gradeName}"></label>
+						</div>
+						<div th:if="${paper.bundleId} != null">
+							<label style = "font-size:18px;" class="card-title" th:text = "${paper.bundleId.name}" th:title="${paper.bundleId.Publisher.name} + '|' + ${paper.bundleId.grade.gradeName}"></label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main><!-- End #main -->	
+		
+		
+		
+  	</div>
+</body>
+</html>
+
+<script src="js/classroom.management.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

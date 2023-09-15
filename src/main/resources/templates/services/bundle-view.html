@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Paper Bundle Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Paper Bundle Managements</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Paper Management</li>
+						<li class="breadcrumb-item active">Bundle Management</li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Bundle Details</h5>	
+								<form class="row g-3" id = "newBundle" th:object="${bundle}" >
+								<input type="hidden" th:field="*{userId}" class="form-control" readonly>
+								<input type="hidden" th:field="*{bundleId}" class="form-control" readonly>
+									<div class="col-md-4">
+										<label for="image" class="form-label">Image</label>
+										<div style="width:18rem;height:10rem">
+											<img th:src="${bundle.image}" style="width:100%;height:100%">
+										</div>
+									</div>
+									
+									<div class="col-md-8">
+										<label for="name" class="form-label">Name<span class="asterisk_input"></span></label>
+										<input type = "text" id = "bundleName" th:field="*{name}" class="form-control" maxlength="15" readonly >
+									</div>
+									
+									<div class="col-md-12">
+										<label for="description" class="form-label">Description</label>
+										<textarea th:field="*{description}" class="form-control" readonly></textarea>
+									</div>
+									
+									<div class="col-md-7">
+										<label for="grade" class="form-label">Grade<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{grade}" id="grade" readonly>
+				                            <option value=''>-- SELECT GRADE --</option>
+				                            <option th:each="log:${gradeList}"
+				                                    th:value="${log.gradeId}"
+				                                    th:text="${log.gradeName}">
+				                            </option>
+				                        </select>
+									</div>
+										
+									<div class="col-md-7">
+										<label for="publisher" class="form-label">Publisher<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{publisher}" id="publisher" readonly>
+				                            <option value=''>-- SELECT PUBLISHER -- </option>
+				                            <option th:each="log:${listPublishers}"
+				                                    th:value="${log.poId}"
+				                                    th:text="${log.name}">
+				                            </option>
+				                        </select>
+									</div>&nbsp;&nbsp;&nbsp;&nbsp;
+									
+								</form>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-lg-6">
+						<div class="card">
+							<h5 class="card-title">&nbsp;&nbsp; Papers</h5>
+							<div class="card-body scrollit">
+								<div th:each="paper : ${listPapers}" class="card mb-3" style = "background-color:#e6f2ff" >
+				                  <div class="card-body">
+				                    <div class="d-flex justify-content-between">
+				                      <div class="d-flex flex-row align-items-center">
+				                        <div>
+				                        	<span class="dot"></span>
+				                        </div>
+				                        <div class="ms-3">
+				                        	<input type="hidden" th:value = "${paper.paperId.paperId}">
+				                          	<h4 th:text = "${paper.paperId.name} + ' | ' + ${paper.paperId.grade.grade}">...</h4>
+				                          	<p class="small mb-0" th:text = "${paper.updateDate} + '|' + ${paper.updateBy}">Join Date</p>
+				                        </div>
+				                      </div>
+				                      <div class="d-flex flex-row align-items-center">
+				                        <h4 th:text = "'No. of Questions ' + ${paper.paperId.numberOfQuestion}">...</h4>
+				                      </div>
+				                    </div>
+				                  </div>
+				                </div>
+				                
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+	</main>
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>
+
+<script src="js/services/paper.bundle.management.js"></script>

@@ -1,0 +1,181 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Group Papers</title>
+</head>
+
+<body th:style="'--bodyBgColor:' + ${classroom.bodyBgColor}
+		+ ';--fontColor:' + ${classroom.fontColor}	
+		+ ';--bodyFontFamily:' + ${classroom.bodyFontFamily}	
+		+ ';--cardBgColor:' + ${classroom.cardBgColor}	
+		+ ';--cardSideColor1:' + ${classroom.cardSideColor}	
+		+ ';--cardSelectedColor:' + ${classroom.cardSelectedColor}">
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Group Papers</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item"><a th:href="@{/viewClassRoom(classroomId=${classroom.classroomId})}">Group Management</a></li>
+						<li class="breadcrumb-item active"><a th:href="@{/listClassromPapers(classroomId=${classroom.classroomId})}">Group Papers</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+
+			<!-- <a type = "button" class="btn btn-primary" th:href="@{/addPaper}">Add New Paper</a> -->
+			<!-- <a sec:authorize="hasRole('ADMIN') || hasRole('EDITOR') || hasRole('LECTURER')" type = "button" class="btn btn-primary" href="/contentWizard">Add Paper</a> -->
+			<a type="button"  data-toggle="modal" data-target="#paperModalCenter" class = "btn btn-primary" >Add Paper</a>	
+			<br/><br/>
+						
+			<div class="col-12 row">
+				<div class="card col-2" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;" th:each="paper : ${paperList}">
+					<div class="row" >
+						<div class="col-md-1" th:if="${paper.active}" style="foat:left;" >
+							<a type = "button" title = "Deactive Paper" class="bi bi-x-circle-fill" th:onclick="|deactiveClassRoomPaper(${paper.classRoomPaperId})|" style = "color:red;"></a>
+						</div>
+						<div class="col-md-1" th:if="${!paper.active}" style="foat:left;">
+							<a type = "button" title = "Active Paper" class="bi bi-check-circle-fill" th:onclick="|activeClassRoomPaper(${paper.classRoomPaperId})|" style = "color:green;"></a>
+						</div>
+						<div class="col-md-1" style="foat:left;">
+							<a type = "button" title = "Remove Paper" class="bi bi-trash-fill" th:onclick="|removeClassRoomPaper(${paper.classRoomPaperId})|" style = "color:gray;"></a>
+						</div>
+					</div>
+					<div class="card-body" th:if="${paper.paperID} != null">
+						<label style = "font-size:20px;" class="card-title" th:text = "${paper.paperID.name}"></label>
+						<div style = "text-align:left;">
+							<table>
+								<tr>
+									<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark font-size:24;"></i>&nbsp;&nbsp;&nbsp;</td>
+									<td th:text = "${paper.paperID.subjectId.subjectName}"></td>
+								</tr>
+								<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+								<tr>
+									<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+									<td th:text = "${paper.paperID.grade.gradeName}"></td>
+								</tr>
+								<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+								<tr>
+									<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+									<td th:text = "'Time : ' + ${paper.paperID.time} + ' minutes'"></td>
+								</tr>
+							</table> 
+						</div>
+					</div>
+					<div class="card-body" th:if="${paper.bundleId} != null">
+						<label style = "font-size:20px;" class="card-title" th:text = "${paper.bundleId.name}"></label>
+						<div style = "text-align:left;">
+							<table>
+								<tr>
+									<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark font-size:24;"></i>&nbsp;&nbsp;&nbsp;</td>
+									<td th:text = "${paper.bundleId.paperCount}"></td>
+								</tr>
+								<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+								<tr>
+									<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+									<td th:text = "${paper.bundleId.grade.gradeName}"></td>
+								</tr>
+								<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+								<tr>
+									<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+									<td th:text = "'By ' + ${paper.bundleId.name}"></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main><!-- End #main -->	
+		
+		<!-- Adding Paper Modal -->
+		<div class="modal fade" id="paperModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered" role="document">
+		    <div class="modal-content">
+		    	<div class="modal-header">
+			    	<h5 class="modal-title" id="exampleModalLongTitle">Add New Paper</h5>
+			    	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			        	<span aria-hidden="true">&times;</span>
+			    	</button>
+		      	</div>
+		    	<div class="modal-body">
+			      	<div class="card paperCard" style = "margin:2%;border: 2px solid; border-radius: 25px;" th:each="paper : ${lecturerPaperList}" th:if="${paper.paperId} != null">
+						<a type = "button" th:onClick = "|addClassRoomPaper(${classroom.classroomId},${paper.paperId.paperId},0)|" data-dismiss="modal">
+				    		<div class="card-body"><br>
+						    	<label style = "font-size:20px;" class="card-title" th:text = "${paper.paperId.name}"></label>
+						      	<div style = "text-align:left;">
+						      		<table>
+						      			<tr>
+						      				<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark font-size:24;"></i>&nbsp;&nbsp;&nbsp;</td>
+						      				<td th:text = "${paper.paperId.subjectId.subjectName}"></td>
+						      			</tr>
+						      			<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+						      			<tr>
+						      				<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+						      				<td th:text = "${paper.paperId.grade.gradeName}"></td>
+						      			</tr>
+						      			<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+						      			<tr>
+						      				<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+						      				<td th:text = "'Time : ' + ${paper.paperId.time} + ' minutes'"></td>
+						      			</tr>
+						      		</table>
+						      	</div>
+							</div>
+						</a>
+					</div>
+					<div class="card paperCard" style = "margin:2%;border: 2px solid; border-radius: 25px;" th:each="paper : ${lecturerPaperList}" th:if="${paper.bundleId} != null">
+						<a type = "button" th:onClick = "|addClassRoomPaper(${classroom.classroomId},0,${paper.bundleId.bundleId})|" data-dismiss="modal">
+				    		<div class="card-body"><br>
+						    	<label style = "font-size:20px;" class="card-title" th:text = "${paper.bundleId.name}"></label>
+						      	<div style = "text-align:left;">
+						      		<table>
+						      			<tr>
+						      				<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark font-size:24;"></i>&nbsp;&nbsp;&nbsp;</td>
+						      				<td th:text = "'Paper Count : ' + ${paper.bundleId.paperCount}"></td>
+						      			</tr>
+						      			<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+						      			<tr>
+						      				<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+						      				<td th:text = "${paper.bundleId.grade.gradeName}"></td>
+						      			</tr>
+						      			<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+						      			<tr>
+						      				<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+						      				<td th:text = "'By ' + ${paper.bundleId.Publisher.name}"></td>
+						      			</tr>
+						      		</table>
+						      	</div>
+							</div>
+						</a>
+					</div>
+				</div>
+		      	<div class="modal-footer">
+		        	<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		      	</div>
+		    </div>
+		  </div>
+		</div>
+  	</div>
+</body>
+</html>
+
+<script src="js/classroom.management.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

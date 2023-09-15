@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+	
+	<title>Register - Quizz Mart</title>
+	<meta content="" name="description">
+	<meta content="" name="keywords">
+	
+	<!-- Favicons -->
+	<link href="/img/favicon.png" rel="icon">
+	<link href="/img/apple-touch-icon.png" rel="apple-touch-icon">
+	
+	<!-- Google Fonts -->
+	<link href="https://fonts.gstatic.com" rel="preconnect">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+	
+	<!-- Vendor CSS Files -->
+	<link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+	<link href="/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+	<link href="/vendor/quill/quill.snow.css" rel="stylesheet">
+	<link href="/vendor/quill/quill.bubble.css" rel="stylesheet">
+	<link href="/vendor/remixicon/remixicon.css" rel="stylesheet">
+	<link href="/vendor/simple-datatables/style.css" rel="stylesheet">
+	
+	<!-- Template Main CSS File -->
+	<link href="/css/style.css" rel="stylesheet">
+	<link href="/css/profile.css" rel="stylesheet">
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.17/sweetalert2.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+	
+	<script src=”https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js”></script>
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+	
+	<style>
+		.tabs {
+			display: flex;
+			flex-wrap: wrap;
+			height: 800px;
+		}
+		
+		.tabs label {
+			order: 1;
+			display: flex;
+			align-items: center;
+			padding: 1rem 2rem;
+			margin-right: 0.2rem;
+			cursor: pointer;
+		}
+		
+		.tabs .tab {
+			order: 9;
+			flex-grow: 1;
+			width: 100%;
+			height: 100%;
+			display: none;
+			padding: 1rem;
+			padding: 20px;
+			background: #f2f2f2;
+		}
+		
+		.tabs input[type="radio"] {
+			display: none;
+		}
+		
+		.tabs input[type="radio"]:checked+label {
+			background: #e6e6e6;
+		}
+		
+		.tabs input[type="radio"]:checked+label+.tab {
+			display: block;
+		}
+		
+		@media ( max-width : 465px) {
+			.tabs .tab, .tabs label {
+				order: initial;
+			}
+			.tabs label {
+				width: 100%;
+				margin-left: 50px;
+			}
+		}
+		
+		
+	</style>
+</head>
+
+<body>
+	<main>
+		<div class="container">
+			<section class="section register  d-flex flex-column align-items-center justify-content-center py-4">
+				<div class="container">
+					<div class="col-12">
+						<p id="sts"><p>
+					</div>
+					<div class="row justify-content-center">
+						<div class="col-lg-12 col-md-6 d-flex flex-column align-items-center justify-content-center">
+							<div class="tabs">
+
+								<input type="radio" name="tabs" id="tabone" checked="checked">
+								<label for="tabone">
+									<h5 class="card-title text-center pb-0 fs-5">Register as Student</h5>
+								</label>
+								
+								<div class="tab">
+									<div class="card mb-3">
+
+										<div class="card-body row">
+											<div class="col-6">
+												<div class="row g-3 needs-validation" novalidate>
+												
+													<div class="col-12">
+														<div th:if="${param.error}">
+															<div class="alert alert-danger">Invalid User Details.</div>
+														</div>
+														<div th:if="${param.success}">
+															<div class="alert alert-info">You've successfully registered.</div>
+														</div>
+													</div>
+				
+													<div class="col-12">
+														<select class="form-select" aria-label="Default select example" onChange = "gradeChange(this.value)" placeholder="GRADE" id="grade">
+															<option th:each="log:${gradeList}" th:value="${log.gradeId}" th:text="${log.gradeName}"></option>
+														</select>
+													</div>
+
+													<div class="col-6">
+														<input type="text" class="form-control" placeholder="STUDENT'S NAME" id = "stdName" required>
+													</div>
+
+													<div class="col-6">
+														<input type="text" class="form-control" placeholder="PARENT'S NAME" id = "prtName" required>
+													</div>
+													
+													<div class="col-6">
+														<select class="form-select" aria-label="Default select example" placeholder="STUDENT'S GENDER" id="stdGender">
+															<option value="male" th:text="Male"></option>
+															<option value="female" th:text="Female"></option>
+														</select>
+													</div>
+													
+													<div class="col-6">
+														<select class="form-select" aria-label="Default select example" placeholder="PARENT'S GENDER" id="prtGender">
+															<option value="male" th:text="Male"></option>
+															<option value="female" th:text="Female"></option>
+														</select>
+													</div>
+
+													<div class="col-5">
+														<!-- <input type="email" class="form-control" placeholder="STUDENT'S EMAIL" oninput="validateUser(this.value)" id = "stdEmail" required> -->
+														<input type="email" class="form-control" placeholder="STUDENT'S EMAIL" id = "stdEmail" required>
+													</div>
+													
+													<div class="col-1 form-check form-switch">
+														<input class="form-check-input" type="checkbox" id="useParentEmail" onclick = "useParentEmail(this)" title = "Use the parent's Email">
+													</div>
+																										
+													<div class="col-6">
+														<!-- <input type="email" class="form-control" placeholder="PARENT'S EMAIL" oninput="validateUser(this.value)" id = "prtEmail" required> -->
+														<input type="email" class="form-control" placeholder="PARENT'S EMAIL" id = "prtEmail" required>
+													</div>
+
+													<div class="col-6">
+														<input type="text" class="form-control" placeholder="STUDENT'S MOBILE" id = "stdMobile" maxlength="10" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required>
+													</div>
+													<!-- 
+													<div class="col-1 form-check form-switch">
+														<input class="form-check-input" type="checkbox" id="useParentMobile" onclick = "useParentMobile(this)" title = "Use the parent's Mobile">
+													</div>
+													 -->
+													<div class="col-6">
+														<input type="text" class="form-control" placeholder="PARENT'S MOBILE" id = "prtMobile" maxlength="10" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required>
+													</div>
+
+													<div class="col-12">
+														<input type="text" class="form-control" placeholder="STUDENT'S USERNAME" oninput="validateUserName(this.value,0)" id = "stdUsername" required>
+													</div>
+
+													<div class="col-11">
+														<input onInput = "checkPolicy('S',this.value)" type="password" id="password" class="form-control" placeholder="STUDENT'S PASSWORD" required>
+													</div>
+													<div class="popup col-1">
+														<div class="popuptext" id="myPopup1">
+															<small>Password must contain the followings:</small>
+															<div th:each="policy : ${listPolicies}" >
+																<small th:id="'policyS'+${policy.policyId}" class="invalid" th:text="${policy.policy}" th:if="${policy.active}" ></small><br>
+															</div>
+														</div>
+													</div>
+													
+													<div class="col-11">
+														<input type="Password" name="confirmPassword" id="confirmPassword" class="form-control" placeholder="RE-TYPE PASSWORD" required>
+													</div>
+													 
+													<div class="col-12">
+														<button class="btn btn-primary w-100" id = "btnRegisterStd" onclick = "studentRegister()">Create Account</button>
+													</div>
+													
+													<div class="col-12">
+														<br>
+														<p class="small mb-0">
+															&nbsp;&nbsp;Already have an account? 
+															<a href="/login">Sign in</a>
+														</p>
+														<br>
+													</div>
+												</div>
+											</div>
+											<div class="col-6">
+												<img src = "/img/student-registratioin.jpg" width = "100%" Height = "100%">
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<input type="radio" name="tabs" id="tabtwo"> 
+								<label for="tabtwo"><h5 class="card-title text-center pb-0 fs-5">Register as Lecturer</h5></label>
+								<div class="tab">
+									<div class="card mb-3">
+										<div class="card-body row">
+											<div class="col-6">
+												<form class="row g-3 needs-validation" novalidate>
+													<div class="col-12">
+														<div th:if="${param.error}">
+															<div class="alert alert-danger">Invalid User Details.</div>
+														</div>
+														<div th:if="${param.success}">
+															<div class="alert alert-info">You've successfully registered.</div>
+														</div>
+													</div>
+
+													<div class="col-6">
+														<input type="text" id = "lecName" class="form-control" placeholder="NAME" required>
+													</div>
+													
+													<div class="col-6">
+														<input type="text" id = "instituteName" class="form-control" placeholder="INSTITUTE NAME" required>
+													</div>
+
+													<div class="col-6">
+														<select class="form-select" aria-label="Default select example" id = "lecGender" placeholder="GENDER" >
+															<option value=''>-- SELECT GENDER --</option>
+															<option value="male" th:text="Male"></option>
+															<option value="female" th:text="Female"></option>
+														</select>
+													</div>
+
+													<div class="col-6">
+														<input type="text" id = "lecNic" class="form-control" placeholder="N.I.C. NUMBER" required> 
+													</div>
+													
+													<div class="col-6">
+														<!-- <input type="email" id = "lecEmail" class="form-control" oninput="validateUser(this.value)" placeholder="EMAIL" required> -->
+														<input type="email" id = "lecEmail" class="form-control" oninput="validateEmail(this.value,0)" placeholder="EMAIL" required>
+													</div>
+
+													<div class="col-6">
+														<input type="text" id = "lecMobile" class="form-control" placeholder="MOBILE" maxlength="10" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required>
+													</div>
+													
+													<div class="col-12">
+														<input type="text" id = "lecUsername" class="form-control" oninput="validateUserName(this.value,0)" placeholder="USERNAME" required>
+													</div>
+
+													<div class="col-11">
+														<input onInput = "checkPolicy('L',this.value)" type="password" id="lecPassword" class="form-control" placeholder="PASSWORD" required>
+													</div>
+													<div class="popup col-1">
+														<div class="popuptext" id="myPopup2">
+															<small>Password must contain the followings:</small>
+															<div th:each="policy : ${listPolicies}" >
+																<small th:id="'policyL'+${policy.policyId}" class="invalid" th:text="${policy.policy}" th:if="${policy.active}" ></small><br>
+															</div>
+														</div>
+													</div>
+													<div class="col-11">
+														<input type="Password" name="confirmPassword" id="lecConfirmPassword" class="form-control" placeholder="RE-TYPE PASSWORD" required>
+													</div>
+													
+													<div class="col-6"> 
+														<select class="form-select form-control" id="testEduQ" aria-label="Default select example" placeholder="EDUCATION QUALIFICATION" onChange = "changeQualification(this.value)">
+															<option value="" selected="selected" disabled="disabled">-- SELECT EDUCATION QUALIFICATION --</option>
+														    <option value="No formal education">No formal education</option>
+														    <option value="Primary education">Primary education</option>
+														    <option value="Secondary education">Secondary education or high school</option>
+														    <option value="Diploma qualification">Diploma qualification</option>
+														    <option value="Vocational qualification">Vocational qualification</option>
+														    <option value="Bachelor's degree">Bachelor's degree</option>
+														    <option value="Master's degree">Master's degree</option>
+														    <option value="Doctorate or higher">Doctorate or higher</option>
+														    <option value="other" >Other</option>
+														</select>
+													</div>
+													<div class="col-6"> 
+														<input type="text" id="educationQualification" class="form-control" placeholder="EDUCATION QUALIFICATION" readonly>
+													</div>
+													<script>
+														function changeQualification(data){
+															if(data == "other"){
+																document.getElementById('educationQualification').value = "";	
+																document.getElementById('educationQualification').removeAttribute('readonly');
+															}else{
+																document.getElementById('educationQualification').readOnly = true;
+																document.getElementById('educationQualification').value = data;	
+															}
+														}
+													</script>
+													<div class="col-12">
+														<textarea type = "text" id="description" class="form-control" placeholder="SHORT DESCRIPTION"></textarea>
+													</div>
+													
+													<div class="col-12">
+														<p id="sts2"><p>
+													</div>
+													
+													<div class="col-12">
+														<button class="btn btn-primary w-100" id = "btnRegisterLect" onclick = "lectureRegister()">Create Account</button>
+													</div>
+													
+													<div class="col-12">
+														<br>
+														<p class="small mb-0">
+															&nbsp;&nbsp;Already have an account? <a href="/login">Sign in</a>
+														</p>
+														<br>
+													</div>
+											</form>
+											</div>
+											<div class="col-6">
+												<img src = "/img/lecturer-registratioin.jpg" width = "100%" Hegiht = "100%">
+											</div>
+										</div>
+									</div>
+								</div>
+								
+								<input type="radio" name="tabs" id="tabthree">
+								<label for="tabthree">
+									<h5 class="card-title text-center pb-0 fs-5">Publisher Registration</h5>
+								</label>
+								
+								<div class="tab">
+									<div class="card mb-3">
+										<div class="card-body row">
+											<div class="col-6">
+												<div class="row g-3 needs-validation" novalidate>
+												
+													<div class="col-12">
+														<div th:if="${param.error}">
+															<div class="alert alert-danger">Invalid Details.</div>
+														</div>
+														<div th:if="${param.success}">
+															<div class="alert alert-info">You've successfully registered.</div>
+														</div>
+													</div>
+							
+													<div class="col-12"> 
+														<input type="text" class="form-control" placeholder="COMPANY NAME" id = "cmpName" required>
+													</div>
+													
+													<div class="col-12">
+														<textarea type = "text" class="form-control" placeholder="SHORT DESCRIPTION" id="cmpDescription" ></textarea>
+													</div>
+
+													<div class="col-12">
+														<textarea type = "text" class="form-control" placeholder="COMPANY ADDRESS" id = "cmpAddress" ></textarea>
+													</div>
+
+													<div class="col-12">
+														<input type="text" class="form-control" placeholder="COMPANY MOBILE" id = "cmpMobile" maxlength="10" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required>
+													</div>
+													
+													<div class="col-12">
+														<input type="email" class="form-control" oninput="validateEmail(this.value,0)" placeholder="COMPANY EMAIL" id = "cmpEmail" required>
+													</div>
+													
+													<div class="col-11">
+														<input onInput = "checkPolicy('P',this.value)" type="password" class="form-control" placeholder="TEMPORARY PASSWORD" id="cmpPassword" required>
+													</div>
+													<div class="popup col-1">
+														<div class="popuptext" id="myPopup3">
+															<small>Password must contain the followings:</small>
+															<div th:each="policy : ${listPolicies}" >
+																<small th:id="'policyP'+${policy.policyId}" class="invalid" th:text="${policy.policy}" th:if="${policy.active}" ></small><br>
+															</div>
+														</div>
+													</div>
+													
+													<div class="col-11">
+														<input type="Password" name="confirmPassword" class="form-control" placeholder="RE-TYPE PASSWORD"  id="cmpConfirmPassword" required>
+													</div>
+													 
+													<div class="col-12">
+														<button class="btn btn-primary w-100" id = "btnRegisterCmp" onclick = "companyRegister()">Create Account</button>
+													</div>
+													
+													<div class="col-12">
+														<br>
+														<p class="small mb-0">
+															&nbsp;&nbsp;Already have an account? 
+															<a href="/login">Sign in</a>
+														</p>
+														<br>
+													</div>
+												</div>
+											</div>
+											<div class="col-6">
+												<img src = "/img/company.webp" width = "100%" Height = "100%">
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</main>
+	<!-- End #main -->
+
+
+	<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.17/sweetalert2.all.min.js"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+	
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+	<!-- Vendor JS Files -->
+	<script src="/vendor/apexcharts/apexcharts.min.js"></script>
+	<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="/vendor/chart.js/chart.min.js"></script>
+	<script src="/vendor/echarts/echarts.min.js"></script>
+	<script src="/vendor/quill/quill.min.js"></script>
+	<script src="/vendor/simple-datatables/simple-datatables.js"></script>
+	<script src="/vendor/tinymce/tinymce.min.js"></script>
+	<script src="/vendor/php-email-form/validate.js"></script>
+
+	<!-- Template Main JS File -->
+	<script src="/js/main.js"></script>
+	<script src="/js/register.management.js"></script>
+</body>
+</html>

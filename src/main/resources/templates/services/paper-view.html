@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>View Paper</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<!-- 
+			<nav>
+				<ol class="breadcrumb" th:if="!(${#authorization.expression('hasRole(''lecturer'')')})">
+					<li class="breadcrumb-item"><a href="/home">Home</a></li>
+					<li class="breadcrumb-item">Material Management</li>
+					<li class="breadcrumb-item"><a href="/listPapers">Papers</a></li>
+					<li class="breadcrumb-item active"><a th:href="@{/listQuestionsByPaperId(paperId=${paper.paperId})}">Questions</a></li>
+				</ol>
+				<ol class="breadcrumb" th:if="${#authorization.expression('hasRole(''lecturer'')')}">
+					<li class="breadcrumb-item"><a href="/home">Home</a></li>
+					<li class="breadcrumb-item"><a href="/listPapers">Papers</a></li>
+					<li class="breadcrumb-item active"><a th:href="@{/viewPaper(paperId=${paper.paperId})}">Preview Paper</a></li>
+				</ol>
+			</nav>
+			 -->
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-10">
+						<div class="card">
+							<div class="card-body">
+								<div class="pagetitle" >
+									<br>
+									<div style= "float:left;"><h1 th:text="${paper.name}"></h1><input type="hidden" th:value="${paper.paperId}" id = "paperId"></div>
+									<br><br><br>
+								</div><!-- End Page Title -->
+								<div id="quizpage" >
+									<div name="quiz" id="quiz">
+										<p>
+										  <div class = "row" th:each="question : ${listQuestions}">
+										  	  
+											  <br><h3 class = "que" th:text="${'(' + question.questionId + ')  '} + ${question.question}"></h3><br>
+											    
+											    <div th:if="*{question.image != null}" class = "col-3">
+											    	<img th:src = "${question.image}" >
+											    </div>
+											    
+											    <div style = "margin-left:10%;" th:if = "${paper.templateId.name == 'Single'}">
+											    	<div class = "col-md-7"  th:each="answer : ${listAnswers}" th:if="*{answer.pqId.pqId == question.pqId}">
+											    		<p class = "ans" >
+												    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}" th:if="${answer.answer_status}" checked disabled>
+												    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}" th:if="${!answer.answer_status}" disabled>
+												    		<br>
+													    	<img th:src = "${answer.image}" th:if = "${answer.image} != null" class = "col-2">
+												    	</p>
+											    	</div>
+											    </div>
+											    
+											    <div style = "margin-left:10%;" th:if = "${paper.templateId.name == 'Multiple'}">
+											    	<div class = "col-md-6"  th:each="answer : ${listAnswers}" th:if="*{answer.pqId.pqId == question.pqId}">
+											    		<p class = "ans" >
+												    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}" th:if="${answer.answer_status}" checked disabled>
+												    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}" th:if="${!answer.answer_status}" disabled>
+												    		<br>
+													    	<img th:src = "${answer.image}" th:if = "${answer.image} != null" class = "col-2">
+												    	</p>
+											    	</div>
+											    </div>
+											    
+											    <div style = "margin-left:10%;" th:if = "${paper.templateId.name == 'All'}">
+											    	<div class = "col-md-3"  th:each="answer : ${listAnswers}" th:if="*{answer.pqId.pqId == question.pqId}">
+											    		<p class = "ans" >
+												    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}" th:if="${answer.answer_status}" checked disabled>
+												    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}" th:if="${!answer.answer_status}" disabled>
+												    		<br>
+													    	<img th:src = "${answer.image}" th:if = "${answer.image} != null" class = "col-2">
+												    	</p>
+											    	</div>
+											    </div>
+											    <!--<hr style="height:2px;border-width:0;color:gray;background-color:gray">-->
+										  </div>
+										</p>
+									</div>								
+								</div>
+							</div>
+						</div>
+					</div>	
+				</div>
+			</section>		
+		</main><!-- End #main -->	
+  	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+    
+<head>
+	<title>Messages</title>
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id = "main" class = "main">
+			
+			<section class="section dashboard">
+		   		<div class="container">
+					<h3 class=" text-center">Messages</h3>
+					<div class="messaging">
+				      <div class="inbox_msg">
+				        <div class="inbox_people">
+				          	<div class="headind_srch row">
+					            <div class="recent_heading col-10">
+					            	<a href = "#">
+						              <h4 text = "AAA"></h4>
+						              <input type="text" th:value = "${user.name}" id = "userId"> 
+					                </a>
+					            </div>
+				          	</div>
+				          	<div class="inbox_chat">
+					          	<div th:each="chat,iter : ${chatList}">
+					          		<div class="chat_list" th:onclick="|showMessages('chat' + ${iter.index})|" >
+					          		<!-- <div class="chat_list" th:onclick="|alert('chat' + ${iter.index})|" > -->
+						              <div class="chat_people">
+						                <div class="chat_img"> <img src="/img/profile.png"> </div>
+						                <div class="chat_ib">
+						                	<input type = "text" th:id = "'chat' + ${iter.index}" th:value = "${chat.user.userId}" >
+						                  <h5><label th:text = "${chat.user.name}"></label> <span class="chat_date" th:text = "${chat.date}">Date ___</span></h5>
+						                  <p th:text = "${chat.lastMessage}">Message</p>
+						                </div>
+						              </div>
+						            </div>
+					          	</div>
+				        	</div>
+				        </div>
+				        
+				        <div class="mesgs">
+				        	<div class="nav-item dropdown" >
+								<a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+									<button class="msg_send_btn" type="button"><i class="bi bi-plus-lg" aria-hidden="true"></i></button>
+								</a>
+								<!-- End Messages Icon -->
+		
+								<ul class="dropdown-menu dropdown-menu-end ">
+									<li class="dropdown-header">Group Members
+									</li>
+									<li>
+										<hr class="dropdown-divider">
+									</li>
+									
+									<li class="message-item" th:each="member : ${users}">
+										<a href="#"> 
+											<div>
+												<h4>
+													🎓<input class = "border-0" type="text" th:value = "${member.name}" onClick = "getMessages(this.value)" readonly/>
+												</h4>
+												<hr class="dropdown-divider">
+											</div>
+										</a>
+									</li>
+								</ul>
+							</div>
+				          	<div class="msg_history" id = "msg_history">
+				          
+				        	</div>
+				        	<div class="type_msg">
+					            <div class="input_msg_write">
+					              <input type="text" id = "messageContent" class="write_msg" placeholder="Type a message" />
+					              <input type="text" id = "sentTo" class="write_msg" hidden/>
+					              <input type="text" id = "sentFrom" class="write_msg" hidden/>
+					              <!-- <button th:onclick="|sendMessage(${classroom.classroomId})|" class="msg_send_btn" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button> -->
+					              <button class="msg_send_btn" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+					            </div>
+				          	</div>
+				     	</div>
+				     				      
+				    </div>
+			    </div>
+		     	
+		     	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+				<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+				<script src="js/message.management.js"></script>
+		   </section>
+		</main>
+	</div>
+</body>
+</html>

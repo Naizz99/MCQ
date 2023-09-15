@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>View Papers</title>
+</head>
+
+<body th:style="'--bodyBgColor:' + ${publisher.bodyBgColor}
+		+ ';--fontColor:' + ${publisher.fontColor}	
+		+ ';--cardBgColor:' + ${publisher.cardBgColor}	
+		+ ';--cardSideColor1:' + ${publisher.cardSideColor}	
+		+ ';--cardSelectedColor:' + ${publisher.cardSelectedColor}">
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main" >
+			<div class="pagetitle">
+				<h2 th:text="${publisher.name}">-</h2>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item"><a href="/home">Subjects</a></li>
+						<li class="breadcrumb-item"><a th:href="'/student/listPublishersByGrade?subjectId=' + ${subject}">Publishers</a></li>
+						<li class="breadcrumb-item"><a th:href="'/student/listPapersByPublisher?subjectId=' + ${subject} + '&poId=' + ${publisher.poId}">Papers</a></li>
+						
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+			
+			<div class="pagetitle">
+				<h1 th:text = "${availableAttempts} + ' More attempts available'" style = "color:red;"></h1>
+				<input type="hidden" th:value = "${availableAttempts}" id="availableAttempts"> 
+			</div>
+			<!-- ****************************************************************************************************************************************** -->
+			<br/><br/>
+			
+			<div class="card-deck row">
+			  <div class="divCard card col-lg-2 col-sm-3" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;"  th:if = "${availableAttempts} > 0" th:each="paper : ${listPapers}">
+			  	<a  th:href="@{/student/viewPaper(paperId=${paper.paperId})}" >
+					<div class="card-body">
+				    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-calendar2-event"></i></label>
+				    	<br>
+				    	<table width = 100% style = "width: 100%;height:100%;color:black" >
+							<tr>
+								<b><td class = "paperName" th:text="${paper.name}"></td></b>
+							</tr>
+							<tr>
+								<td class = "subjectName" th:text="${paper.subjectId.subjectName}"></td>
+							</tr>
+							<tr>
+								<td class = "gradeName" th:text="${paper.grade.gradeName}"></td> 
+							</tr>
+							<tr>
+								<td class = "paperTime" th:text="'Time : ' + ${paper.time} + ' minutes'"></td> 
+							</tr>
+						</table>
+					</div>
+			    </a>
+			  </div>
+			  <h5 th:if="${#lists.isEmpty(listPapers)}" class="text-dark card-title">There are no currently activated papers</h5>
+			</div>
+			
+		</main><!-- End #main -->	
+  	</div>
+</body>
+</html>
+
+<script>
+	
+	function viewPaperError(){
+		Swal.fire(
+	      'Can not access the paper!',
+	      'Your attempt count has been exceed',
+	      'error'
+	    )
+	}
+	
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

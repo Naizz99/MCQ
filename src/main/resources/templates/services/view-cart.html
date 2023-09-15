@@ -1,0 +1,74 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Purchase Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>View Cart</h1>
+    			    			
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Purchase Management</li>
+						<li class="breadcrumb-item active"><a href="/viewCart">View Cart</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Cart ID</th>
+						<th>Type</th>
+						<th>Added Date</th>
+						<th>Item</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="item : ${itemList}" >
+						<td th:text="${item.cartId}">Cart ID</td>
+						<td th:text="${item.type}">Type</td>
+						<td th:text="${item.createDate}">Create Date</td>
+						<td th:text="${item.name}"></td>
+						<td colspan=2 style="letter-spacing: 10px;">
+							<a type = "button" class="bi bi-bag-fill" title="Buy Now" th:href="@{/purchase(paperId=${item.referenceId},bundleId=0)}" th:if="${item.type} == 'paper'"></a>
+							<a type = "button" class="bi bi-bag-fill" title="Buy Now" th:href="@{/purchase(paperId=0,bundleId=${item.referenceId})}" th:if="${item.type} == 'bundle'"></a>
+							<!-- <a type = "button" class="bi bi-trash" title="Remove item from cart" th:onclick="|removeItem('${item.cartId}')|"></a> -->
+						</td>
+						<td >
+							
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</main><!-- End #main -->	
+  	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

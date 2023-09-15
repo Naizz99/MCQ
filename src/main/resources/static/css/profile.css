@@ -1,0 +1,93 @@
+:root {
+  	--bodyBgColor: #f6f9ff;
+	--bodyFontFamily:"Nunito", sans-serif;
+	--sideBgColor: #fff;
+	--sideMenuTextColor: #012970;
+	--sideSubMenuTextColor: #012970;
+	--fontColor: #000;
+	--pageTitle: #012970;
+	--cardBgColor: #fff;
+	--cardSideColor1: #e1f0fa;
+	--cardSelectedColor: #e1f0fc;
+}
+
+/*background color*/
+body, .transparentTextarea {
+  background: var(--bodyBgColor);  
+}
+
+body,table,tr,th,td,.bodyText{  
+  font-family: var(--bodyFontFamily);
+  color: var(--fontColor);
+}
+
+/*Side bar*/
+.sidebar {
+  background-color:var(--sideBgColor);
+}
+.sidebar-nav .nav-link.collapsed ,.sidebar-nav .nav-link.collapsed i{
+  color: var(--sideMenuTextColor);
+}
+
+.sidebar-nav .nav-content a {
+  color: var(--sideSubMenuTextColor);
+}
+
+/*delete,modify,activation icons' color*/
+a{
+  color: var(--fontColor);
+  text-decoration: none;
+}
+
+.pagetitle h1 {
+  color:var(--pageTitle);
+}
+
+
+/* Breadcrumbs */
+.breadcrumb , .breadcrumb a, .breadcrumb a:hover{
+  color: var(--fontColor);
+}
+
+.breadcrumb a , .breadcrumb active{
+  font-weight: bold;
+}
+
+.breadcrumb a:hover {
+  opacity:0.7;
+}
+
+.main .divCard {
+  background: var(--cardBgColor);
+}
+
+.card {
+  background: var(--cardBgColor);
+}
+
+.main .divCard::before {
+  background: var(--cardSideColor1);
+}
+
+.main .divCard:hover::before {
+  background: var(--cardSelectedColor);
+}
+
+/*Header*/
+/*Header bar background color*/
+.header {
+  background-color: #fff; /***/
+}
+
+/*Header bar text colors*/
+.logo span {
+  color: #012970; /*****/
+}
+.header-nav .nav-icon {
+  color: #012970; /*****/
+}
+.header .toggle-sidebar-btn {
+  color: #012970; /*****/
+}
+
+

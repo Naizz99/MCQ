@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Users / Profile</title>
+
+<style>
+	.passwordForm{
+		 padding:2%;
+		 margin:2%;
+		 border-radius: 1%;
+		 border-style: inset;
+		 border-color: #990000;
+		 border-width: thin;
+	}
+	
+	.formBorder{
+		 padding:2%;
+		 margin:2%;
+		 border-radius: 1%;
+		 border-style: inset;
+		 border-color: #3399ff;
+		 border-width: thin;
+	}
+	
+	.roleForm{
+		 padding:2%;
+		 margin:2%;
+		 border-radius: 1%;
+		 border-style: inset;
+		 border-color: #2eb82e;
+		 border-width: thin;
+	}
+	
+	.alert {
+	  padding: 20px;
+	  background-color: #f44336;
+	  color: white;
+	  opacity: 1;
+	  transition: opacity 0.6s;
+	  margin-bottom: 15px;
+	}
+	
+	/* Popup arrow */
+	.popup .popuptext::after {
+	  content: "";
+	  position: absolute;
+	  margin-left: 80%;
+	  margin-top: -25px;
+	  border-width: 8px;
+	  border-style: solid;
+	  border-color: #555 transparent transparent transparent;
+	  transform: rotate(180deg);
+	}
+	
+	form{
+		width:100%;
+	}
+</style>
+
+<script>
+	
+	function savePhoto(temp,data,type,name){
+		Swal.fire({
+			title: 'Do you want to save the changes?',
+			showDenyButton: true,
+			showCancelButton: true,
+			confirmButtonText: 'Save',
+			denyButtonText: `Don't save`,
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$.ajax({
+					url: '/secure/savePhoto',
+					type: 'POST',
+					data: {type:type,data:data,name:name},
+			        success:function (response) {
+			        	 Swal.fire('Saved!', '', 'success').then(function() {
+			        	 	window.location.reload();
+						 });
+					},
+					error:function(status, error){
+						if(type == 'cover'){
+							CoverImage.src = temp;
+						}else if(type == 'profile'){
+							ProfileImage.src = temp;
+						}
+						Swal.fire(
+					      'Can not save!',
+					      'Something went wrong',
+					      'error'
+					    )
+					}
+				});		
+			} else if (result.isDenied) {
+				if(type == 'cover'){
+					CoverImage.src = temp;
+				}else if(type == 'profile'){
+					ProfileImage.src = temp;
+				}
+				Swal.fire('Changes are not saved', '', 'info')
+			}
+		})
+	}
+
+	var coverImageDate = null;
+	var profileImageDate = null;
+	function imageUploader(id,type) {
+		var name = "uid-"+document.getElementById('userId').value + "." + document.getElementById(id).value.split('.').pop();
+		//var file = document.querySelector('input[type=file]')['files'][0];
+		var file = document.getElementById(id)['files'][0];
+		var reader = new FileReader();		
+		var coverImageDate = null;
+		var profileImageDate = null;
+		reader.onload = function () {
+			if(type == 'cover'){
+				coverImageDate = reader.result.replace("data:", "").replace(/^.+,/, "");
+				var CoverImage = document.getElementById("CoverImage");
+				var temp = CoverImage.src; 
+				CoverImage.src = reader.result;
+				savePhoto(temp,coverImageDate,'cover',name);
+			}else if(type == 'profile'){
+				profileImageDate = reader.result.replace("data:", "").replace(/^.+,/, "");	
+				var ProfileImage = document.getElementById("ProfileImage");
+				var temp = ProfileImage.src;
+				ProfileImage.src = reader.result;
+				savePhoto(temp,profileImageDate,'profile',name);
+			}
+		}
+		reader.readAsDataURL(file);
+	}
+</script>
+
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle" style="background-color:red" th:if="${#arrays.contains(session.loggedRolesName, 'AUTHOR')}">
+				<div style="float:left;" >
+					<img th:src="${profile.profilePic}" alt="Profile" class="rounded-circle" th:if="${(profile.profilePic) != null}" style="width:40px;height:40px;">
+					<img src="img/profile.png" alt="Profile" class="rounded-circle" th:if="${profile.profilePic == null}" style="width:40px;height:40px;">
+				</div>
+				<div style="float:left">
+					<h4 th:text = "${user.name}">Switch Profile</h4>
+				</div>
+				<div style="float:left;font-size:25px;" title="Switch Profile">
+					&nbsp;&nbsp;&nbsp;&nbsp;<a th:href="@{/publisherProfile(publisherId=${publisher.poId})}"><i class="bi bi-arrow-repeat"></i></a>
+				</div>
+				<div style="float:left;" >
+					<img th:src="${publisher.image}" class="rounded-circle" th:if="${(publisher.image) != ''}" th:title="${publisher.name}" style="width:40px;height:40px;">
+					<img src="img/null-publisher.jpg" class="rounded-circle" th:if="${publisher.image == ''}" th:title="${publisher.name}" style="width:40px;height:40px;">
+				</div>
+			</div><br><br><br>
+			<div class="alert" th:if="${user.forcePassword}">
+			  <strong>** Update Password ** &nbsp; </strong> Your Password has been <b> expired </b> or <b> reset </b> by admin. Please enter valid password and confirm the new password.
+			</div>
+			<div class="alert" th:if="${#arrays.contains(session.loggedRolesName, 'GUEST')}">
+			  <strong>** Select User Role ** &nbsp; </strong> You have been registered as <b> GUEST </b>. Please select valid user role.
+			</div>
+			
+			<section class="section profile">
+				<div class="row">
+					<div class="col-xl-4">
+						<div>
+							<div class="card-body pt-4 d-flex flex-column align-items-center CoverImage">
+								
+								<label id="coverImageLabel" class="-label" for="file2">
+									<span class="glyphicon glyphicon-camera"></span>
+								    <span>Change Cover Photo</span>
+								</label>
+								<input id="file2" type="file" onchange="imageUploader(this.id,'cover')" hidden/>
+								<img class="CoverImg" th:src="${profile.coverImage}" id="CoverImage" />
+								
+								<div class="profile-pic">
+									<label id="profileImageLabel" class="-label" for="file1">
+										<span class="glyphicon glyphicon-camera"></span>
+									    <span>Change Image</span>
+									</label>
+									<input id="file1" type="file" onchange="imageUploader(this.id,'profile')"/>
+									<img th:src="${profile.profilePic}" id="ProfileImage" width="200" th:if="${profile.profilePic != null}" />
+									<img src="img/profile.png" id="ProfileImage" width="200" th:if="${profile.profilePic == null}" />
+								</div>
+							</div>
+							<div class="card-body pt-4 d-flex flex-column align-items-center CoverImage" >
+								<h2><span th:text="${user.name}"></span></h2>
+								<h3><span th:text="${user.email}"></span></h3>
+							</div>
+						</div>
+						<form class="roleForm card" th:if="${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'ADMIN')}">
+							<div>
+								<label for="role" class="form-label">USER ROLES</label>
+								<select class="form-select form-control" aria-label="Default select example" id="role" onChange="linkUserRole(document.getElementById('userId').value,this.value)">
+		                            <option value=''>-- SELECT ROLES--</option>
+		                            <option th:each="log:${listRoles}"
+		                                    th:value="${log.roleId}"
+		                                    th:text="${log.role}" th:if="${log.role} != 'GUEST'">
+		                            </option>
+		                        </select>
+							</div>
+							<hr>
+							<div>
+								<div th:each="uRole : ${listUserRoles}">
+									<p th:id = "${uRole.urId}">
+										<i class="bi bi-caret-right-square-fill"></i>&nbsp;
+										<small th:text="${uRole.roleId.role}"></small> 
+										<i onclick="removeUserRole(this.parentElement.id)" style="color:red;" class="bi bi-x-lg"></i>
+									</p>
+								</div>
+							</div>
+						</form>
+						
+						<form class="roleForm card" id="profile" th:object="${profile}">
+						<input type="hidden" th:value="${profile.profileId}" id="profileId" name="profileId">
+						<input type="hidden" th:value="${profile.user}" id="user" name="user">
+						<input type="hidden" th:value="${profile.coverImage}" id="coverImage" name="coverImage">
+						<input type="hidden" th:value="${profile.profilePic}" id="profilePic" name="profilePic">
+							<div>
+								<label for="theam" class="form-label">Theam Colors</label>
+							</div>
+							<hr>
+							<div>
+								<table border=0 width="100%">
+									<tr>
+										<td>Background Color</td>
+										<td><input type="color" name="bodyBgColor" id="bodyBgColor" th:value="(${profile.bodyBgColor == null} OR ${profile.bodyBgColor == ''}) ? '#f6f9ff' : ${profile.bodyBgColor}"></td>
+									</tr>
+									<tr>
+										<td>Font Type</td>
+										<td>
+											<select name="bodyFontFamily" id="bodyFontFamily" th:value="(${profile.bodyFontFamily == null} OR ${profile.bodyFontFamily == ''}) ? 'Nunito, sans-serif' : ${profile.bodyFontFamily}">
+												<option value="Nunito, sans-serif" style="font-family:Nunito, sans-serif">Nunito</option>
+												<option value="Arial, sans-serif" style="font-family:Arial, sans-serif">Arial</option>
+												<option value="Verdana, sans-serif" style="font-family:Verdana, sans-serif">Verdana</option>
+												<option value="Tahoma, sans-serif" style="font-family:Tahoma, sans-serif">Tahoma</option>
+												<option value="Trebuchet MS, sans-serif" style="font-family:Trebuchet MS, sans-serif">Trebuchet MS</option>
+												<option value="Times New Roman, serif" style="font-family:Times New Roman, serif">Times New Roman</option>
+												<option value="Georgia, serif" style="font-family:Georgia, serif">Georgia</option>
+												<option value="Garamond, serif" style="font-family:Garamond, serif">Garamond</option>
+												<option value="Courier New, monospace" style="font-family:Courier New, monospace">Courier New</option>
+												<option value="Brush Script MT, cursive" style="font-family:Brush Script MT, cursive">Brush Script MT</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>Font Color</td>
+										<td><input type="color" name="fontColor" id="fontColor" th:value="(${profile.fontColor == null} OR ${profile.fontColor == ''}) ? '#000' : ${profile.fontColor}"></td>
+									</tr>
+									<tr>
+										<td>Headings</td>
+										<td><input type="color" name="pageTitle" id="pageTitle" th:value="(${profile.pageTitle == null} OR ${profile.pageTitle == ''}) ? '#012970' : ${profile.pageTitle}"></td>
+									</tr>
+									<tr style="text-align:center" rowspan=2>
+										<td colspan=2><b>Side Bar</b></td>
+									</tr>
+									<tr>
+										<td>Background Color</td>
+										<td><input type="color" name="sideBgColor" id="sideBgColor" th:value="(${profile.sideBgColor == null} OR ${profile.sideBgColor == ''}) ? '#ffffff' : ${profile.sideBgColor}"></td>
+									</tr>
+									<tr>
+										<td>Main Menu</td>
+										<td><input type="color" name="sideMenuTextColor" id="sideMenuTextColor" th:value="(${profile.sideMenuTextColor == null} OR ${profile.sideMenuTextColor == ''}) ? '#012970' : ${profile.sideMenuTextColor}"></td>
+									</tr>
+									<tr>
+										<td>Sub Menu</td>
+										<td><input type="color" name="sideSubMenuTextColor" id="sideSubMenuTextColor" th:value="(${profile.sideSubMenuTextColor == null} OR ${profile.sideSubMenuTextColor == ''}) ? '#012970' : ${profile.sideSubMenuTextColor}"></td>
+									</tr>
+									<tr>
+										<td><u>Cards</u></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Background Color</td>
+										<td><input type="color" name="cardBgColor" id="cardBgColor" th:value="(${profile.cardBgColor == null} OR ${profile.cardBgColor == ''}) ? '#ffffff' : ${profile.cardBgColor}"></td>
+									</tr>
+									<tr>
+										<td>Side Color</td>
+										<td><input type="color" name="cardSideColor1" id="cardSideColor1" th:value="(${profile.cardSideColor1 == null} OR ${profile.cardSideColor1 == ''}) ? '#e1f0fa' : ${profile.cardSideColor1}"></td>
+									</tr>
+									<tr>
+										<td>Mouseover Color</td>
+										<td><input type="color" name="cardSelectedColor" id="cardSelectedColor" th:value="(${profile.cardSelectedColor == null} OR ${profile.cardSelectedColor == ''}) ? '#e1f0fc' : ${profile.cardSelectedColor}"></td>
+									</tr>
+								</table>
+							</div>
+							<div>
+								<button type="button" class="btn btn-warning" onclick="saveTheam('new')" style="width:25%">Save</button>
+								<button type="button" class="btn btn-danger" onclick="saveTheam('default')" style="width:25%">Set Default</button>
+							</div>
+						</form>
+						
+					</div>
+
+					<div class="col-xl-8">
+						
+						<div class="row mb-3">
+							<p id="sts"><p>
+						</div>
+						
+						<!-- Password Form -->
+						<form id="passwordForm" class="passwordForm card" th:if="${user.forcePassword}">
+							<!-- 
+							<div class="row mb-3">
+								<div class="col-md-6 col-lg-7">
+									<input name="password" type="password" class="form-control" oninput="checkOtp()" id="otp" readonly>
+								</div>
+								<div class="col-md-2 col-lg-2">
+									<input type="button" class="form-control btn-primary" id = "otpButton" value = "Send OTP" onClick = "sendOtp()">
+								</div>
+							</div> 
+							 -->
+
+							<div class="row mb-3">
+								<label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+								<div class="col-md-8 col-lg-9">
+									<input name="newpassword" type="password" class="form-control" onInput = "checkPolicy(this.value)" id="password">
+								</div>
+							</div>
+							<div class="popup">
+								<div class="popuptext" id="policyPopup">
+									<small>Password must contain the followings:</small>
+									<div th:each="policy : ${listPolicies}" th:if="${policy.active}">
+										<small th:id="'policy'+${policy.policyId}" class="invalid" th:text="${policy.policy}"></small><br>
+									</div>
+								</div>
+							</div>
+							<div class="row mb-3">
+								<label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Confirm Password</label>
+								<div class="col-md-8 col-lg-9">
+									<input name="renewpassword" type="password" oninput="checkPassword()" class="form-control" id="confirmPassword">
+								</div>
+							</div>
+							<div class="row mb-3">
+								<label class="col-md-4 col-lg-3 col-form-label"></label>
+								<div class="col-md-8 col-lg-9">
+									<label id="passordStatus">	</label>
+								</div>
+							</div>
+							
+							<div class="text-right">
+								<button id = "changePassword" type="button" class="btn btn-warning" onclick="savePassword()">Change Password</button>
+								<button id = "cancel" type="button" class="btn btn-danger" onclick="canselField()">Cancel</button>
+							</div>
+						</form>
+						<br>
+						<!-- User Form -->
+						<form class="formBorder card" id = "newUser" th:object="${user}">
+							<input id = "userId" th:field="*{userId}" readonly hidden>
+							<input id = "correctPassword" readonly hidden>
+							<input th:field="*{active}" readonly hidden>
+							<input th:field="*{createBy}" readonly hidden>
+							<input th:field="*{createDate}" readonly hidden>
+							<input th:field="*{updateBy}" readonly hidden>
+							<input th:field="*{updateDate}" readonly hidden>
+							<input th:field="*{logged}" readonly hidden>
+							<input th:field="*{provider}" readonly hidden>
+							<input th:field="*{firstName}" readonly hidden>
+							<input th:field="*{lastName}" readonly hidden>
+							<input id = "forcePassword" th:field="*{forcePassword}" readonly hidden>
+							
+							<div class="row mb-3">
+								<label for="fullName" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:field="*{name}" type="text" class="form-control" id="fullName" th:value="${user.name}" style = "border: none;" readonly>
+								</div>
+							</div>
+							
+							<div class="row mb-3">
+								<label for="bio" class="col-md-4 col-lg-3 col-form-label">Bio</label>
+								<div class="col-md-8 col-lg-9">
+									<textarea type = "text" th:field="*{bio}" id="bio" th:value="${bio}" style = "border: none;" class="form-control" readonly></textarea>
+								</div>
+							</div>
+							
+							<div class="row mb-3">
+								<label for="fullName" class="col-md-4 col-lg-3 col-form-label">Username</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:field="*{username}" type="text" class="form-control" id="username" th:value="${user.username}" style = "border: none;" readonly>
+								</div>
+							</div>
+							
+							<div class="row mb-3">
+								<label for="email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:field="*{email}" type="email" class="form-control" id="email" th:value="${user.email}" style = "border: none;" oninput="validateEmail(this.value,document.getElementById('userId').value);document.getElementById('ssoEmail').value = this.value" readonly>
+								</div>
+							</div>
+							
+							<div class="row mb-3">
+								<label for="phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:field="*{mobile}" type="text" class="form-control" id="phone" th:value="${user.mobile}" style = "border: none;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" readonly>
+								</div>
+							</div>	
+							
+							<div class="row mb-3">
+								<label for="gender" class="col-md-4 col-lg-3 col-form-label">Gender</label>
+								<div class="col-md-8 col-lg-9 form-check">
+								  	<input type="radio" name="gender" id="male" value="male" th:field="*{gender}" checked>Male
+								  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								  	<input type="radio" name="gender" id="female" value="female" th:field="*{gender}">Female
+								</div>
+			                </div>
+			                
+							<div class="row mb-3">
+								<label for="isSso" class="col-md-4 col-lg-3 col-form-label">Use SSO Login</label>
+								<div class="col-md-3 col-lg-3">
+									<div class="form-check form-switch">
+										<input th:field="*{sso}" class="form-check-input" type="checkbox" id="isSso" onChange = "enableSSO(this.checked)" readonly>
+									</div>
+								</div>
+								<div class="col-md-5 col-lg-6">
+									<input th:field="*{ssoEmail}" class="form-control" type="text" id="ssoEmail" style = "border: none;" oninput="validateEmail(this.value,document.getElementById('userId').value);document.getElementById('email').value = this.value" readonly>
+								</div>
+							</div>	
+							<div class="row mb-3">
+								<label class="col-12 col-form-label" id="ssoLabel"></label>
+							</div>						
+						</form>
+						
+						<!-- Student Form -->
+						<form class="formBorder card" id = "newStudent"  th:object="${student}" th:if="${#arrays.contains(session.loggedRolesName, 'STUDENT')}">
+							<input id = "studentId" th:field="*{studentId}" hidden>							
+							<input th:field="*{userId}" hidden>							
+							
+							<div class="row mb-3" >
+		                      <label for="grade" class="col-md-4 col-lg-3 col-form-label">Grade</label>
+			                      <div class="col-md-8 col-lg-9">
+			                      	<select class="form-select form-control" aria-label="Default select example" th:field="*{grade}" id="grade" readonly>
+			                            <option th:each="log:${gradeList}"
+			                                    th:value="${log.gradeId}"
+			                                    th:text="${log.gradeName}">
+			                            </option>
+			                        </select>
+			                      </div>
+		                    </div>
+		                    
+		                    <div class="row mb-3">
+								<label for="gpa" class="col-md-4 col-lg-3 col-form-label">GPA</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:field="*{gpa}" class="form-control"  type="text" id="gpa" readonly>
+								</div>
+							</div>
+							
+							<div class="row mb-3">
+								<label for="attemptsAllowed" class="col-md-4 col-lg-3 col-form-label">Allowed Attempts</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:field="*{attemptsAllowed}" class="form-control"  type="text" id="attemptsAllowed" readonly>
+								</div>
+							</div>
+							
+							<div class="row mb-3">
+								<label for="attemptsAvailable" class="col-md-4 col-lg-3 col-form-label">Available Attempts</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:value="${attemptsAvailable}" class="form-control"  type="text" id="attemptsAvailable" readonly>
+								</div>
+							</div>				
+						</form>
+							
+						<!-- Lecturer Form -->
+						<form class="formBorder card" id = "newLecturer"  th:object="${lecturer}" th:if="${#arrays.contains(session.loggedRolesName, 'LECTURER')}">
+							<input id = "lecturerId" th:field="*{lecturerId}" hidden>
+							<input th:field="*{userId}" hidden>
+							
+							<div class="row mb-3">
+								<label for="description" class="col-md-4 col-lg-3 col-form-label">Description</label>
+								<div class="col-md-8 col-lg-9">
+									<textarea type = "text" th:field="*{description}" id="description" th:value="${description}" style = "border: none;" class="form-control" readonly></textarea>
+								</div>
+							</div>
+														
+							<div class="row mb-3">
+								<label for="educationQualification" class="col-md-4 col-lg-3 col-form-label">Education Qualifications</label>
+								<div class="col-md-4 col-lg-5"> 
+									<select id="eduQualification" class="form-select form-control" aria-label="Default select example" placeholder="EDUCATION QUALIFICATION" onChange = "changeQualification(this.value)" readonly>
+										<option value="" selected="selected" disabled="disabled">-- SELECT EDUCATION QUALIFICATION --</option>
+									    <option value="No formal education">No formal education</option>
+									    <option value="Primary education">Primary education</option>
+									    <option value="Secondary education">Secondary education or high school</option>
+									    <option value="Diploma qualification">Diploma qualification</option>
+									    <option value="Vocational qualification">Vocational qualification</option>
+									    <option value="Bachelor's degree">Bachelor's degree</option>
+									    <option value="Master's degree">Master's degree</option>
+									    <option value="Doctorate or higher">Doctorate or higher</option>
+									    <option value="other" >Other</option>
+									</select>
+								</div>
+								<div class="col-md-4 col-lg-4"> 
+									<input type="text" th:field="*{educationQualification}" id="educationQualification" class="form-control" placeholder="EDUCATION QUALIFICATION" style = "border: none;" readonly>
+								</div>
+								<script>
+									function changeQualification(data){
+										if(data == "other"){
+											document.getElementById('educationQualification').value = "";	
+											document.getElementById('educationQualification').removeAttribute('readonly');
+										}else{
+											document.getElementById('educationQualification').readOnly = true;
+											document.getElementById('educationQualification').value = data;	
+										}
+									}
+								</script>
+							</div>
+							
+							<div class="row mb-3">
+								<label for="instituteName" class="col-md-4 col-lg-3 col-form-label">Institute Name</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:field="*{instituteName}" id="instituteName" type="text" class="form-control" th:value="${instituteName}" style = "border: none;" readonly>
+								</div>
+							</div>
+
+							<div class="row mb-3">
+								<label for="nicNumber" class="col-md-4 col-lg-3 col-form-label">NIC Number</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:field="*{nicNumber}" type="text" class="form-control" id="nicNumber" th:value="${nicNumber}" style = "border: none;" readonly>
+								</div>
+							</div>				
+						</form>
+						<br>
+						<form>
+							<div class="text-right">
+								<button id = "updateProfile" type="button" class="btn btn-primary" onclick="enableProfile()">Update Profile</button>
+								<button id = "save" type="button" class="btn btn-success" onclick="saveProfile()">Save</button>
+								<button id = "cancel" type="button" class="btn btn-secondary" onclick="canselField()">Cancel</button>
+							</div>
+						</form>		
+						<br>
+										
+						<!-- Password Form -->
+						<form class="passwordForm card" th:if="${!user.forcePassword}">
+							<!-- 
+							<div class="row mb-3">
+								<div class="col-md-6 col-lg-7">
+									<input name="password" type="password" class="form-control" oninput="checkOtp()" id="otp" readonly>
+								</div>
+								<div class="col-md-2 col-lg-2">
+									<input type="button" class="form-control btn-primary" id = "otpButton" value = "Send OTP" onClick = "sendOtp()">
+								</div>
+							</div> 
+							 -->
+
+							<div class="row mb-3">
+								<label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+								<div class="col-md-8 col-lg-9">
+									<input name="newpassword" type="password" class="form-control" onInput = "checkPolicy(this.value)" id="password">
+								</div>
+							</div>
+							<div class="popup">
+								<div class="popuptext" id="policyPopup">
+									<small>Password must contain the followings:</small>
+									<div th:each="policy : ${listPolicies}" th:if="${policy.active}">
+										<small th:id="'policy'+${policy.policyId}" class="invalid" th:text="${policy.policy}"></small><br>
+									</div>
+								</div>
+							</div>
+							<div class="row mb-3">
+								<label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Confirm Password</label>
+								<div class="col-md-8 col-lg-9">
+									<input name="renewpassword" type="password" oninput="checkPassword()" class="form-control" id="confirmPassword">
+								</div>
+							</div>
+							<div class="row mb-3">
+								<label class="col-md-4 col-lg-3 col-form-label"></label>
+								<div class="col-md-8 col-lg-9">
+									<label id="passordStatus">	</label>
+								</div>
+							</div>
+							
+							<div class="text-right">
+								<button id = "changePassword" type="button" class="btn btn-warning" onclick="savePassword()">Change Password</button>
+								<button id = "cancel" type="button" class="btn btn-danger" onclick="canselField()">Cancel</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</section>
+
+		</main>
+		<!-- End #main -->
+		<script src="js/user.profile.js"></script>
+		<script src="js/user.management.js"></script>
+	</div>
+</body>
+
+</html>

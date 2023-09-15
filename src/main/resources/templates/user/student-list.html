@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Student Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Student Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item active"><a href="/listStudents">Student Management</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+
+			<a type = "button" class="btn btn-primary" th:href="@{/addStudent}" th:if="${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'ADMIN')}">Add New Student</a>
+			
+			<br/><br/>
+			<div class="col-12">
+				<div th:if="${param.error}">
+					<div class="alert alert-danger">Can not delete record</div>
+				</div>
+				<div th:if="${param.success}">
+					<div class="alert alert-info">Record deleted successfully</div>
+				</div>
+			</div>
+			<table class="table datatable">
+				<thead>
+					<tr>
+						<th>User ID</th>
+						<!-- <th>Student ID</th> -->
+						<th>Name</th>
+						<th>Gender</th>
+						<th>Email</th>
+						<th>Mobile</th>
+						<th>Username</th>
+						<th>Grade</th>
+						<th>GPA</th>
+						<th>Status</th>
+						<!-- <th>Create User</th> -->
+						<th>Create Date</th>
+						<!-- <th>Last Update User</th> -->
+						<th>Last Update Date</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					<tr th:each="student : ${listStudents}">
+						<td th:text="${student.userId.userId}">User ID</td>
+						<!-- <td th:text="${student.studentId}">Student ID</td> -->
+						<td th:text="${student.userId.name}">Name</td>
+						<td th:if = "${student.userId.gender == 'male'}" th:text = "Male" >Gender</td>
+						<td th:if = "${student.userId.gender == 'female'}" th:text = "Female">Gender</td>
+						<td th:if = "${student.userId.gender == null}" >Not Entered</td>
+						<td th:text="${student.userId.email}">Email</td>
+						<td th:text="${student.userId.mobile}">Mobile</td>
+						<td th:text="${student.userId.username}">Username</td>
+						<td th:text="${student.grade.gradeName}">Grade</td>
+						<td th:text="${student.gpa}">GPA</td>
+						<td th:if="${!(student.userId.active)}"> <span class="label label-danger">Deactive</span></td>
+						<td th:if="${student.userId.active}"><span class="label label-success">Active</span></td>
+						<!-- <td th:text="${student.userId.createBy}">Create User</td> -->
+						<td th:text="${student.userId.createDate}">Create Date</td>
+						<!-- <td th:text="${student.userId.updateBy}">Last Update User</td> -->
+						<td th:text="${student.userId.updateDate}">Last Update Date</td>
+						<td colspan=2 style="letter-spacing: 10px;" th:if="${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'ADMIN')}">
+							<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showStudentUpdate(studentId=${student.userId.userId})}"></a>
+							<a type = "button" class="bi bi-trash" title="Delete" th:onclick="|deleteStudent('${student.studentId}','${student.userId.userId}')|"></a>
+							<a type = "button" class="bi bi-clipboard-x"  title = "Deactivate" th:href="@{/studentDeactive(studentId=${student.studentId},userId=${student.userId.userId})}" th:if="${student.userId.active}"></a>
+							<a type = "button" class="bi bi-clipboard-check" title = "Activate" th:href="@{/studentActive(studentId=${student.studentId},userId=${student.userId.userId})}" th:if="${!(student.userId.active)}"></a>
+						</td> 
+					</tr>
+				</tbody>
+			</table>
+		</main><!-- End #main -->	
+		<script src="js/user.management.js"></script>
+  	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

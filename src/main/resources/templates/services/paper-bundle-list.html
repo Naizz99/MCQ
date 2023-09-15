@@ -1,0 +1,59 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Paper Bundle Management</title>
+  <style>
+  	.top-right {
+	  position: absolute;
+	  top: 8px;
+	  right: 16px;
+	}
+  </style>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Paper Bundle Management</h1>    			    			
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Paper Management</li>
+						<li class="breadcrumb-item active"><a href="/listPaperBundles">Paper Bundle</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+
+			<section class="section">
+				<a type = "button" class="btn btn-primary" href="/addPaperBundle">Create Bundle</a> </br></br>
+				<div class="row">
+					<div class="card col-2" style="margin:1%;align-content: center;text-align:center;" th:each="bundle : ${listBundles}"  th:title="${bundle.description}">
+					  <div style="width:100%;height:20rem;">
+					  	<img class="card-img-top" src="img/no-image.jpg" alt="Error Loading Image" th:if="${bundle.image} == ''" >
+					  	<img class="card-img-top" th:src="${bundle.image}" alt="Error Loading Image" th:if="${bundle.image} != ''" >
+					  </div>
+					  <div class="card-body" style="text-shadow:1px 1px 5px #fff,1px 1px 5px #fff,1px 1px 5px #fff, 1px 1px 5px #fff;">
+					  	<h3 th:text = "${bundle.name}"></h3>
+					    <p class="card-text" th:text="${bundle.grade.gradeName}"></p>
+					    Published by <font style="font-weight: bold;" th:text = "${bundle.publisher.name}"></font>
+					  </div>
+					  <div th:if="${!(bundle.active)}" class="top-right"> <span class="label label-danger">Deactive</span> </div>
+					  <div th:if="${bundle.active}" class="top-right"> <span class="label label-success">Active</span> </div>
+					  <div class="card-footer" style="letter-spacing: 5px;">
+					  	<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showPaperBundleUpdate(bundleId=${bundle.bundleId})}"></a>
+					  	<a type = "button" class="bi bi-trash-fill text-dark" title="Delete" th:onclick="|deleteBundle('${bundle.bundleId}')|"></a>
+					  	<a type = "button" class="bi bi-clipboard-check text-success"  title = "Activate" th:href="@{/paperBundleActive(bundleId=${bundle.bundleId})}" th:if="${!bundle.active}"></a>
+					  	<a type = "button" class="bi bi-clipboard-x text-danger"  title = "Deactivate" th:href="@{/paperBundleDeactive(bundleId=${bundle.bundleId})}" th:if="${bundle.active}"></a>
+					  </div>
+					</div>
+				</div>
+			</section>
+			<!-- th:title="${bundle.desriprion}" -->
+		</main>
+		<script src="js/services/paper.bundle.management.js"></script>	
+  	</div>
+</body>
+</html>

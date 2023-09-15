@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Dashboard - Quizz Mart</title>
+ 
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  
+  <!-- Favicons -->
+  <link href="/img/favicon.png" rel="icon">
+  <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts --> 
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->   
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="/vendor/simple-datatables/style.css" rel="stylesheet">
+ 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.17/sweetalert2.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+ 
+  <!-- Template Main CSS File -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link href="/css/style.css" rel="stylesheet">
+  <link href="/css/profile.css" rel="stylesheet">
+  <link href="/css/message-style.css" type="text/css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.15/css/jquery.Jcrop.min.css" integrity="sha512-bbAsdySYlqC/kxg7Id5vEUVWy3nOfYKzVHCKDFgiT+GsHG/3MD7ywtJnJNSgw++HBc+w4j71MLiaeVm1XY5KDQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.15/css/jquery.Jcrop.css" integrity="sha512-G0VfAHKo2MoitbJamARbi9tuuv5rb+fuzVY+xMU1Z0t1/VkyVVAf9foAHGuSkymgMcj9XBn9bOB3BHsbgqbMvg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/2.3.4/cropper.min.css">
+	
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/plugin/DataTables/datatables.min.css"/>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+  <script src=”https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js”></script>
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+		
+</head>
+
+<body sec:authorize="isAuthenticated()" th:if="(${session.profile.bodyBgColor != null} AND ${session.profile.bodyBgColor != ''}) 
+				AND (${session.profile.bodyFontFamily != null} AND ${session.profile.bodyFontFamily != ''}) 
+				AND (${session.profile.sideBgColor != null} AND ${session.profile.sideBgColor != ''}) 
+				AND (${session.profile.sideMenuTextColor != null} AND ${session.profile.sideMenuTextColor != ''}) 
+				AND (${session.profile.sideSubMenuTextColor != null} AND ${session.profile.sideSubMenuTextColor != ''}) 
+				AND (${session.profile.fontColor != null} AND ${session.profile.fontColor != ''}) 
+				AND (${session.profile.pageTitle != null} AND ${session.profile.pageTitle != ''}) 
+				AND (${session.profile.cardBgColor != null} AND ${session.profile.cardBgColor != ''}) 
+				AND (${session.profile.cardSideColor1 != null} AND ${session.profile.cardSideColor1 != ''}) 
+				AND (${session.profile.cardSelectedColor != null} AND ${session.profile.cardSelectedColor != ''}) 
+				AND (${session.profile.bodyBgColor != null} AND ${session.profile.bodyBgColor != ''})"   
+
+	  th:style="'--bodyBgColor:' + ${session.profile.bodyBgColor} 
+				+ ';--bodyFontFamily:' + ${session.profile.bodyFontFamily}
+				+ ';--sideBgColor:' + ${session.profile.sideBgColor}
+				+ ';--sideMenuTextColor:' + ${session.profile.sideMenuTextColor}
+				+ ';--sideSubMenuTextColor:' + ${session.profile.sideSubMenuTextColor}
+				+ ';--fontColor:' + ${session.profile.fontColor}
+				+ ';--pageTitle:' + ${session.profile.pageTitle}	
+				+ ';--cardBgColor:' + ${session.profile.cardBgColor}	
+				+ ';--cardSideColor1:' + ${session.profile.cardSideColor1}	
+				+ ';--cardSelectedColor:' + ${session.profile.cardSelectedColor}">	
+	<div>
+		<div> 
+			<!-- <th:block th:replace="fragments/header2 :: header"/> -->
+			<th:block layout:fragment="content"/>    
+	  	</div> 
+	</div>
+  
+	<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+	
+	<!-- Vendor JS Files -->
+	
+	<script type = "text/javascript" src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script type = "text/javascript" src="/vendor/apexcharts/apexcharts.min.js"></script>
+	<script type = "text/javascript" src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script type = "text/javascript" src="/vendor/chart.js/chart.min.js"></script>
+	<script type = "text/javascript" src="/vendor/echarts/echarts.min.js"></script>
+	<script type = "text/javascript" src="/vendor/quill/quill.min.js"></script>
+	<script type = "text/javascript" src="/vendor/simple-datatables/simple-datatables.js"></script>
+	<script type = "text/javascript" src="/vendor/tinymce/tinymce.min.js"></script>
+	<script type = "text/javascript" src="/vendor/php-email-form/validate.js"></script>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.17/sweetalert2.all.min.js"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.15/js/jquery.Jcrop.min.js" integrity="sha512-KKpgpD20ujD3yJ5gIJqfesYNuisuxguvTMcIrSnqGQP767QNHjEP+2s1WONIQ7j6zkdzGD4zgBHUwYmro5vMAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.15/js/jquery.Jcrop.js" integrity="sha512-8SpT7ueuEcyaOfE5XTafnVw9V3Bqz6uFzR3xYQIxWOed2ic4t6bfpL/k2JciMdML3n0k4QRZEe3EBFw+/eVLQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js"></script>
+	
+	<!-- DataTables -->
+	<script type="text/javascript" th:src="@{/plugin/DataTables/datatables.min.js}"></script>
+
+	<script type="text/javascript" src="/plugin/sockjs-client/sockjs.min.js"></script>
+	<script type="text/javascript" src="/plugin/stomp-websocket/stomp.min.js"></script>
+
+	<script type = "text/javascript" src="/js/main.js"></script>
+		
+</body>
+
+<body sec:authorize="isAuthenticated()" th:if="(${session.profile.bodyBgColor == null} OR ${session.profile.bodyBgColor == ''}) 
+				AND (${session.profile.bodyFontFamily == null} OR ${session.profile.bodyFontFamily == ''}) 
+				AND (${session.profile.sideBgColor == null} OR ${session.profile.sideBgColor == ''}) 
+				AND (${session.profile.sideMenuTextColor == null} OR ${session.profile.sideMenuTextColor == ''}) 
+				AND (${session.profile.sideSubMenuTextColor == null} OR ${session.profile.sideSubMenuTextColor == ''}) 
+				AND (${session.profile.fontColor == null} OR ${session.profile.fontColor == ''}) 
+				AND (${session.profile.pageTitle == null} OR ${session.profile.pageTitle == ''}) 
+				AND (${session.profile.cardBgColor == null} OR ${session.profile.cardBgColor == ''}) 
+				AND (${session.profile.cardSideColor1 == null} OR ${session.profile.cardSideColor1 == ''}) 
+				AND (${session.profile.cardSelectedColor == null} OR ${session.profile.cardSelectedColor == ''}) 
+				AND (${session.profile.bodyBgColor == null} OR ${session.profile.bodyBgColor == ''}) ">	
+	<div>
+		<div> 
+			<!-- <th:block th:replace="fragments/header2 :: header"/> -->
+			<th:block layout:fragment="content"/>    
+	  	</div> 
+	</div>
+  
+	<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+	
+	<!-- Vendor JS Files -->
+	
+	<script type = "text/javascript" src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script type = "text/javascript" src="/vendor/apexcharts/apexcharts.min.js"></script>
+	<script type = "text/javascript" src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script type = "text/javascript" src="/vendor/chart.js/chart.min.js"></script>
+	<script type = "text/javascript" src="/vendor/echarts/echarts.min.js"></script>
+	<script type = "text/javascript" src="/vendor/quill/quill.min.js"></script>
+	<script type = "text/javascript" src="/vendor/simple-datatables/simple-datatables.js"></script>
+	<script type = "text/javascript" src="/vendor/tinymce/tinymce.min.js"></script>
+	<script type = "text/javascript" src="/vendor/php-email-form/validate.js"></script>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.17/sweetalert2.all.min.js"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.15/js/jquery.Jcrop.min.js" integrity="sha512-KKpgpD20ujD3yJ5gIJqfesYNuisuxguvTMcIrSnqGQP767QNHjEP+2s1WONIQ7j6zkdzGD4zgBHUwYmro5vMAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.15/js/jquery.Jcrop.js" integrity="sha512-8SpT7ueuEcyaOfE5XTafnVw9V3Bqz6uFzR3xYQIxWOed2ic4t6bfpL/k2JciMdML3n0k4QRZEe3EBFw+/eVLQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js"></script>
+	
+	<!-- DataTables -->
+	<script type="text/javascript" th:src="@{/plugin/DataTables/datatables.min.js}"></script>
+
+	<script type="text/javascript" src="/plugin/sockjs-client/sockjs.min.js"></script>
+	<script type="text/javascript" src="/plugin/stomp-websocket/stomp.min.js"></script>
+
+	<script type = "text/javascript" src="/js/main.js"></script>
+		
+</body>
+
+<body sec:authorize="isAnonymous()">	
+	<div>
+		<div> 
+			<!-- <th:block th:replace="fragments/header2 :: header"/> -->
+			<th:block layout:fragment="content"/>    
+	  	</div> 
+	</div>
+  
+	<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+	
+	<!-- Vendor JS Files -->
+	
+	<script type = "text/javascript" src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script type = "text/javascript" src="/vendor/apexcharts/apexcharts.min.js"></script>
+	<script type = "text/javascript" src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script type = "text/javascript" src="/vendor/chart.js/chart.min.js"></script>
+	<script type = "text/javascript" src="/vendor/echarts/echarts.min.js"></script>
+	<script type = "text/javascript" src="/vendor/quill/quill.min.js"></script>
+	<script type = "text/javascript" src="/vendor/simple-datatables/simple-datatables.js"></script>
+	<script type = "text/javascript" src="/vendor/tinymce/tinymce.min.js"></script>
+	<script type = "text/javascript" src="/vendor/php-email-form/validate.js"></script>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.17/sweetalert2.all.min.js"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.15/js/jquery.Jcrop.min.js" integrity="sha512-KKpgpD20ujD3yJ5gIJqfesYNuisuxguvTMcIrSnqGQP767QNHjEP+2s1WONIQ7j6zkdzGD4zgBHUwYmro5vMAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-jcrop/0.9.15/js/jquery.Jcrop.js" integrity="sha512-8SpT7ueuEcyaOfE5XTafnVw9V3Bqz6uFzR3xYQIxWOed2ic4t6bfpL/k2JciMdML3n0k4QRZEe3EBFw+/eVLQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js"></script>
+	
+	<!-- DataTables -->
+	<script type="text/javascript" th:src="@{/plugin/DataTables/datatables.min.js}"></script>
+
+	<script type="text/javascript" src="/plugin/sockjs-client/sockjs.min.js"></script>
+	<script type="text/javascript" src="/plugin/stomp-websocket/stomp.min.js"></script>
+
+	<script type = "text/javascript" src="/js/main.js"></script>
+		
+</body>
+
+</html>
+

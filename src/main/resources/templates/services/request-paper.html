@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+<head>
+<title>Paper Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				
+    			<h1>Paper Management</h1>
+				
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Paper Management</li>
+						<li class="breadcrumb-item active"><a href="/requestPapers">Request Paper</a></li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Request Details</h5>
+								<form class="row g-3">
+								
+									<div class="col-md-12">
+										<select class="form-select form-control" aria-label="Default select example" id="publisher" onChange="document.getElementById('lecturer').value = ''">
+				                            <option value=''>-- SELECT PUBLISHER --</option>
+				                            <option th:each="log:${publisherList}"
+				                                    th:value="${log.poId}"
+				                                    th:text="${log.name}">
+				                            </option>
+				                        </select>
+									</div>
+									<h1>OR</h1>
+									<div class="col-md-12">
+										<select class="form-select form-control" aria-label="Default select example" id="lecturer" onChange="document.getElementById('publisher').value = ''">
+				                            <option value=''>-- SELECT LECTURER --</option>
+				                            <option th:each="log:${lecturerList}"
+				                                    th:value="${log.lecturerId}"
+				                                    th:text="${log.userId.name}">
+				                            </option>
+				                        </select>
+									</div>
+									<br><br><br>
+									<div class="col-md-12">
+										<textarea class="form-control" id="message" rows="5" placeholder="ENTER REQUSTING PAPER DETAILS(GRADE,SUBJECT,..)"></textarea>
+									</div>
+									
+									<div class="text-right">
+										<button type="button" onClick="requestPaper()" class="btn btn-success">Submit Request</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</section>
+	</main>
+	<script src="../js/paper.management.js"></script>
+	<script src="../js/services/purchase.management.js"></script>
+	
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>

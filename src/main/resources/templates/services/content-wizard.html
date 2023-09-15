@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+	<title>Add New Paper</title>
+	  	
+  	<link href="/css/imageUploaderCss.css" rel="stylesheet">	
+	<link href="https://cdn.jsdelivr.net/gh/daneden/animate.css@latest/animate.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/gh/jamesssooi/Croppr.js@latest/dist/croppr.min.css" rel="stylesheet">
+	
+  	
+	<style>
+		#grad1 {
+			background-color: #9C27B0;
+			background-image: linear-gradient(120deg, #FF4081, #008ae6);
+		}
+
+		#msform {
+			text-align: center;
+			position: relative;
+			margin-top: 20px;
+		}
+
+		#msform fieldset .form-card {
+			background: white;
+			border: 0 none;
+			border-radius: 0px;
+			box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);
+			padding: 20px 40px 30px 40px;
+			box-sizing: border-box;
+			width: 94%;
+			margin: 0 3% 20px 3%;
+
+			position: relative;
+		}
+
+		#msform fieldset {
+			background: white;
+			border: 0 none;
+			border-radius: 0.5rem;
+			box-sizing: border-box;
+			width: 100%;
+			margin: 0;
+			padding-bottom: 20px;
+
+			position: relative;
+		}
+
+		#msform fieldset:not(:first-of-type) {
+			display: none;
+		}
+
+		#msform fieldset .form-card {
+			text-align: left;
+			color: #9E9E9E;
+		}
+
+		#msform .action-button {
+			width: 100px;
+			background: #008ae6;
+			font-weight: bold;
+			color: white;
+			border: 0 none;
+			border-radius: 0px;
+			cursor: pointer;
+			padding: 10px 5px;
+			margin: 10px 5px;
+		}
+
+		#msform .action-button:hover, #msform .action-button:focus {
+			box-shadow: 0 0 0 2px white, 0 0 0 3px #008ae6;
+		}
+
+		#msform .action-button-previous {
+			width: 100px;
+			background: #616161;
+			font-weight: bold;
+			color: white;
+			border: 0 none;
+			border-radius: 0px;
+			cursor: pointer;
+			padding: 10px 5px;
+			margin: 10px 5px;
+		}
+
+		#msform .action-button-previous:hover, #msform .action-button-previous:focus {
+			box-shadow: 0 0 0 2px white, 0 0 0 3px #616161;
+		}
+
+		select.list-dt {
+			border: none;
+			outline: 0;
+			border-bottom: 1px solid #ccc;
+			padding: 2px 5px 3px 5px;
+			margin: 2px;
+		}
+
+		select.list-dt:focus {
+			border-bottom: 2px solid #008ae6;
+		}
+
+		.card {
+			z-index: 0;
+			border: none;
+			border-radius: 0.5rem;
+			position: relative;
+		}
+
+		.fs-title {
+			font-size: 25px;
+			color: #2C3E50;
+			margin-bottom: 10px;
+			font-weight: bold;
+			text-align: left;
+		}
+
+		#progressbar {
+			margin-bottom: 30px;
+			overflow: hidden;
+			color: lightgrey;
+		}
+
+		#progressbar .active {
+			color: #000000;
+		}
+
+		#progressbar li {
+			list-style-type: none;
+			font-size: 12px;
+			width: 25%;
+			float: left;
+			position: relative;
+		}
+
+		#progressbar #account:before {
+			font-family: FontAwesome;
+			content: "\f101";
+		}
+
+		#progressbar #personal:before {
+			font-family: FontAwesome;
+			content: "\f101";
+		}
+
+		#progressbar #submit:before {
+			font-family: FontAwesome;
+			content: "\f101";
+		}
+
+		#progressbar #success:before {
+			font-family: FontAwesome;
+			content: "\f101";
+		}
+
+		#progressbar li:before {
+			width: 50px;
+			height: 50px;
+			line-height: 45px;
+			display: block;
+			font-size: 18px;
+			color: #ffffff;
+			background: lightgray;
+			border-radius: 50%;
+			margin: 0 auto 10px auto;
+			padding: 2px;
+		}
+
+		#progressbar li:after {
+			content: '';
+			width: 100%;
+			height: 2px;
+			background: lightgray;
+			position: absolute;
+			left: 0;
+			top: 25px;
+			z-index: -1;
+		}
+
+		#progressbar li.active:before, #progressbar li.active:after {
+			background: #008ae6;
+		}
+
+		.radio-group {
+			position: relative;
+			margin-bottom: 25px;
+		}
+
+		.radio {
+			display:inline-block;
+			width: 204;
+			height: 104;
+			border-radius: 0;
+			background: #008ae6;
+			box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);
+			box-sizing: border-box;
+			cursor:pointer;
+			margin: 8px 2px; 
+		}
+
+		.radio:hover {
+			box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.3);
+		}
+
+		.radio.selected {
+			box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1);
+		}
+
+		.fit-image{
+			width: 100%;
+			object-fit: cover;
+		}
+		.mySlides {display:none;}
+		
+		.loader {
+		  border: 16px solid #f3f3f3;
+		  border-radius: 50%;
+		  border-top: 16px solid #3498db;
+		  width: 120px;
+		  height: 120px;
+		  -webkit-animation: spin 2s linear infinite; /* Safari */
+		  animation: spin 2s linear infinite;
+		}
+		
+		/* Safari */
+		@-webkit-keyframes spin {
+		  0% { -webkit-transform: rotate(0deg); }
+		  100% { -webkit-transform: rotate(360deg); }
+		}
+		@keyframes spin {
+		  0% { transform: rotate(0deg); }
+		  100% { transform: rotate(360deg); }
+		}
+		
+	</style>
+</head>
+
+<body>	
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="row justify-content-center mt-0">
+		        <div class="col-11 col-sm-9 col-md-7 col-lg-12 text-center p-0 mt-3 mb-2">
+		            <div class="card px-0 pt-4 pb-0 mt-3 mb-3">
+		                <div class="row">
+		                    <div class="col-md-12 mx-0">
+		                        <form id="msform">
+		                            <!-- progressbar -->
+		                            <ul id="progressbar">
+		                                <li class="active" id="account"><strong>Create Paper</strong></li>
+		                                <li id="personal"><strong>Add Questions</strong></li>
+		                                <li id="submit"><strong>Request for Approval</strong></li>
+		                                <li id="success"><strong>Submitted</strong></li>
+		                            </ul>
+		                            
+		                            <input type = "hidden" id = "loggedUser" th:value = "${loggedUser}">
+		                            
+		                            <!-- fieldsets -->
+		                            <fieldset>
+		                                <div class="form-card col-3 card-body">
+							                <div class="col-md-4">
+							                  <input type="text" id="paperName" class="form-control asterisk_input" placeholder = "PAPER NAME">
+							                </div>
+							                <div class="col-md-7"></div><br><br><br>
+							                <div class="col-md-4">
+							                   <select class="form-select form-control" id="grade" aria-label="Default select example" onChange="onUpdateGrade()">
+						                            <option value=''>-- SELECT GRADE --</option>
+						                            <option th:each="log:${gradeList}"
+						                                    th:value="${log.gradeId}"
+						                                    th:text="${log.gradeName}">
+						                            </option>
+						                        </select>
+							                </div>
+							                <br><br><br>
+							                <div class="col-md-4">
+							                    <select class="form-select form-control" id="subject" aria-label="Default select example" onChange="onUpdateSubject()">
+						                            <!-- <option th:value="" th:text="Select Subject"></option> -->
+						                        </select>
+							                </div><br><br><br>
+							                <div class="col-md-4">
+							                	<p style="color:red;">Maximum question count is 100</p>
+							                  <input type="number" id="questionCount" class="form-control" placeholder = "QUESTIONS PER PAPER" max=100 min=1 oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" >
+							                </div>
+							                <br><br><br><br>
+							                <div class="col-md-4">
+							                	<p style="color:red;">Maximum answer count is 6</p>
+							                  <input type="number" id="answerCount" class="form-control" placeholder = "ANSWERS PER QUESTION" max=6 min=1 oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+							                </div><br><br><br><br>
+							                <div class="col-md-4">
+							                  <input type="number" id="time" class="form-control" placeholder = "TIME [MINUTES]" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+							                </div><br><br><br>
+							                <div class="col-md-4">
+												<select class="form-select form-control" id="templateId" aria-label="Default select example" placeholder = "TEMPLATE [ANSWERS PER ROW]">
+						                            <option value=''>-- SELECT TEMPLATE --</option>
+						                            <option th:each="log:${templateList}"
+						                                    th:value="${log.templateId}"
+						                                    th:text="${log.name}">
+						                            </option>
+						                        </select>
+											</div>	
+											<br><br><br>
+							                <div class="col-md-4" th:if="${#arrays.contains(session.loggedRolesName, 'ADMIN')}">
+							                  	<select class="form-select form-control" id="publisher" aria-label="Default select example" placeholder = "SELECT PUBLISHER">
+						                            <option value=''>-- SELECT PUBLISHER --</option>
+						                            <option th:each="log:${publisherList}"
+						                                    th:value="${log.poId}"
+						                                    th:text="${log.name}">
+						                            </option>
+						                        </select>
+		                                	</div>
+		                                	<div class="col-md-4" th:if="(${#arrays.contains(session.loggedRolesName, 'AUTHOR')} OR ${#arrays.contains(session.loggedRolesName, 'EDITOR')} OR ${#arrays.contains(session.loggedRolesName, 'LECTURER')}) AND ${!#arrays.contains(session.loggedRolesName, 'ADMIN')}">
+							                  	<input type="hidden" id="publisher" th:value="${publisher.poId}" class="form-control" readonly>
+									           	<input type="text" th:value="${publisher.name}" class="form-control" placeholder="PUBLISHER" readonly>
+		                                	</div>
+		                                	
+		                                	<div class="col-md-4 form-check form-switch" hidden>
+							                  	<input class="form-check-input" type="checkbox" id="availableForBuy">
+									           	<label class="form-check-label" for="availableForBuy">Add to Market Place</label>
+		                                	</div>
+		                                	
+		                                	<br><br><br>
+	                                	</div>
+		                                <input type="button" name="next" id = "createPaper" class="next action-button" value="Next" onClick = "createQuestion()"/>
+		                            </fieldset>
+		                            <fieldset>
+		                            	<div>
+		                            		<section class='card-deck section scrollit' id = 'section1'></section>
+		                            	</div>
+		                                
+		                                <input type="button" name="previous" id="sec1Prev" class="previous action-button-previous" value="Previous"/>
+		                                <input type="button" name="next" id = "sec1" class="next action-button" value="Save" onClick = "validateQuestion()"/>
+		                            </fieldset>
+		                            <fieldset>
+		                                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+		                                <input type="button" name="next" id = "saveDetails" style = "background-color:#47d147;" class="next action-button w-75 btn btn-warning" value="Send for Approval"/>
+		                            </fieldset>
+		                            <fieldset>
+		                                <div class="form-card" style = "height:600px;" id="loadingDiv">
+		                                	<h2 class="fs-title text-center">Processing.... <br> Dont't leave the page!</h2>
+		                                    <br><br>
+		                                    <div class="row justify-content-center">
+		                                        <div class="col-3 loader">
+		                                        </div>
+		                                    </div>
+		                                </div>
+		                                <div class="form-card" style = "height:600px;" id="successDiv">
+		                                    <h2 class="fs-title text-center">Success !</h2>
+		                                    <br><br>
+		                                    <div class="row justify-content-center">
+		                                        <div class="col-3">
+		                                            <img src="https://img.icons8.com/color/96/000000/ok--v2.png" class="fit-image">
+		                                        </div>
+		                                    </div>
+		                                    <br><br>
+		                                    <div class="row justify-content-center">
+		                                    	<div class="col-7 text-center">
+		                                        	<h5>Paper Has Successfully Saved!</h5>
+		                                    	</div>
+		                                    </div>
+		                                </div>
+		                            </fieldset>
+		                        </form>
+		                        <input id="crop" type="file" name="filename" hidden>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+			
+			<script src="https://cdn.jsdelivr.net/gh/eligrey/canvas-toBlob.js@latest/canvas-toBlob.min.js" defer></script>
+			<script src="https://cdn.jsdelivr.net/gh/eligrey/FileSaver.js@latest/dist/FileSaver.min.js" defer></script>
+			<script src="https://cdn.jsdelivr.net/gh/jamesssooi/Croppr.js@latest/dist/croppr.min.js"></script>
+			<script type = "text/javascript" src="/js/image.management/multiImageUploaderJs.js"></script>	
+			<script type = "text/javascript" src="/js/services/content.wizard.js"></script>
+		</main>
+	</div>
+	
+</body>
+
+</html>
+
+
+

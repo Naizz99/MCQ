@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+	<title>Report Center</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			
+			<div class="pagetitle">
+				<h1 id="rptName">Paper Details Report</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Reports</li>
+						<li class="breadcrumb-item active">Papers Details</li>
+					</ol>
+				</nav>
+			</div>
+
+			<div class="row" id="searchBar">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body row">
+							<div class="col-3">
+								<div class="input-group">
+									<br> <input type="text" class="form-control" id="paperId"
+										placeholder="PAPER ID">
+								</div>
+							</div>
+							<div class="col-3">
+								<div class="input-group">
+									<br> <input type="text" class="form-control" id="name"
+										placeholder="NAME">
+								</div>
+							</div>
+							<div class="col-3">
+								<br> <select class="form-select form-control"
+									aria-label="Default select example" id="grade"
+									onChange="updateSubjectList()">
+									<option value=''>GRADE</option>
+									<option th:each="log:${grades}" th:value="${log.gradeId}"
+										th:text="${log.gradeName}"></option>
+								</select>
+							</div>
+							<br>
+							<div class="col-3">
+								<br> <select class="form-select form-control"
+									aria-label="Default select example" id="subject">
+									<option value=''>SUBJECT</option>
+								</select>
+							</div>
+							<div class="col-3">
+								<br> <select class="form-select form-control"
+									aria-label="Default select example" id="publisher">
+									<option value=''>PUBLISHER</option>
+									<option th:each="log:${publishers}" th:value="${log.poId}"
+										th:text="${log.name}"></option>
+								</select>
+							</div>
+							<div class="col-6">
+								<br>
+								<button class="btn btn-primary" onclick="searchPaperList()"
+									id="search">
+									<i class="bi bi-search"></i> &nbsp; Search
+								</button>
+								<a type="button" class="btn btn-danger"
+									style="background-color: #990000;" id="printButton">Export</a>
+								<a type="button" class="btn btn-secondary" id="cancelButton"
+									onClick="clearSearch()">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body" id="rptDiv">
+							<table class="table table-striped" id="rptTable">
+								<thead>
+									<tr>
+										<th scope="col">Id</th>
+										<th scope="col">Paper</th>
+										<th scope="col">No. Questions</th>
+										<th scope="col">Time</th>
+										<th scope="col">Grade</th>
+										<th scope="col">Subject</th>
+										<th scope="col">Publisher</th>
+										<th scope="col">Total Attempts</th>
+										<th scope="col">Status</th>
+									</tr>
+								</thead>
+								<tbody id="rptData">
+									<tr th:each="paper : ${papers}">
+										<td th:text="${paper.paperId}">ID</td>
+										<td th:text="${paper.name}">Paper</td>
+										<td th:text="${paper.numberOfQuestion}">No. Questions</td>
+										<td th:text="${paper.time}">Time</td>
+										<td th:text="${paper.grade}">Grade</td>
+										<td th:text="${paper.subject}">Subject</td>
+										<td th:text="${paper.publisher}">Publisher</td>
+										<td th:text="${paper.attemptCount}">Total Attempts</td>
+										<td th:if="${(paper.active) == 'Deactive'}"><span
+											class="label label-danger">Deactive</span></td>
+										<td th:if="${paper.active == 'Active'}"><span class="label label-success">Active</span></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<script src="js/report.management.js"></script>
+	</div>
+</body>
+
+</html>
+
+

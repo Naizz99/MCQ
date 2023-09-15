@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+	<head>
+	  <title>Module Management</title>
+	</head>
+	
+	<body>
+		<div layout:fragment="content" th:remove="tag">
+			<main id="main" class="main">
+				<div class="pagetitle">
+					<h1>Module Management</h1>
+					<nav>
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="/home">Home</a></li>
+							<li class="breadcrumb-item">Content Management</li>
+							<li class="breadcrumb-item active"><a href="/listModules">Modules</a></li>
+						</ol>
+					</nav>
+				</div><!-- End Page Title -->
+	
+				<a type = "button" class="btn btn-primary" th:href="@{/addModule}">Add New Module</a>
+				
+				<br/><br/>
+				
+				<table class="table datatable">
+					<thead>
+						<tr>
+							<th>Module ID</th>
+							<th>Grade</th> 
+							<th>Subject</th> 
+							<th>Module Name</th>
+							<th>Status</th>
+							<!-- <th>Create User</th> -->
+							<th>Create Date</th>
+							<!-- <th>Last Update User</th> -->
+							<th>Last Update Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="module : ${listModules}">
+							<td th:text="${module.moduleId}">Module ID</td>
+							<td th:text="${module.subjectId.grade.gradeName}">Grade</td>
+							<td th:text="${module.subjectId.subjectName}">Subject</td>
+							<td th:text="${module.name}">Module Name</td>
+							<td th:if="${!(module.active)}"><span class="label label-danger">Deactive</span></td>
+							<td th:if="${module.active}"><span class="label label-success">Active</span></td>
+							<!-- <td th:text="${module.createBy}">Create User</td> -->
+							<td th:text="${module.createDate}">Create Date</td>
+							<!-- <td th:text="${module.updateBy}">Last Update User</td> -->
+							<td th:text="${module.updateDate}">Last Update Date</td>
+							<td colspan=2 style="letter-spacing: 10px;">
+								<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showModuleUpdate(moduleId=${module.moduleId})}"></a>
+								<a type = "button" class="bi bi-trash" title="Delete" th:onclick="|deleteModule('${module.moduleId}')|"></a>
+								<a type = "button" class="bi bi-clipboard-x"  title = "Deactivate" th:href="@{/moduleDeactive(moduleId=${module.moduleId})}" th:if="${module.active}"></a>	
+								<a type = "button" class="bi bi-clipboard-check" title = "Activate" th:href="@{/moduleActive(moduleId=${module.moduleId})}" th:if="${!(module.active)}"></a>	
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</main><!-- End #main -->	
+			<script src="js/module.management.js"></script>
+	  	</div>
+	</body>
+
+</html>

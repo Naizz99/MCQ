@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Grade Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Grade Managements</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Content Management</li>
+						<li class="breadcrumb-item active"><a href="/listGrades">Grades</a></li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Grade Details</h5>
+								<div class="alert alert-success" id="success-alert" style="display:none"> Success Message</div>
+								<form class="row g-3" id = "newGrade" th:object="${grade}">
+									<input type="hidden" th:field="*{gradeId}" class="form-control" readonly>
+									
+					                  <div class="col-sm-6">
+					                  	<label for="grade" class="form-label">Grade<span class="asterisk_input"></span></label>
+					                    <select class="form-select form-control" th:field="*{grade}" aria-label="Default select example" id = "grade" onChange="update()" required>
+					                      <option value=''>-- SELECT GRADE --</option>
+					                      <option value="1">1</option>
+					                      <option value="2">2</option>
+					                      <option value="3">3</option>
+					                      <option value="4">4</option>
+					                      <option value="5">5</option>
+					                      <option value="6">6</option>
+					                      <option value="7">7</option>
+					                      <option value="8">8</option>
+					                      <option value="9">9</option>
+					                      <option value="10">10</option>
+					                      <option value="11">11</option>
+					                      <option value="12">12</option>
+					                      <option value="13">13</option>
+					                      <option value="0">Other</option>
+					                    </select>
+					                  </div>
+					                  
+									<div class="col-md-6">
+										<label for="gradeName" class="form-label">Grade Name<span class="asterisk_input"></span></label>
+										<input type="text" name = "gradeName" th:field="*{gradeName}" class="form-control" id = "gradeName" required>
+									</div>
+																	
+									<div class="col-md-12" th:if="${grade.active}" >
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Active" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-12" th:if="${!grade.active}">
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Deactive" class="form-control" readonly>
+									</div>
+									<input type="hidden" th:field="*{active}" id = "active" class="form-control" readonly>
+
+									<div class="col-md-6">
+										<label for="createBy" class="form-label">Create By</label> 
+										<input type="text" th:field="*{createBy}" id = "createBy" class="form-control" readonly>
+									</div>
+									<div class="col-md-6">
+										<label for="createDate" class="form-label">Create Date</label> 
+										<input type="text" th:field="*{createDate}" id = "createDate" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="updateBy" class="form-label">Update By</label> 
+										<input type="text" th:field="*{updateBy}" id = "updateBy" class="form-control" readonly>
+									</div>
+									<div class="col-md-6">
+										<label for="updateDate" class="form-label">Update Date</label> 
+										<input type="text" th:field="*{updateDate}" id = "updateDate" class="form-control" readonly>
+									</div>
+									
+									<div class="text-center">
+										<button type="button" id = "saveGrade" class="btn btn-primary">Submit</button>
+										<button type="reset" class="btn btn-secondary">Reset</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+	</main>
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>
+<script src="js/grade.management.js"></script>
+<script type="text/javascript">
+	function update() {
+		var select = document.getElementById('grade');
+		var option = select.options[select.selectedIndex];
+		
+		if(option.value == "0"){
+			//document.getElementById("gradeName").value = " ";
+			document.getElementById("gradeName").readonly = false; 
+			
+		}else if(option.value != ''){
+			//document.getElementById("gradeName").disabled = true;
+			document.getElementById('grade').value = option.value;
+			document.getElementById('gradeName').value = "Grade " + option.text;
+		}else{
+			document.getElementById("gradeName").readonly = true;
+			document.getElementById('gradeName').value = "SELECT GRADE ";
+		}
+		
+	}
+	
+	update();
+	
+	$(document).ready(function(){
+		//document.getElementById("gradeName").disabled = true; 
+	});
+
+</script>

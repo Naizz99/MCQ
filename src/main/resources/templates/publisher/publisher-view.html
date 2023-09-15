@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Publisher Management</title>
+
+  	<link href="/css/imageUploaderCss.css" rel="stylesheet">	
+	<link href="https://cdn.jsdelivr.net/gh/daneden/animate.css@latest/animate.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/gh/jamesssooi/Croppr.js@latest/dist/croppr.min.css" rel="stylesheet">
+	
+	<!-- Favicons -->
+	<link href="/img/favicon.png" rel="icon">
+	<link href="/img/apple-touch-icon.png" rel="apple-touch-icon">
+	
+	<!-- Google Fonts -->
+	<link href="https://fonts.gstatic.com" rel="preconnect">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+	
+	<!-- Vendor CSS Files -->
+	<link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+	<link href="/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+	<link href="/vendor/quill/quill.snow.css" rel="stylesheet">
+	<link href="/vendor/quill/quill.bubble.css" rel="stylesheet">
+	<link href="/vendor/remixicon/remixicon.css" rel="stylesheet">
+	<link href="/vendor/simple-datatables/style.css" rel="stylesheet">
+	
+	<!-- Template Main CSS File -->
+	<link href="/css/style.css" rel="stylesheet">
+	<link href="/css/profile.css" rel="stylesheet">
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.17/sweetalert2.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+	
+	<script src=”https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js”></script>
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+	
+	
+	<style>
+		body, html {
+		  height: 100%;
+		  margin: 0;
+		}
+		
+		.bg-img {
+		  height: 50%;
+		  background-position: center;
+		  background-repeat: no-repeat;
+		  background-size: cover;
+		}
+	</style>
+</head>
+
+<body th:style="'--bodyBgColor:' + ${publisher.bodyBgColor} 
+				+ ';--bodyFontFamily:' + ${publisher.bodyFontFamily}
+				+ ';--fontColor:' + ${publisher.fontColor}
+				+ ';--cardBgColor:' + ${publisher.cardBgColor}	
+				+ ';--cardSideColor1:' + ${publisher.cardSideColor}	
+				+ ';--cardSelectedColor:' + ${publisher.cardSelectedColor}">
+	<main id="main" class="main container" style="margin:auto;">
+		<div class="col-lg-12" style="text-align:left;">
+			<div class="bg-img" th:style="'background-image: url('+${publisher.coverImage}+');width:100%;height:25em;'" th:if="${publisher.coverImage} != null"></div>
+			<div class="bg-img" style="background-image: url('img/No_image_available-cover.png');width:90%;height:25em;" th:if="(${publisher.coverImage} == null)"></div>
+			<img th:src="${publisher.image}" style="width:200px;border-radius:60%;margin-top:-5em;margin-left:1em;" th:if="${publisher.image} != null">
+			<img src="img/no-img.png" style="width:200px;border-radius:60%;margin-top:-5em;margin-left:1em;" th:if="${publisher.image} == null">
+			<div style="width:100%;text-align:right;">
+				<table style="margin-top:-15em;margin-right:0.5em;text-shadow:1px 1px 5px #fff,1px 1px 5px #fff,1px 1px 5px #fff, 1px 1px 5px #fff;float:right;">
+					<tr><td>
+					<h1 class="bodyText" th:text="${publisher.name}"></h1>
+					</td></tr>
+					<tr><td>
+					<p class="bodyText" th:text="${publisher.mobile} + '|' + ${publisher.email}" style="font-size:24px;"></p>
+					</td></tr>
+					<tr><td>
+					<p class="bodyText" th:text="${publisher.address}" style="font-size:24px;"></p>
+					</td></tr>
+					<tr><td>
+					<!-- <p style="font-size:18px;" th:text="${paperCount} + ' Papers Available'"></p> -->
+					</td></tr>
+				</table>
+			</div>
+			<textarea class="bodyText transparentTextarea" id="myTextarea" th:text="${publisher.description}" style="font-size:15px;overflow: hidden;border: none;text-align:justify;resize: none;font-weight: bold;" readonly></textarea>
+		</div>
+		<script>
+		 var textarea = document.getElementById('myTextarea');
+		  textarea.style.height = 'auto';
+		  textarea.style.width = '100%'; 
+		  
+		  textarea.style.height = textarea.scrollHeight + 'px'; 
+		  textarea.style.width = textarea.scrollWidth + 'px';   
+		</script>
+			
+		<div class="col-lg-12 row">
+			<hr>
+			<p style="font-size:18px;" th:text="${paperCount} + ' Papers Available'"></p>
+			<div class="divCard card col-lg-2 col-sm-3" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;"  th:each="paper : ${listPapers}" th:if="${paper.paperId} != null AND ${paper.active}">
+			  	<a href="" >
+				    <div class="card-body">
+				    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-calendar2-event"></i></label><br>
+				    	<table width = 100% style = "width: 100%;height:100%;color:black">
+							<tr>
+							    <b><td class = "paperName" th:text="${paper.name}"></td></b>
+							</tr>
+							<tr>
+							    <td class = "subjectName" th:text="${paper.subjectId.subjectName}"></td>
+							</tr>
+							<tr>
+							    <td class = "gradeName" th:text="${paper.grade.gradeName}"></td> 
+							</tr>
+							<tr>
+							    <td class = "paperTime" th:text="'Time : ' + ${paper.time} + ' minutes'"></td> 
+							</tr>
+						</table>
+				    </div>
+			    </a>
+			    <div class="card-footer rounded-pill" style = "text-align : center;" sec:authorize="isAuthenticated()">
+			    	<small class="text-muted" >
+			    		<a th:href="@{/purchase(paperId=${paper.paperId},bundleId=0)}" type="button" class="btn btn-primary btn-sm rounded-pill">Buy Now</a>
+			    		<a th:onclick="|addToCart('${paper.paperId}','paper')|" type="button" class="btn btn-info btn-sm rounded-pill">Add To Cart</a>
+			      	</small>
+			    </div>
+			</div>
+				
+			<div class="divCard card col-lg-2 col-sm-3" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;"  th:each="bundle : ${listBundles}" th:if="${bundle.bundleId} != null AND ${bundle.active}">
+			  	<a href="" >
+				    <div class="card-body">
+				    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-calendar2-event"></i></label><br>
+				    	<table width = 100% style = "width: 100%;height:100%;color:black" >
+							<tr>
+							    <b><td th:text="${bundle.name}"></td></b>
+							</tr>
+							
+							<tr>
+							    <td th:text="${#strings.substring(bundle.description, 1)}" ></td>
+							</tr>
+							
+							<tr>
+							    <td th:text="${bundle.grade.gradeName}"></td> 
+							</tr>
+							
+							<tr>
+							    <td th:text="'Number of Papers : ' + ${bundle.paperCount}"></td> 
+							</tr>
+						</table>
+				    </div>
+			    </a>
+			    <div class="card-footer rounded-pill" style = "text-align : center;;margin-bottom:0%" sec:authorize="isAuthenticated()">
+			      	<small class="text-muted" >
+			      		<a th:href="@{/purchase(paperId=0,bundleId=${bundle.bundleId})}" type="button" class="btn btn-primary btn-sm rounded-pill">Buy Now</a>
+			      		<a th:onclick="|addToCart('${bundle.bundleId}','bundle')|" type="button" class="btn btn-info btn-sm rounded-pill">Add To Cart</a>
+		      		</small>
+			    </div>
+			</div>          
+		</div>
+			
+		<script src="https://cdn.jsdelivr.net/gh/eligrey/canvas-toBlob.js@latest/canvas-toBlob.min.js" defer></script>
+		<script src="https://cdn.jsdelivr.net/gh/eligrey/FileSaver.js@latest/dist/FileSaver.min.js" defer></script>
+		<script src="https://cdn.jsdelivr.net/gh/jamesssooi/Croppr.js@latest/dist/croppr.min.js"></script>
+		<script src="js/publisher.management.js"></script>
+		<script src="js/image.management/image.model.js"></script>
+		<script src="js/services/purchase.management.js"></script>
+	</main>
+	<!-- End #main -->
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.17/sweetalert2.all.min.js"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+	
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+	<!-- Vendor JS Files -->
+	<script src="/vendor/apexcharts/apexcharts.min.js"></script>
+	<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="/vendor/chart.js/chart.min.js"></script>
+	<script src="/vendor/echarts/echarts.min.js"></script>
+	<script src="/vendor/quill/quill.min.js"></script>
+	<script src="/vendor/simple-datatables/simple-datatables.js"></script>
+	<script src="/vendor/tinymce/tinymce.min.js"></script>
+	<script src="/vendor/php-email-form/validate.js"></script>
+
+	<!-- Template Main JS File -->
+	<script src="/js/main.js"></script>
+</body>
+
+</html>
+
+

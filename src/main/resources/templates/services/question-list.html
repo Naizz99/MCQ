@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+	<title>Question Management</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle row">
+				
+				<div class = "col-lg-6 col-md-12 col-sm-12">	
+					<h1>Question Managements</h1>
+					<nav>
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="/home">Home</a></li>
+							<li class="breadcrumb-item">Material Management</li>
+							<li class="breadcrumb-item"><a href="/listPapers">Papers</a></li>
+							<li class="breadcrumb-item active"><a href="">Questions</a></li>
+						</ol>
+					</nav>
+				</div></br>
+				<div class = "col-lg-7 col-md-12 col-sm-12">
+					<input th:value="${paper.numberOfQuestion}" id = "numberOfQuestion" type="hidden" class="form-control" readonly>
+					<input th:value="${questionCount}" id = "questionCount" type="hidden" class="form-control" readonly>
+					<input th:value="${paper.numberOfQuestion}" id = "totalQuestionCount" type="hidden" class="form-control" readonly>
+					<input type="hidden" th:value="${paper.paperId}" class="form-control" id = "PaperID" readonly>
+					<input type="hidden" class="form-control" th:value = "${paper.answersPerQuestion}" id = "answersPerQuestion" readonly >
+					<input type="hidden" class="form-control" th:value = "${listAnswers}" readonly >
+					
+					<table class="table col-sm-4">
+					  <thead>
+					    <tr>
+					      <th scope="col"><a type="button" id = "addQuestion" class = "btn btn-info" href=""><i class="bi bi-plus-square"></i> &nbsp;Add</a></th>
+					      <th scope="col"><a type="button" id = "updateQuestion" class = "btn btn-info" onclick = "questionUpdateButton()"><i class="bi bi-pencil-square"></i> &nbsp;Update</a></th>
+					      <th scope="col"><a type="button" id = "deleteQuestion" class = "btn btn-danger" onclick = "questionDeleteButton()"><i class="bi bi-trash"></i> &nbsp;Delete</a>	</th>
+					      <th scope="col"><a type="button" id = "answerList" class = "btn btn-info" onclick = "questionAnswerButton()"><i class="bi bi-card-list"></i> &nbsp;Answers</a></th>
+					      <th scope="col"><a type="button" th:href="@{/viewPaper(paperId=${paperId})}" class = "btn btn-info" ><i class="bi bi-eye"></i> &nbsp;Preview</a></th>
+					      <th scope="col"><a type="button" id = "saveChanges" class = "btn btn-success" onclick = "saveChanges()"><i class="bi bi-save"></i> &nbsp;Save Changes</a></th>
+					    </tr>
+					  </thead>
+					</table>			
+				</div>
+				
+			</div>
+			<!-- End Page Title -->
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<label for="status" id = "statusTxt" style="color:red;"></label>
+							<h5 class="card-title" th:text="' ~ ~ ' + ${paper.name} + ' ~ ~ '"></h5>
+							
+							<div class="card-body scrollit" style = "height:1000px" >
+								
+								<div th:each="question : ${listQuestions}" class="col-md-12 border" style = "padding:2%;margin-bottom:1%;">
+										
+				                	<div class="row mb-3" th:onclick="|selectQuestion('${question.questionId}')|" style="cursor:pointer;" th:title="'Question No : ' + ${question.questionId}">
+					                 
+					                  <div class="col-sm-1">
+					                     <label for="inputText" class="col-sm-2 col-form-label" th:text="${question.questionId}"></label>
+					                  </div>
+					                  <div class="col-sm-10">
+					                  	<input th:value="${question.pqId}" th:id="pqId + ${question.questionId}" type="text" class="form-control" hidden readonly>
+					                  	<input th:value="${question.questionId}" th:id="questionId + ${question.questionId}" type="text" class="form-control" hidden readonly>
+					                  	<input th:value="${question.moduleId}" th:id="moduleId + ${question.questionId}" type="text" class="form-control" hidden readonly>
+					                    <textarea th:text="${question.question}" style = "border: none;" class="form-control" th:id="question + ${question.questionId}" rows="3" readonly></textarea>
+					                 	
+					                  </div>
+					                  	<div class="col-sm-1">
+					                  		<a th:onclick = "|openQuestionImage('${question.pqId}')|">
+					                			<i class="bi bi-images" style = "font-size:30px;"></i>
+					                		</a>
+				                  		</div>
+					                </div>
+						            
+					                <a th:id="viewAnswers + ${question.questionId}" class="nav-link collapsed" th:data-bs-target="'#qid' + ${question.pqId}" data-bs-toggle="collapse"><i class="bi bi-arrow-down-up"></i></a>
+					                
+					                <ul th:id="'qid' + ${question.pqId}" class="nav-content collapse" data-bs-parent="#sidebar-nav" style = "list-style-type: none;"> 
+					                	<li th:each="answer , stat : ${listAnswers}" th:if="*{answer.pqId.pqId == question.pqId}">
+					                		<div class="col-sm-11">
+					                			<input th:value="${answer.paId}" th:id="question + ${question.questionId} + answerId + ${stat.index}" type="text" class="form-control" hidden readonly>
+						                		<input th:if="${answer.answer_status}" class='form-check-input' type='radio' th:name = "rd + ${question.questionId}" th:id="pq + ${question.questionId} + rd + ${stat.index}" checked>
+						                		<input th:value="${answer.answer}" th:id="question + ${question.questionId} + answer + ${stat.index}" th:onclick = "|selectAnswer(${stat.index} + 1)|" th:if="${answer.answer_status}" style = "background-color:rgba(0, 255, 0, 0.2);border: none;margin:1%;" type="text" class="form-control">
+												<input th:if="${!(answer.answer_status)}" class='form-check-input' type='radio' th:name = "rd + ${question.questionId}" th:id="pq + ${question.questionId} + rd + ${stat.index}">
+												<input th:value="${answer.answer}" th:id="question + ${question.questionId} + answer + ${stat.index}" th:onclick = "|selectAnswer(${stat.index} + 1)|" th:if="${!(answer.answer_status)}" type="text" class="form-control" style = "background-color:rgba(0, 191, 255,0.1);border: none;margin:1%;">
+					                		</div>
+					                		<div class="col-sm-1">
+					                			<a th:onclick = "|openAnswerImage('${answer.paId}')|">
+						                			<i class="bi bi-images"></i>
+						                		</a>
+					                		</div>
+					                		
+						                </li>
+						                <div>
+											<a type = "button" class="btn btn-outline-primary btn-sm" th:href="@{/updateQuestionByQuestionId(pqId=${question.pqId})}">Update</a>
+											<a type = "button" class="btn btn-outline-danger btn-sm" th:onclick="|deleteQuestion('${question.pqId}')|">Remove</a>
+											<a type = "button" class="btn btn-outline-primary btn-sm" th:href="@{/listAnswersByPqId(pqId=${question.pqId})}">All Answers</a>
+									    </div>
+					                </ul>
+								</div>	
+								
+								<!--  Image Crop Modal -->
+								<div class="modal fade" id="imageModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+								  <div class="modal-dialog modal-dialog-centered" role="document">
+								    <div class="modal-content" id = "modelContent">
+								        <div class="modal-header">
+							                <h4 class="modal-titler" id="cropmodel">Question Image Upload</h4>
+							                <button type="button" class="close" data-dismiss="modal" arial-label="Close">
+							                    <span aria-hidden="true">&times;</span>
+							                </button>
+							            </div>
+							            <form id="formimg">
+							                <div class="modal-body text-center">
+							                    <div id="views" class="m-t-15"></div>
+							                </div>
+							                <div class="modal-footer">
+							                    <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="" data-original-title="Select Cropped Image">
+							                        <button type="submit" id="cropbutton" class="btn btn-dark waves-effect waves-themed" title="Select Cropped Image">Upload</button>
+							                    </span>
+							                    <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="" data-original-title="Rotate">
+							                        <button type="button" id="rotatebutton" class="btn btn-dark waves-effect waves-themed bi bi-arrow-clockwise" title="Rotate"></button>
+							                    </span>
+							                    <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="" data-original-title="Cancel">
+							                        <button type="button" id="cancel" class="btn btn-dark waves-effect waves-themed bi bi-x-lg" data-dismiss="modal" title="Cancel"></button>
+							                    </span>
+							                </div>
+							            </form>
+								        
+								    </div>
+								  </div>
+								</div>
+							</div>
+						</div>
+					</div>
+	
+	<!-- **************************************************************************************************************************************************************************-->
+				
+					<div class="col-lg-6" >
+						<div class = "col-12 row" > 
+							<div class = "col-6" > 
+								<form id = "fileData">
+									<div class="col-md-12">
+										<input id="wordFile" name="file" type="file" onchange="readWord()" hidden/>
+										<a type = "button" onclick="document.getElementById('wordFile').click();" ><i class="fa fa-file-word-o" style="font-size:24px" title = "Upload Word Document"></i></a> &nbsp;
+										<input id="pdfFile" name="file" type="file" onchange="readPDF(event)" hidden/>
+										<a type = "button" onclick="document.getElementById('pdfFile').click();" ><i class="fa fa-file-pdf-o" style="font-size:24px" title = "Upload PDF"></i></a> &nbsp;
+										<!-- <input id="imgFile" name="file" type="file" onchange="readIMG(event)" hidden/>
+										<a type = "button" onclick="document.getElementById('imgFile').click();" ><i class="bi bi-file-earmark-image-fill" style="font-size:24px" title = "Upload Image"></i></a>&nbsp;-->
+										<input id="queImg" name="questionImage" type="file" onchange="selectImage(this)" hidden />
+										<a type = "button" onclick="document.getElementById('queImg').click();" ><i class="fa fa-file-image-o" style="font-size:24px" title = "Question Image"></i></a>&nbsp;
+										<button id="modelButton" type="button" class="btn btn-primary" data-toggle="modal" hidden >..</button>
+										<a type = "button" onclick="uploadQuestionImage()"><i class="fa fa-upload" style="font-size:24px" title = "Upload"></i></a>&nbsp;
+									</div>
+								</form>
+							</div>
+							<div class = "col-6 row"> 
+								<label class="form-label">Image save to</label>
+								<div class="col-2"><label class="form-label">Q.No:</label></div>
+								<div class="col-4"><input id = "currentQuestion" type="text" class="form-control"></div>
+								<div class="col-2"><label class="form-label">Ans.No:</label></div>
+								<div class="col-4"><input id = "currentAnswer" type="text" class="form-control"></div>
+							</div>
+						</div>
+						<div class = "col-12" > 
+							<!--word Read content results -->
+							<textarea id="wordDiv" style="display: block;width:100%;height:650px;"></textarea>
+							<iframe id="PdfDiv" style="display: block;width:100%;height:650px;" src="" ></iframe>
+							<iframe id = "ImgDiv" style="display: block;width:100%;height:650px;" ></iframe>
+							<form id = "queImage">
+								<input type="hidden" value = "Example Extention" name = "extention" id="extention" class="form-control" > 
+								<input type="hidden" value = "0000000000" name = "serial" id="serial" class="form-control" >
+								<input name = "questionNo" type="text" src=""  id="SetImgQue" hidden> 
+								<input type="image" src="" id="SetImg" alt = "" class = "scrollit" width = "100%">
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+		
+		<script src="../js/question.management.js"></script>
+	</div>
+</body>
+
+</html> 
+
+<script>
+	var jcrop_api;
+	var canvas;
+	var context;
+	var image;
+	var perfsize;
+	
+	var isChangeImage = 0;
+		
+	$(document).ready(function (){
+		
+		var questionCount = document.getElementById("questionCount").value;
+		var totalQuestionCount = document.getElementById("totalQuestionCount").value;
+		
+		if(questionCount >= totalQuestionCount){
+		    document.getElementById("addQuestion").href=""; 
+		    document.getElementById("addQuestion").setAttribute('disabled', ''); 
+		    document.getElementById("statusTxt").innerHTML  = "* Total question count has been exceed. To add new questions please update the paper details.";
+		}else{
+			document.getElementById("addQuestion").href="addQuestionByPaperId?paperId=" + document.getElementById("PaperID").value; 
+		}
+		
+		document.getElementById("PdfDiv").style.display = "none";
+		document.getElementById("ImgDiv").style.display = "none";
+	    document.getElementById("wordDiv").style.display = "block";
+	    
+	    document.getElementById("updateQuestion").setAttribute('disabled', '');
+		document.getElementById("deleteQuestion").setAttribute('disabled', '');
+		document.getElementById("answerList").setAttribute('disabled', '');
+				
+		 $('#add-course-form input[type="file"]').each(function () {
+            $(this).rules('add', {
+                required: true,
+                messages: {
+                    required: "Please select course image",
+                }
+            })
+        })
+        		 
+        $(".img").change(function () {
+        	document.getElementById("modelButton").dataset.target = "#imageModel";
+        	document.getElementById("modelButton").click();
+        	$('#imageModel').modal({
+                backdrop: 'static',
+                keyboard: false,                
+            });
+        	loadImage(this);
+        });
+		 
+        $("#cropbutton").click(function (e) {
+            applyCrop();
+        });
+        
+        $("#rotatebutton").click(function (e) {
+            applyRotate();
+        });
+        
+        $("#formimg").submit(function (e) {
+        	document.getElementById("PdfDiv").style.display = "none";
+        	document.getElementById("ImgDiv").style.display = "none";
+            document.getElementById("wordDiv").style.display = "none";
+            document.getElementById("SetImg").style.display = "block";
+            
+        	e.preventDefault();
+        	$("#SetImg").attr("src", canvas.toDataURL('image/jpeg'));
+        	isChangeImage = 1;
+        	
+            button.form.submit();
+        	
+        	$('#imageModel').hide();
+        	    		
+        });
+        
+        $("#imgInp").change(function (e) {
+            $('#SetImgName').text(e.target.files['0'].name);
+        });
+        
+        $("#imgUpdate").change(function (e) {
+        	$('#GetImgName').text(e.target.files['0'].name);
+        });
+        
+
+	});
+	
+	function selectImage(data){
+		document.getElementById("modelButton").dataset.target = "#imageModel";
+    	document.getElementById("modelButton").click();
+    	
+    	$('#imageModel' + currentQuestion).modal({
+            backdrop: 'static',
+            keyboard: false,                
+        });
+        loadImage(data);
+	}
+		
+	function loadImage(input) {
+        var isImage = input.value;
+        isImage = isImage.split('.');
+        isImage = (isImage[isImage.length - 1]).toLowerCase();
+        if (isImage === 'png' || isImage === 'jpg' || isImage === 'jpeg') {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                canvas = null;
+                reader.onload = function (e) {
+                    image = new Image();
+                    image.onload = validateImage;
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+                $("#loader").addClass("hide");
+            }
+        } else if (isImage === '') {
+            $('#myImageCrop').modal('hide');
+            return;
+        }
+        else {
+            toastr.options.progressBar = true;
+            toastr.error("Please select .jpg or .png format image..", "Image format not supported!");
+            $('#myImageCrop').modal('hide');
+            return;
+        }
+    }
+	
+	function processImage(fileUpload) {
+        var fileformat;
+        var imageonly = fileUpload.split(';');
+        var contenttype = imageonly[0].split(':')[1];
+        fileformat = contenttype.split('/')[1];
+        var realdata = imageonly[1].split(',')[1];
+        var blob = b64toBlob(realdata, contenttype);
+        var filename = "pic." + fileformat;
+        var data = new FormData();
+        data.append("UploadLocation", "\\img\\Courses\\");
+        data.append("FileInitials", "course");
+        data.append(filename, blob, filename);
+        return data;
+    }
+    function ImageUploader(fileUpload, callback) {
+        data = processImage(fileUpload);
+        $.ajax({
+            type: "POST",
+            url: "/Images/UploadFilesWithLocation",
+            contentType: false,
+            processData: false,
+            data: data
+        }).always(callback);
+    }
+    
+    function validateImage() {
+        if (canvas != null) {
+            image = new Image();
+            image.onload = restartJcrop;
+            image.src = canvas.toDataURL('image/jpeg');
+        } else restartJcrop();
+    }
+    function restartJcrop() {
+        var crop_max_width = 400;
+        var crop_max_height = 400;
+        if (jcrop_api != null) {
+            jcrop_api.destroy();	               
+        }
+        $("#views").empty();
+        $("#views").append("<canvas id=\"canvas\">");
+        canvas = $("#canvas")[0];
+        context = canvas.getContext("2d");
+        canvas.width = image.width;
+        document.getElementById("modelContent").width = image.width;
+        canvas.height = image.height;
+        context.drawImage(image, 0, 0);
+        $("#canvas").Jcrop({
+            onSelect: selectcanvas,
+            onRelease: clearcanvas,
+            boxWidth: crop_max_width,
+            boxHeight: crop_max_height
+        }, function () {
+            jcrop_api = this;
+        });
+        clearcanvas();
+    }
+    function clearcanvas() {
+        prefsize = {
+            x: 0,
+            y: 0,
+            w: canvas.width,
+            h: canvas.height
+        };
+        selectcanvas(null);
+    }
+    function selectcanvas(coords) {
+        if (coords != null) {
+            prefsize = {
+                x: Math.round(coords.x),
+                y: Math.round(coords.y),
+                w: Math.round(coords.w),
+                h: Math.round(coords.h)
+            };
+        }
+        else {
+            jcrop_api.focus();
+            jcrop_api.animateTo([50, 50, 100, 100]);
+            jcrop_api.setOptions({
+                minSize: [150, 150],
+                aspectRatio: 4 / 4
+            });
+            jcrop_api.focus();
+            $('#canvas').Jcrop({
+            }, function () {
+                jcrop_api = this;
+                jcrop_api.animateTo([50, 50, 100, 100]);
+                $('#can_click,#can_move,#can_size').attr('checked', 'checked');
+                $('#ar_lock,#size_lock,#bg_swap').attr('checked', false);
+                $('.requiresjcrop').show();
+            });
+        }
+    }
+    function applyCrop() {
+        canvas.width = prefsize.w;
+        canvas.height = prefsize.h;
+        context.drawImage(image, prefsize.x, prefsize.y, prefsize.w, prefsize.h, 0, 0, canvas.width, canvas.height);
+        validateImage();
+    }
+    function applyRotate() {
+        canvas.width = image.height;
+        canvas.height = image.width;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.translate(image.height / 2, image.width / 2);
+        context.rotate(Math.PI / 2);
+        context.drawImage(image, -image.width / 2, -image.height / 2);
+        validateImage();
+    }
+    
+    function b64toBlob(b64Data, contentType, sliceSize) {
+    	contentType = contentType || '';
+        sliceSize = sliceSize || 512;
+        var byteCharacters = atob(b64Data);
+        var byteArrays = [];
+        for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            var slice = byteCharacters.slice(offset, offset + sliceSize);
+            var byteNumbers = new Array(slice.length);
+            for (var i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+            var byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+        var blob = new Blob(byteArrays, { type: contentType }, { fileName: "ppp.JPG" });
+        return blob;
+    }
+
+    function FileUploader(fileUpload) {
+    	var fileformat;
+        var imageonly = file.split(';');
+        var contenttype = imageonly[0].split(':')[1];
+        fileformat = contenttype.split('/')[1];
+        var realdata = imageonly[1].split(',')[1];
+        var blob = b64toBlob(realdata, contenttype);
+        var filename = "pic." + fileformat;
+        var data = new FormData();
+        data.append(filename, blob, filename);
+    }
+    
+</script>
+

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Editor Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Editor Managements</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Editor Management</li>
+						<li class="breadcrumb-item active"><a href="/listSystemEditors">Editors</a></li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Editor Details</h5>	
+								<form class="row g-3" id = "newUser" th:object="${editor}" method="POST">
+									<input type="hidden" id="userId" th:field="*{userId.userId}" class="form-control" readonly>
+									<input type="hidden" th:field="*{pbUserId}" class="form-control" readonly>
+									<input type="hidden" th:field="*{userId.forcePassword}" class="form-control" readonly>
+									<input type="hidden" th:field="*{userId.sso}" class="form-control" readonly>
+									<input type="hidden" th:field="*{userId.ssoEmail}" class="form-control" readonly>
+									
+									<div class="col-md-12" >
+										<label for="name" class="form-label">Name<span class="asterisk_input"></span></label>
+										<input type = "text" id = "userName" th:field="*{userId.name}" class="form-control" required>
+									</div>
+									 
+									<div class="col-md-6">
+										<label for="username" class="form-label">Username<span class="asterisk_input"></span></label>
+										<input type="text" th:field="*{userId.username}" class="form-control" oninput="validateUserName(this.value,document.getElementById('userId').value)" required>
+									</div>
+									
+									<div class="col-md-6" th:if = "${publisher.poId == null}">
+										<label for="publisher" class="form-label">Publisher<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{poId}" id="publisher">
+				                            <option value=''>-- SELECT PUBLISHER --</option>
+				                            <option th:each="log:${publisherList}"
+				                                    th:value="${log.poId}"
+				                                    th:text="${log.name}">
+				                            </option>
+				                        </select>
+									</div>
+									
+									<div class="col-md-6" th:if = "${publisher.poId != null}">
+										<label for="publisher" class="form-label">Publisher<span class="asterisk_input"></span></label>
+				                        <input type="text" th:value="*{poId.name}" class="form-control" readonly>
+				                        <input type="hidden" th:field="*{poId}" id="publisher" class="form-control" readonly>
+									</div>
+									
+									<div class="col-12">
+										<p id="sts"><p>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="email" class="form-label">Email<span class="asterisk_input"></span></label>
+										<input type="email" th:field="*{userId.email}" class="form-control" oninput="validateEmail(this.value,0)" required>
+									</div>
+										
+									<div class="col-md-6">
+										<label for="mobile" class="form-label">Mobile<span class="asterisk_input"></span></label>
+										<input type="text" th:field="*{userId.mobile}" class="form-control" maxlength="10" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required>
+									</div>
+									<div class="col-md-6">
+										<label for="mobile" class="form-label">Gender<span class="asterisk_input"></span></label>
+										<div class="form-check">
+										  	<input type="radio" name="gender" id="male" value="male" th:field="*{userId.gender}" checked>Male
+										  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										  	<input type="radio" name="gender" id="female" value="female" th:field="*{userId.gender}">Female
+										</div>
+					                </div>
+					                
+					                <input type="hidden" th:field="*{role}" class="form-control">
+										
+									<div class="col-md-12" th:if="${editor.userId.active}">
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Active"  class="form-control" readonly>
+									</div>
+																	
+									<div class="col-md-12" th:if="${!editor.userId.active}">
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Deactive"  class="form-control" readonly>
+									</div>
+									<input type="hidden" th:field="*{userId.active}" class="form-control" readonly>
+							
+									<div class="col-md-6">
+										<label for="createBy" class="form-label">Create By</label> 
+										<input type="text" th:field="*{userId.createBy}" class="form-control" readonly>
+									</div>
+									<div class="col-md-6">
+										<label for="createDate" class="form-label">Create Date</label> 
+										<input type="text" th:field="*{userId.createDate}" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="updateBy" class="form-label">Update By</label> 
+										<input type="text" th:field="*{userId.updateBy}" class="form-control" readonly>
+									</div>
+									<div class="col-md-6">
+										<label for="updateDate" class="form-label">Update Date</label> 
+										<input type="text" th:field="*{userId.updateDate}" class="form-control" readonly>
+									</div>
+									
+									<div class="text-center">
+										<button type="button" id = "saveUser" class="btn btn-primary">Submit</button>
+										<button type="reset" class="btn btn-secondary">Reset</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Password Change</h5>	
+								
+								<form class="row g-3">
+									
+									<div class="col-md-11">
+										<label for="password" class="form-label">Password</label>
+										<input type="password" id="password" class="form-control" onInput = "checkPolicy(this.value)" required>
+									</div>
+									<div class="col-md-1">
+										<label class="form-label"></label>
+										<span toggle="#password-field" class="input-group-text"><i class="fa fa-fw fa-eye field-icon toggle-password"></i></span>
+									</div>
+									<div class="popup"> 
+										<div class="popuptext" id="policyPopup">
+											<small>Password must contain the followings:</small>
+											<div th:each="policy : ${listPolicies}" th:if="${policy.active}">
+												<small th:id="'policy'+${policy.policyId}" class="invalid" th:text="${policy.policy}"></small><br>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-11">
+										<label for="confirmPassword" class="form-label">Re-Type Password</label>
+										<label id="passordStatus">	</label>
+										<input type="password" id="confirmPassword" class="form-control" onchange = "validatePassword()" required>
+									</div>
+									
+									<div class="text-right">
+										<button type="button" class="btn btn-primary" onClick = "savePassword()">Change Password</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+	</main>
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>
+
+<script src="js/user.management.js"></script>

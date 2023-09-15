@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+	<title>Role - Function Management</title>
+
+	<style>
+	
+		.function {
+		  height: auto;
+		  /*background: #e6e6e6;
+		  border-left: 4px solid #404040;*/
+		  margin:2%;
+		}
+		
+		.sub-function {
+		  height: auto;
+		  /*background: #e6e6e6;
+		  border-left: 4px solid #595959;*/
+		  margin:2%;
+		  margin-left:10%;
+		}
+		
+		.sub-list{
+			display:none;
+		}
+		
+		.function:hover {
+		  background: #cce6ff;
+		}
+		
+	</style>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Role - Function Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item"><a href="">Settings</a></li>
+						<li class="breadcrumb-item active"><a href="/listRoleFunctions">Role - Function Management</a></li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-12 row">
+						<div class="col-lg-1">
+							<label for="name" class="form-label">Select Role</label>
+						</div>
+						<div class="col-lg-3">
+							<select id = "roles" name="roles" class="form-select form-control" onclick="getFunctions(this.value)">
+							    <option th:each="role : ${session.roles}" th:value="${role.role}" th:text="${role.role}"></option>
+							</select>
+						</div>
+					</div>
+					<hr>
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body ">
+								<h5 class="card-title">All Function</h5>	
+								<div th:id = "${'function' + function.functionId}" th:each="function : ${listFunctions}" th:if="${function.parent}">
+									<div class="function row border border-secondary p-2" >
+										<div class="col-10">
+											<p th:text = "${function.functionName}" ></p>
+										</div>	
+										<div class="col-1" th:onclick="|subFunctions(${function.functionId})|">
+											<i class="bi bi-caret-down"></i>
+										</div>	
+										<div class="col-1">
+											<i class="bi bi-chevron-double-right" th:onclick="|createFunctionLink(${function.functionId})|"></i>	
+										</div>	
+									</div>
+									
+									<div class="sub-list" th:id = "${'subFunction' + function.functionId}">
+										<div class="sub-function row border border-secondary p-2" th:each="subFunction : ${listFunctions}" th:if="${subFunction.parentId == function.functionId}">
+											<div class="col-10">
+												<p th:text = "${subFunction.functionName}" ></p>
+											</div>
+											<div class="col-1">
+												<i class="bi bi-chevron-double-right" th:onclick="|createFunctionLink(${subFunction.functionId})|"></i>	
+											</div>	
+										</div>
+									</div>
+								</div>	
+															
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Allocated Functions</h5>
+								
+								<div class="functions row border border-secondary p-2" id="functions">
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<script src="js/function.management.js"></script>
+	</main>
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>

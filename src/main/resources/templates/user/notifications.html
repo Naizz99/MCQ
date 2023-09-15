@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+    
+<head>
+	<title>Notifications</title>
+	
+	<style>
+		.alert {
+		  padding: 20px;
+		  background-color: #e6f5ff;
+		  /*color: white;*/
+		  opacity: 1;
+		  transition: opacity 0.6s;
+		  margin-bottom: 15px;
+		}
+		
+		.b{
+			 padding:2%;
+			 margin:2%;
+			 border-radius: 1%;
+			 border-style: inset;
+			 border-color: #3399ff;
+			 border-width: thin;
+		}
+	</style>
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Notifications</h1>
+			</div>
+			<!-- End Page Title -->
+
+			<section class="section">
+				<div class="row">
+					<!-- 
+						<div class="col-lg-7">
+							<div class="card">
+								<div class="card-body">
+									<div>
+										<h4 id="notificationTopic"></h4>
+									</div>								
+								</div>
+							</div>
+						</div>
+					 -->
+					<div class="col-lg-9">
+						<div class="card">
+							<div class="card-body">
+								<div class="alert b row" th:id="${notification.ntfId}" th:each="notification : ${notificationList}" th:onclick="|viewNotification('${notification.ntfId}')|">
+								  <div class="col-11">
+								  	<strong th:text = "${notification.topic}"></strong>
+									<p class="subNotification" th:text = "${notification.subNotification}" th:id="'ntf1'+${notification.ntfId}"></p>
+									<p class="notification" th:text = "${notification.notification}" th:id="'ntf2'+${notification.ntfId}" hidden></p>
+									<p th:text = "${notification.receiveTime} + '  |  ' + ${notification.receiveDate}">Receive Time</p>
+								  </div>
+								  <div class="col-1">
+								  	<!-- <i class="bi bi-trash-fill text-dark"></i> -->
+								  	<span th:id="'new'+${notification.ntfId}" class="badge rounded-pill bg-success" th:if="${!notification.readStatus}" style="transform: rotate(35deg);">New</span>
+								  </div>
+								</div>
+								
+								<div th:if="${#lists.isEmpty(notificationList)}">
+								  <h4>There are no notifications for you</h4>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+	</main>
+	</div>
+</body>
+</html>
+
+<script>
+	$(document).ready(function(){
+		//document.getElementsByClassName('notification').style.visibility='hidden';
+		//const box = document.getElementsByClassName('notification')[0];
+		//box.style.visibility = 'hidden';
+	});
+	
+	var p1 = null;
+	var p2 = null;
+	var ntf = null 
+	
+	function viewNotification(ntfId){
+		
+		document.getElementById(ntfId).style.borderColor = "red";
+		var paragraphId1 = 'ntf1' + ntfId;
+		var paragraphId2 = 'ntf2' + ntfId;
+		var newLabel = 'new' + ntfId;
+		
+		if((document.getElementById(p1) != null) && (document.getElementById(p2) != null) && (document.getElementById(ntf) != null) && (ntf != ntfId)){
+			document.getElementById(p2).hidden = true;
+			document.getElementById(p1).removeAttribute("hidden");
+			document.getElementById(ntf).style.borderColor = "#3399ff";
+		}
+		
+		p1 = paragraphId1;
+		p2 = paragraphId2;
+		ntf = ntfId;
+		
+		if(document.getElementById(newLabel) != null){
+			document.getElementById(newLabel).hidden = true;
+		}
+		
+		if(document.getElementById(paragraphId1).hidden){
+			document.getElementById(paragraphId2).hidden = true;
+			document.getElementById(paragraphId1).removeAttribute("hidden"); 
+		}else{
+			$.ajax({
+				url: '/readNotification',
+				type: 'GET',
+				traditional: true,
+				data: {ntfId: ntfId},
+				success: function (response) {
+				    //window.location.reload();
+				    document.getElementById(paragraphId1).hidden = true;
+					document.getElementById(paragraphId2).removeAttribute("hidden"); 
+				}
+			});
+		}
+		
+	}
+</script>
+
+
+
+
+

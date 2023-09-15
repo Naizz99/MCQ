@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Users / Profile</title>
+<style>
+	.profile-pic {
+		 color: transparent;
+		 transition: all 0.3s ease;
+		 display: flex;
+		 justify-content: center;
+		 align-items: center;
+		 position: relative;
+		 transition: all 0.3s ease;
+	}
+	 .profile-pic input {
+		 display: none;
+	}
+	 .profile-pic img {
+		 position: absolute;
+		 object-fit: cover;
+		 width: 165px;
+		 height: 165px;
+		 box-shadow: 0 0 10px 0 rgba(255, 255, 255, .35);
+		 border-radius: 100px;
+		 z-index: 0;
+	}
+	 .profile-pic .-label {
+		 cursor: pointer;
+		 height: 165px;
+		 width: 165px;
+	}
+	 .profile-pic:hover .-label {
+		 display: flex;
+		 justify-content: center;
+		 align-items: center;
+		 background-color: rgba(0, 0, 0, .8);
+		 z-index: 10000;
+		 color: #fafafa;
+		 transition: background-color 0.2s ease-in-out;
+		 border-radius: 100px;
+	}
+	 .profile-pic span {
+		 display: inline-flex;
+		 padding: 0.2em;
+		 height: 2em;
+	}
+	.CoverImage {
+	  display: inline-block;
+	  overflow: hidden;
+	  position: relative;
+	  width: 100%;
+	}
+	
+	.CoverImg {
+	  pointer-events: none;
+	  position: absolute;
+	  width: 100%;
+	  height: 100%;
+	  z-index: -1;
+	}
+	
+	.passwordForm{
+		 padding:2%;
+		 margin:2%;
+		 border-radius: 1%;
+		 border-style: inset;
+		 border-color: #990000;
+		 border-width: thin;
+	}
+	
+	.formBorder{
+		 padding:2%;
+		 margin:2%;
+		 border-radius: 1%;
+		 border-style: inset;
+		 border-color: #3399ff;
+		 border-width: thin;
+	}
+	
+	.roleForm{
+		 padding:2%;
+		 margin:2%;
+		 border-radius: 1%;
+		 border-style: inset;
+		 border-color: #2eb82e;
+		 border-width: thin;
+	}
+	
+	.alert {
+	  padding: 20px;
+	  background-color: #f44336;
+	  color: white;
+	  opacity: 1;
+	  transition: opacity 0.6s;
+	  margin-bottom: 15px;
+	}
+	
+	/* Popup arrow */
+	.popup .popuptext::after {
+	  content: "";
+	  position: absolute;
+	  margin-left: 80%;
+	  margin-top: -25px;
+	  border-width: 8px;
+	  border-style: solid;
+	  border-color: #555 transparent transparent transparent;
+	  transform: rotate(180deg);
+	}
+	
+	form{
+		width:100%;
+	}
+</style>
+
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main" th:style="'background-color:' + ${publisher.bodyBgColor} 
+				+ ';font-family:' + ${publisher.bodyFontFamily}
+				+ ';color:' + ${publisher.fontColor}
+				+ ';'">
+				<script>
+					document.getElementById("sidebar").style.backgroundColor = document.getElementById("main").style.backgroundColor;
+				</script>
+			<div class="pagetitle" style="background-color:red" th:if="${#arrays.contains(session.loggedRolesName, 'AUTHOR')}">
+				<div style="float:left;" >
+					<img th:src="${publisher.image}" alt="Profile" class="rounded-circle" th:if="${(publisher.image) != ''}" style="width:40px;height:40px;">
+					<img src="img/null-publisher.jpg" alt="Profile" class="rounded-circle" th:if="${publisher.image == ''}" style="width:40px;height:40px;">
+				</div>
+				<div style="float:left">
+					<h4 th:text = "${publisher.name}">Switch Profile</h4>
+				</div>
+				<div style="float:left;font-size:25px;" title="Switch Profile">
+					&nbsp;&nbsp;&nbsp;&nbsp;<a href="/userProfile"><i class="bi bi-arrow-repeat"></i></a>
+				</div>
+				<div style="float:left;" >
+					<img th:src="${profile.profilePic}" class="rounded-circle" th:if="${(profile.profilePic) != null}" th:title="${user.name}" style="width:40px;height:40px;">
+					<img src="img/profile.png" class="rounded-circle" th:if="${profile.profilePic == null}" th:title="${user.name}" style="width:40px;height:40px;">
+				</div>
+			</div><br><br><br>
+						
+			<section class="section profile">
+				<div class="row">
+					<div class="col-xl-4">
+						<div>
+							<div class="card-body pt-4 d-flex flex-column align-items-center CoverImage">
+								<label id="coverImageLabel" class="-label" for="file2">
+									<span class="glyphicon glyphicon-camera"></span>
+								    <span>Change Cover Photo</span>
+								</label>
+								<input id="file2" type="file" onchange="imageUploader(this.id,'cover')" hidden/>
+								<img class="CoverImg" th:src="${publisher.coverImage}" id="CoverImage" />
+								
+								<div class="profile-pic">
+									<label id="profileImageLabel" class="-label" for="file1">
+										<span class="glyphicon glyphicon-camera"></span>
+									    <span>Change Image</span>
+									</label>
+									<input id="file1" type="file" onchange="imageUploader(this.id,'profile')"/>
+									<img th:src="${publisher.image}" id="ProfileImage" width="200" th:if="${publisher.image != ''}" />
+									<img src="img/null-publisher.jpg" id="ProfileImage" width="200" th:if="${publisher.image == ''}" />
+								</div>
+							</div>
+							<div class="card-body pt-4 d-flex flex-column align-items-center CoverImage" >
+								<h2><span th:text="${publisher.name}"></span></h2>
+								<h3><span th:text="${publisher.email}"></span></h3>
+							</div>
+						</div>
+						
+						<form class="roleForm card" id="profile">
+							<div>
+								<label for="theam" class="form-label">Theam Colors</label>
+							</div>
+							<hr>
+							<div>
+								<table border=0 width="100%">
+									<tr>
+										<td>Background Color</td>
+										<td><input type="color" name="bodyBgColor" id="bodyBgColor" th:value="(${publisher.bodyBgColor == null} OR ${publisher.bodyBgColor == ''}) ? '#f6f9ff' : ${publisher.bodyBgColor}"></td>
+									</tr>
+									<tr>
+										<td>Font Type</td>
+										<td>
+											<select name="bodyFontFamily" id="bodyFontFamily" th:value="(${publisher.bodyFontFamily == null} OR ${publisher.bodyFontFamily == ''}) ? 'Nunito, sans-serif' : ${publisher.bodyFontFamily}">
+												<option value="Nunito, sans-serif" style="font-family:Nunito, sans-serif">Nunito</option>
+												<option value="Arial, sans-serif" style="font-family:Arial, sans-serif">Arial</option>
+												<option value="Verdana, sans-serif" style="font-family:Verdana, sans-serif">Verdana</option>
+												<option value="Tahoma, sans-serif" style="font-family:Tahoma, sans-serif">Tahoma</option>
+												<option value="Trebuchet MS, sans-serif" style="font-family:Trebuchet MS, sans-serif">Trebuchet MS</option>
+												<option value="Times New Roman, serif" style="font-family:Times New Roman, serif">Times New Roman</option>
+												<option value="Georgia, serif" style="font-family:Georgia, serif">Georgia</option>
+												<option value="Garamond, serif" style="font-family:Garamond, serif">Garamond</option>
+												<option value="Courier New, monospace" style="font-family:Courier New, monospace">Courier New</option>
+												<option value="Brush Script MT, cursive" style="font-family:Brush Script MT, cursive">Brush Script MT</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>Font Color</td>
+										<td><input type="color" name="fontColor" id="fontColor" th:value="(${publisher.fontColor == null} OR ${publisher.fontColor == ''}) ? '#000' : ${publisher.fontColor}"></td>
+									</tr>
+									<tr>
+										<td><u>Cards</u></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Background Color</td>
+										<td><input type="color" name="cardBgColor" id="cardBgColor" th:value="(${publisher.cardBgColor == null} OR ${publisher.cardBgColor == ''}) ? '#fff' : ${publisher.cardBgColor}"></td>
+									</tr>
+									<tr>
+										<td>Side Color</td>
+										<td><input type="color" name="cardSideColor" id="cardSideColor" th:value="(${publisher.cardSideColor == null} OR ${publisher.cardSideColor == ''}) ? '#e1f0fa' : ${publisher.cardSideColor}"></td>
+									</tr>
+									<tr>
+										<td>Mouseover Color</td>
+										<td><input type="color" name="cardSelectedColor" id="cardSelectedColor" th:value="(${publisher.cardSelectedColor == null} OR ${publisher.cardSelectedColor == ''}) ? '#e1f0fc' : ${publisher.cardSelectedColor}"></td>
+									</tr>
+								</table>
+							</div>
+							<div>
+								<button type="button" class="btn btn-warning" onclick="saveTheam('new')" style="width:25%">Save</button>
+								<button type="button" class="btn btn-danger" onclick="saveTheam('default')" style="width:25%">Set Default</button>
+							</div>
+						</form>
+					</div>
+
+					<div class="col-xl-8">
+						
+						<div class="row mb-3">
+							<p id="sts"><p>
+						</div>
+						
+						<!-- User Form -->
+						<form class="formBorder card" id = "publisher" th:object="${publisher}">
+							<input id = "publisherId" th:field="*{poId}" readonly hidden>
+							<input th:field="*{active}" readonly hidden>
+							<input th:field="*{approved}" readonly hidden>
+							<input th:field="*{image}" readonly hidden>
+							<input th:field="*{coverImage}" readonly hidden>
+							<input th:field="*{createBy}" readonly hidden>
+							<input th:field="*{createDate}" readonly hidden>
+							<input th:field="*{updateBy}" readonly hidden>
+							<input th:field="*{updateDate}" readonly hidden>
+							
+							<div class="row mb-3">
+								<label for="Name" class="col-md-4 col-lg-3 col-form-label">Name</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:field="*{name}" type="text" class="form-control" id="publisherName" th:value="${publisher.name}" style = "border: none;" readonly>
+								</div>
+							</div>
+							
+							<div class="row mb-3">
+								<label for="bio" class="col-md-4 col-lg-3 col-form-label">Description</label>
+								<div class="col-md-8 col-lg-9">
+									<textarea type = "text" th:field="*{description}" id="description" th:value="${description}" style = "border: none;" class="form-control" maxlength="1500" readonly></textarea>
+									<div id="the-count">
+			                            <span id="current">0</span>
+			                            <span id="maximum">/1500</span>
+			                        </div>
+								</div>
+							</div>
+							<script>
+								document.getElementById("current").innerText = $('#description').val().length;
+								$('#description').keyup(function() {
+								    
+								      var characterCount = $('#description').val().length,
+								          current = $('#current'),
+								          maximum = $('#maximum'),
+								          theCount = $('#the-count');
+								        
+								      current.text(characterCount);
+								     								      
+								      if (characterCount >= 1500) {
+								        maximum.css('color', '#8f0001');
+								        current.css('color', '#8f0001');
+								        theCount.css('font-weight','bold');
+								      } else {
+								        maximum.css('color','#666');
+								        theCount.css('font-weight','normal');
+								      }
+								      
+								          
+								    });
+							</script>
+							<div class="row mb-3">
+								<label for="email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:field="*{email}" type="email" class="form-control" id="email" th:value="${publisher.email}" style = "border: none;" readonly>
+								</div>
+							</div>
+							
+							<div class="row mb-3">
+								<label for="phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:field="*{mobile}" type="text" class="form-control" id="phone" th:value="${publisher.mobile}" style = "border: none;" readonly>
+								</div>
+							</div>	
+							
+							<div class="row mb-3">
+								<label for="address" class="col-md-4 col-lg-3 col-form-label">Address</label>
+								<div class="col-md-8 col-lg-9">
+									<input th:field="*{address}" type="text" class="form-control" id="address" th:value="${publisher.address}" style = "border: none;" readonly>
+								</div>
+							</div>	
+							
+			                <div class="row mb-3">
+								<label class="col-12 col-form-label" id="ssoLabel"></label>
+							</div>						
+						</form>
+						
+						<br>
+						<form>
+							<div class="text-right">
+								<button id = "updateProfile" type="button" class="btn btn-primary" onclick="enableProfile()">Update Profile</button>
+								<button id = "save" type="button" class="btn btn-success" onclick="saveProfile()">Save</button>
+								<button id = "cancel" type="button" class="btn btn-secondary" onclick="cancelUpdate()">Cancel</button>
+							</div>
+						</form>		
+						<br>
+					</div>
+					
+				</div>
+			</section>
+
+		</main>
+		<!-- End #main -->
+		<script src="js/publisher.management.js"></script>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+	<head>
+		<title>Group Management</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+			
+	<style>
+		.paperCard:hover { 
+	 		transform: scale(0.90);
+	  		box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px;
+		}
+	</style>
+	
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class = "row">
+				<div class="col-6 pagetitle" style = "float:left;">
+					<h1>Group Management</h1>
+					<nav>
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="/home">Home</a></li>
+							<li class="breadcrumb-item">Lecturers & Groups</li>
+							<li class="breadcrumb-item active"><a href="/listClassRooms">Groups</a></li>
+						</ol>
+					</nav>
+				</div>
+				<div class = "col-2" style = "float:left;">
+				<br><br>
+					<a type="button"  data-toggle="modal" data-target="#reportModalCenter" class = "btn btn-primary btn-lg" href=""><i class="bi bi-calendar3-range-fill"></i> &nbsp;Report Center </a>
+				</div>
+				<div class = "col-2" style = "float:left;">
+				<br><br>
+					<a type="button" class = "btn btn-primary btn-lg" th:href = "'/showClassRoomMessages?classroomId=' + ${classroom.classroomId} + '&email=' + ${user.email}"><i class="bi bi-envelope"></i> &nbsp;Messages </a>
+				</div>
+			</div>
+			<!-- End Page Title -->
+
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<h5 class="card-title">&nbsp;&nbsp;  Group Details <i title = "Share Link" class="bi bi-share-fill"></i> &nbsp; <i title = "Messages" class="bi bi-envelope"></i> &nbsp; <i title = "News" class="bi bi-newspaper"></i></h5>
+							<div class="card-body">
+								<form class="row g-3" id = "newClassRoom" th:object="${classroom}">
+									<input type="text" th:field="*{classroomId}" class="form-control" hidden>
+									<input type="text" th:field="*{classroomId}" class="form-control" hidden>
+									<div style="text-align:right" th:if="${classroom.availableDates} >= 10 AND *{classroomId} != null">
+								    	<span class="label text-success" th:text="'Expire in ' + ${classroom.availableDates} + ' Days'"></span>
+								    </div>
+								    <div style="text-align:right" th:if="${classroom.availableDates} < 10 AND ${classroom.availableDates} > 0 AND *{classroomId} != null">
+								    	<span class="label label-warning" th:text="'Expire in ' + ${classroom.availableDates} + ' Days'"></span>
+								    </div>
+								    <div style="text-align:right" th:if="${classroom.availableDates} == 0 AND *{classroomId} != null">
+								    	<span class="label label-danger">Expire Today</span>
+								    </div>
+									<span th:if="${classroom.status}" class="label label-success active1">Active</span>
+									<div class="col-md-6">
+										<label for="lecturer" class="form-label">Lecturer<span class="asterisk_input"></span></label>
+										<input th:if="${#arrays.contains(session.loggedRolesName, 'LECTURER')}" type="text" th:value="${session.user.name}" class="form-control" readonly required>
+										<input th:if="${#arrays.contains(session.loggedRolesName, 'LECTURER')}" type="text" th:field="*{lecturerId}" class="form-control" id = "lecturerId" hidden required>
+										<select th:if="${#arrays.contains(session.loggedRolesName, 'ADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}" class="form-select form-control" aria-label="Default select example" th:field="*{lecturerId}" id="lecturerId">
+				                            <option value=''>-- SELECT LECTURER --</option>
+				                            <option th:each="log:${lecturerList}"
+				                                    th:value="${log.lecturerId}"
+				                                    th:text="${log.userId.name}">
+				                            </option>
+				                        </select>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="name" class="form-label">Group Name<span class="asterisk_input"></span></label>
+										<input type="text" th:field="*{name}" class="form-control" id = "name" required>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="id" class="form-label">Group ID<span class="asterisk_input"></span></label>
+										<input type="text" th:field="*{loginId}" class="form-control" id = "loginId" disabled>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="passcode" class="form-label">Passcode<span class="asterisk_input"></span></label>
+										<input type="text" th:field="*{password}" class="form-control" id = "password" required>
+									</div>
+									
+									
+									<div class="col-md-12">
+										<label for="name" class="form-label">Type of Group<span class="asterisk_input"></span></label>
+									</div>
+									<div class="col-md-8">
+										<div class="form-check col-sm-6">
+											<input class="form-check-input" type="radio" th:field="*{type}" name="type" id="public" value="PUBLIC" checked>
+											<i class="bi bi-eye"></i> &nbsp; Public
+										</div>
+										<div class="form-check col-sm-6">
+											<input class="form-check-input" type="radio" th:field="*{type}" name="type" id="private" value="PRIVATE">
+											<i class="bi bi-eye-slash"></i> &nbsp; Private 
+										</div>
+									</div>
+									 
+									<div class="col-md-6">
+										<label for="grade" class="form-label">Grade<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{grade}" id="grade" onChange="update()">
+				                            <option value=''>-- SELECT GRADE --</option>
+				                            <option th:each="log:${gradeList}"
+				                                    th:value="${log.gradeId}"
+				                                    th:text="${log.gradeName}">
+				                            </option>
+				                        </select>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="subject" class="form-label">Subject<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{subjectId}" id="subject" >
+				                            <option value=''>-- SELECT SUBJECT --</option>
+				                        </select>
+									</div>
+									
+									<div class="col-md-12">
+										<label for="package" class="form-label">Package<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{packageId}" id="package" onChange="selectPackage(this.options[this.selectedIndex])" th:if="*{classroomId} == null">
+				                            <option value=''>-- SELECT PACKAGE --</option>
+				                            <option th:each="log:${packageList}"
+				                                    th:value="${log.packageId}"
+				                                    th:data-duration = "${log.duration}"
+				                                    th:text = "${log.duration} + ' Days for ' + ${log.studentCount} + ' Students    (Rs. ' + ${log.price} + '/=)'" >
+				                            </option>
+				                        </select>
+				                         <input type="hidden" id="packageDuration" th:if="*{classroomId} == null">
+				                        <input type="text" class="form-control" th:value="${classroom.packageId.duration} + ' Days for ' + ${classroom.packageId.studentCount} + ' Students    (Rs. ' + ${classroom.packageId.price} + '/=)'" th:if="*{classroomId} != null" disabled>
+				                        <input type="hidden" class="form-control" th:field="*{packageId}" id="package" th:if="*{classroomId} != null" >
+				                        <input type="hidden" id="packageDuration" th:value="${classroom.packageId.duration}" th:if="*{classroomId} != null">
+									</div>
+									
+									<div class="col-md-6">
+										<label for="startDate" class="form-label">Start Date</label>
+										<input type="date" class="form-control" id="startDate" name="startDate" th:field="*{startDate}" onchange = "changeDate()" th:if="*{classroomId} == null">
+										<input type="text" class="form-control" id="startDate" name="startDate" th:field="*{startDate}" th:if="*{classroomId} != null" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="status" class="form-label">End Date</label>
+										<input type="text" class="form-control" id="endDate" readonly>
+									</div>
+									
+									<div class="col-md-5" th:if="${classroom.status}" >
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "On Going ClassRoom" class="form-control" readonly>
+									</div>
+									<div class="col-md-1" th:if="${classroom.status}" >
+										<a type = "button" title = "Stop ClassRoom" class="bi bi-x" th:onclick="|stopClassRoom('${classroom.classroomId}')|" style = "color:green;"></a>
+									</div>
+									
+									<div class="col-md-5" th:if="${!classroom.status}">
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "ClassRoom Paused" class="form-control" readonly>
+									</div>
+									<div class="col-md-1" th:if="${!classroom.status}" >
+										<a type = "button" title = "Start ClassRoom" class="bi bi-check2-circle" th:onclick="|startClassRoom('${classroom.classroomId}')|" style = "color:green;"></a>
+									</div>
+									<input type="hidden" th:field="*{status}" id = "status" class="form-control" readonly>
+
+																											
+									<div class="col-md-5" th:if="${classroom.active}" >
+										<label for="status" class="form-label">Active / Deactive</label>
+										<input type="text" value = "Active" class="form-control" readonly>
+									</div>
+									<div class="col-md-1" th:if="${classroom.active}" >
+										<a type = "button" title = "Set as Close" class="bi bi-x" th:onclick="|classRoomDeactive('${classroom.classroomId}')|" style = "color:red;"></a>
+									</div>
+									
+									<div class="col-md-5" th:if="${!classroom.active}">
+										<label for="status" class="form-label">Active / Deactive</label>
+										<input type="text" value = "Closed" class="form-control" readonly>
+									</div>
+									<div class="col-md-1" th:if="${!classroom.active}" >
+										<a type = "button" title = "Set as Active" class="bi bi-check2-circle" th:onclick="|classRoomActive('${classroom.classroomId}')|" style = "color:red;"></a>
+									</div>
+									<input type="hidden" th:field="*{active}" id = "active" class="form-control" readonly>
+
+									<div class="col-md-6">
+										<label for="createBy" class="form-label">Create By</label> 
+										<input type="text" th:field="*{createBy}" id = "createBy" class="form-control" readonly>
+									</div>
+									<div class="col-md-6">
+										<label for="createDate" class="form-label">Create Date</label> 
+										<input type="text" th:field="*{createDate}" id = "createDate" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="updateBy" class="form-label">Update By</label> 
+										<input type="text" th:field="*{updateBy}" id = "updateBy" class="form-control" readonly>
+									</div>
+									<div class="col-md-6">
+										<label for="updateDate" class="form-label">Update Date</label> 
+										<input type="text" th:field="*{updateDate}" id = "updateDate" class="form-control" readonly>
+									</div>
+									
+									<div class="text-center">
+										<button type="button" id = "saveClassRoom" class="btn btn-primary">Submit</button>
+										<button type="button" th:onclick="|deleteClassRoom('${classroom.classroomId}')|" class="btn btn-danger">Delete</button>
+										<button type="reset" class="btn btn-secondary">Reset</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-lg-6">
+							
+						<div class="card">
+							<h5 class="card-title">&nbsp;&nbsp; Students
+								<a type="button"  data-toggle="modal" data-target="#studentModalCenter" class = "btn btn-dark btn-sm" style = "width : 10%;float:right;" href="" th:if="${classroom.packageId.studentCount > classroom.studentCount}"><i class="bi bi-plus-square"></i> &nbsp;Add </a>	
+							</h5>
+							
+							<p style="color:red;text-align:right;" th:if="${classroom.packageId} != null AND ${classroom.packageId.studentCount <= classroom.studentCount}">Maximum student count has been exceed. Please upgrade classroom.</p>
+							
+							<div class="card-body scrollit">
+								
+								<div th:each="student : ${studentList}" class="card mb-3" style = "background-color:#e6f2ff" >
+				                  <div class="card-body">
+				                    <div class="d-flex justify-content-between">
+				                      <div class="d-flex flex-row align-items-center">
+				                        <div>
+				                          <span th:if = "${student.status}" class="dot"></span>
+				                        </div>
+				                        <div class="ms-3">
+				                          <h4 th:text = "${student.studentId.userId.name}">Email</h4>
+				                          <p class="small mb-0" th:text = "${student.studentId.userId.email}">Join Date</p>
+				                          <p class="small mb-0" th:text = "${student.createDate} + '|' + ${student.updateDate}">Join Date</p>
+				                        </div>
+				                      </div>
+				                      <div class="d-flex flex-row align-items-center">
+				                        <div style="width: 50px;">
+				                          <i title = "Remove" class="bi bi-person-x" th:onClick = "|removeStudent('${student.classRoomStudentId}')|"></i>
+				                        </div>
+				                        <div style="width: 80px;">
+				                          <i th:if = "${student.status}" title = "Session Close" class="bi bi-power" th:onClick = "|sessionClose('${student.classRoomStudentId}')|"></i>
+				                          <i th:if = "${!student.status}" title = "Send Request" class="bi bi-send-plus" th:id = "sendRequest + ${student.classRoomStudentId}" th:onClick = "|sendRequest('${student.classRoomStudentId}')|"></i>
+				                        </div>
+				                      </div>
+				                    </div>
+				                  </div>
+				                </div>
+				                
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-lg-12">
+						
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="card-deck row" >
+							<h5 class="card-title">&nbsp;&nbsp; Papers
+								<a type="button"  data-toggle="modal" data-target="#paperModalCenter" class = "btn btn-dark btn-sm" style = "width : 10%;float:right;" href=""><i class="bi bi-plus-square"></i> &nbsp;Add </a>	
+							</h5>
+						  <div class="card col-2" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;" th:each="paper : ${paperList}">
+						    <div class="row" >
+						    	<div class="col-md-1" th:if="${paper.active}" style="foat:left;" >
+									<a type = "button" title = "Deactive Paper" class="bi bi-x-circle-fill" th:onclick="|deactiveClassRoomPaper(${paper.classRoomPaperId})|" style = "color:red;"></a>
+								</div>
+								<div class="col-md-1" th:if="${!paper.active}" style="foat:left;">
+									<a type = "button" title = "Active Paper" class="bi bi-check-circle-fill" th:onclick="|activeClassRoomPaper(${paper.classRoomPaperId})|" style = "color:green;"></a>
+								</div>
+								 <div class="col-md-1" style="foat:left;">
+									<a type = "button" title = "Remove Paper" class="bi bi-trash-fill" th:onclick="|removeClassRoomPaper(${paper.classRoomPaperId})|" style = "color:gray;"></a>
+								</div>
+						    </div>
+						    <div class="card-body" th:if="${paper.paperID} != null">
+						      <label style = "font-size:20px;" class="card-title" th:text = "${paper.paperID.name}"></label>
+						      <div style = "text-align:left;">
+						      	<table>
+						      		<tr>
+						      			<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark font-size:24;"></i>&nbsp;&nbsp;&nbsp;</td>
+						      			<td th:text = "${paper.paperID.subjectId.subjectName}"></td>
+						      		</tr>
+						      		<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+						      		<tr>
+						      			<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+						      			<td th:text = "${paper.paperID.grade.gradeName}"></td>
+						      		</tr>
+						      		<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+						      		<tr>
+						      			<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+						      			<td th:text = "'Time : ' + ${paper.paperID.time} + ' minutes'"></td>
+						      		</tr>
+						      	</table>
+						      	  
+						      </div>
+						    </div>
+						    <div class="card-body" th:if="${paper.bundleId} != null">
+						      <label style = "font-size:20px;" class="card-title" th:text = "${paper.bundleId.name}"></label>
+						      <div style = "text-align:left;">
+						      	<table>
+						      		<tr>
+						      			<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark font-size:24;"></i>&nbsp;&nbsp;&nbsp;</td>
+						      			<td th:text = "${paper.bundleId.paperCount}"></td>
+						      		</tr>
+						      		<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+						      		<tr>
+						      			<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+						      			<td th:text = "${paper.bundleId.grade.gradeName}"></td>
+						      		</tr>
+						      		<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+						      		<tr>
+						      			<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+						      			<td th:text = "'By ' + ${paper.bundleId.name}"></td>
+						      		</tr>
+						      	</table>
+						      </div>
+						    </div>
+						  </div>						  
+						</div>
+					</div>
+				</div>
+			</section>
+			
+			<!-- Adding Student Modal -->
+			<div class="modal fade" id="studentModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title" id="exampleModalLongTitle">Add New Student</h5>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body">
+			        <div class="col-md-12">
+						<label for="studentEmail" class="form-label">Student Email</label> 
+						<input type="email" id = "stdEmail" class="form-control" onInput="getStudents(this.value)">
+						<input type="hidden" id = "stdId" class="form-control">
+					</div>
+					<div class="col-md-12" id="studentDiv">
+						
+					</div>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			        <button id = "add" type="button" class="btn btn-primary" th:onClick = "|addClassRoomStudent(${classroom.classroomId})|"> Add</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			
+			<!-- Adding Paper Modal -->
+			<div class="modal fade" id="paperModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title" id="exampleModalLongTitle">Add New Paper</h5>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body">
+			      	<div class="card paperCard" style = "margin:2%;border: 2px solid; border-radius: 25px;" th:each="paper : ${lecturerPaperList}" th:if="${paper.paperId} != null">
+						<a type = "button" th:onClick = "|addClassRoomPaper(${classroom.classroomId},${paper.paperId.paperId},0)|" data-dismiss="modal">
+				    		<div class="card-body"><br>
+						    	<label style = "font-size:20px;" class="card-title" th:text = "${paper.paperId.name}"></label>
+						      	<div style = "text-align:left;">
+						      		<table>
+						      			<tr>
+						      				<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark font-size:24;"></i>&nbsp;&nbsp;&nbsp;</td>
+						      				<td th:text = "${paper.paperId.subjectId.subjectName}"></td>
+						      			</tr>
+						      			<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+						      			<tr>
+						      				<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+						      				<td th:text = "${paper.paperId.grade.gradeName}"></td>
+						      			</tr>
+						      			<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+						      			<tr>
+						      				<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+						      				<td th:text = "'Time : ' + ${paper.paperId.time} + ' minutes'"></td>
+						      			</tr>
+						      		</table>
+						      	</div>
+							</div>
+						</a>
+					</div>
+					<div class="card paperCard" style = "margin:2%;border: 2px solid; border-radius: 25px;" th:each="paper : ${lecturerPaperList}" th:if="${paper.bundleId} != null">
+						<a type = "button" th:onClick = "|addClassRoomPaper(${classroom.classroomId},0,${paper.bundleId.bundleId})|" data-dismiss="modal">
+				    		<div class="card-body"><br>
+						    	<label style = "font-size:20px;" class="card-title" th:text = "${paper.bundleId.name}"></label>
+						      	<div style = "text-align:left;">
+						      		<table>
+						      			<tr>
+						      				<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark font-size:24;"></i>&nbsp;&nbsp;&nbsp;</td>
+						      				<td th:text = "'Paper Count : ' + ${paper.bundleId.paperCount}"></td>
+						      			</tr>
+						      			<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+						      			<tr>
+						      				<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+						      				<td th:text = "${paper.bundleId.grade.gradeName}"></td>
+						      			</tr>
+						      			<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+						      			<tr>
+						      				<td  VALIGN=TOP><i class="bi bi-pencil-fill text-dark"></i>&nbsp;&nbsp;&nbsp;</td>
+						      				<td th:text = "'By ' + ${paper.bundleId.Publisher.name}"></td>
+						      			</tr>
+						      		</table>
+						      	</div>
+							</div>
+						</a>
+					</div>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			
+			<!-- Report Center Modal -->
+			<div class="modal fade" id="reportModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title" id="exampleModalLongTitle">Report Center</h5>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body row">
+			      	<div class="reportCard card col-5" style = "margin:4%;text-align:center;border: 1px solid;padding: 1%;box-shadow: 1px 1px #888888;">
+						<a th:href = "'/classroom/studentReport?classroomId=' + ${classroom.classroomId}">
+						  	<div class="card-body">
+						    	<label style = "font-size:15px;" class="card-title">Student Analysis Report</label><br>
+						    	<label style = "font-size:35px;"><i class="bi bi-download"></i></label>
+						    </div>
+						</a>
+					</div>
+			        
+			        <!-- 
+					<div class="reportCard card col-5" style = "margin:4%;text-align:center;border: 1px solid;padding: 1%;box-shadow: 1px 1px #888888;">
+						<a th:href = "'/classroom/paperReport?classroomId=' + ${classroom.classroomId}">
+						  	<div class="card-body">
+						    	<label style = "font-size:15px;" class="card-title">Paper Details</label><br>
+						    	<label style = "font-size:35px;"><i class="bi bi-download"></i></label>
+						    </div>
+					    </a>
+					</div>
+					 -->
+					<div class="reportCard card col-5" style = "margin:4%;text-align:center;border: 1px solid;padding: 1%;box-shadow: 1px 1px #888888;">
+					  	<a th:href = "'/classroom/activeSessionReport?classroomId=' + ${classroom.classroomId}">
+						  	<div class="card-body">
+						    	<label style = "font-size:15px;" class="card-title">Active Sessions</label><br>
+						    	<label style = "font-size:35px;"><i class="bi bi-download"></i></label>
+						    </div>
+						</a>
+					</div>
+					<div class="reportCard card col-5" style = "margin:4%;text-align:center;border: 1px solid;padding: 1%;box-shadow: 1px 1px #888888;">
+					  	<a th:href = "'/classroom/monthlySessionReport?classroomId=' + ${classroom.classroomId}">
+						  	<div class="card-body">
+						    	<label style = "font-size:15px;" class="card-title">Monthly Session Analyzer</label><br>
+						    	<label style = "font-size:35px;"><i class="bi bi-download"></i></label>
+						    </div>
+					    </a>
+					</div>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			<script src="js/classroom.management.js"></script>
+	</main>
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>

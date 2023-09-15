@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Report Center</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			
+			<div class="pagetitle">
+				<h1 id="rptName">User Details Report</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Reports</li>
+						<li class="breadcrumb-item active">User Details</li>
+					</ol>
+				</nav>
+			</div>
+
+			<div class="row" id="searchBar">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="row card-body">
+							<div class="col-3">
+								<div class="input-group">
+									<br> <input type="text" class="form-control" id="userId"
+										placeholder="USER ID">
+								</div>
+							</div>
+							<div class="col-3">
+								<div class="input-group">
+									<br> <input type="text" class="form-control" id="name"
+										placeholder="NAME">
+								</div>
+							</div>
+							<div class="col-3">
+								<br> <select class="form-select form-control"
+									aria-label="Default select example" id="gender">
+									<option value=''>GENDER</option>
+									<option value='male'>Male</option>
+									<option value='female'>Female</option>
+								</select>
+							</div>
+							<br>
+							<div class="col-3">
+								<br> <select class="form-select form-control"
+									aria-label="Default select example" id="userType">
+									<option value=''>USER TYPE</option>
+									<option th:each="log:${listRoles}" th:value="${log.roleId}"
+										th:text="${log.role}"></option>
+								</select>
+							</div>
+
+							<div class="col-3">
+								<br>
+								<div class="input-group">
+									<input type="email" class="form-control" id="email"
+										placeholder="Email">
+								</div>
+							</div>
+
+							<div class="col-3">
+								<br> <input type="text" class="form-control" id="mobile"
+									placeholder="Mobile">
+							</div>
+							<div class="col-6">
+								<br>
+								<button class="btn btn-primary" onclick="searchUserList()"
+									id="search">
+									<i class="bi bi-search"></i> &nbsp; Search
+								</button>
+								<a type="button" class="btn btn-danger"
+									style="background-color: #990000;" id="printButton">Export</a>
+								<a type="button" class="btn btn-secondary" id="cancelButton"
+									onClick="clearSearch()">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body" id="rptDiv">
+							<table class="table table-striped" id="rptTable">
+								<thead>
+									<tr>
+										<th scope="col">Id</th>
+										<th scope="col">Name</th>
+										<th scope="col">Gender</th>
+										<th scope="col">Email</th>
+										<th scope="col">Mobile</th>
+										<th scope="col">User Type</th>
+										<th scope="col">Status</th>
+									</tr>
+								</thead>
+								<tbody id="rptData">
+									<tr th:each="user : ${users}">
+										<td th:text="${user.userId}">ID</td>
+										<td th:text="${user.name}">Name</td>
+										<td th:text="${user.gender}">Gender</td>
+										<td th:text="${user.Email}">Email</td>
+										<td th:text="${user.Mobile}">Mobile</td>
+										<td th:text="${user.role}">User Type</td>
+										<td th:if="${!(user.active)}"><span
+											class="label label-danger">Deactive</span></td>
+										<td th:if="${user.active}"><span
+											class="label label-success">Active</span></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</main>
+
+		<script src="js/report.management.js"></script>
+
+	</div>
+</body>
+
+</html>
+
+

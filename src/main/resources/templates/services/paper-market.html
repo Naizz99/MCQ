@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Paper Market</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Paper Market</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Purchase Paper</li>
+						<li class="breadcrumb-item active"><a href="/listPurchasePapers">Papers</a></li>
+						<li class="breadcrumb-item active"><a href="/paperMarket">Paper Market</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+			
+			<a type = "button" class="btn btn-danger" th:href="@{/requestPapers}"><i class="bi bi-send-plus"></i> &nbsp; Request New Papers</a>
+			
+			<div class="card-deck row" >
+			  <!-- List Papers -->
+			  <div class="divCard card col-lg-3 col-sm-4" th:each="paper : ${listPapers}" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;" th:title="${paper.name} + '|' + ${paper.subjectId.grade.gradeName}">
+			    	<div class="card-body">
+				      <h5 class="card-title" th:text = ${paper.name} style = "font-size:190%;"></h5>
+				      <h4 class="card-text" th:text = ${paper.subjectId.subjectName}></h4>
+				      <h4 class="card-text" th:text = ${paper.subjectId.grade.gradeName}></h4>
+				      <p class="card-text"></p>
+				      <p style="text-align:right;">1X Paper Available</p>
+				    </div>
+				    <div class="card-footer rounded-pill">
+				    	<small class="text-muted" >
+				    		<a th:href="@{/purchase(paperId=${paper.paperId},bundleId=0)}" type="button" class="btn btn-primary btn-sm rounded-pill">Buy Now</a>
+				    		<a th:onclick="|addToCart('${paper.paperId}','paper')|" type="button" class="btn btn-info btn-sm rounded-pill">Add To Cart</a>
+				      	</small>
+				    </div>
+			  </div>
+			  
+			  <!-- List Bundles -->
+			  <div class="divCard card col-lg-3 col-sm-4" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;" th:each="bundle : ${listBundles}" th:title="${bundle.description}">
+			    	<div class="card-body" th:style="'background:url(' + ${bundle.image} + ');'" >
+				      <h5 class="card-title" th:text = ${bundle.name}></h5>
+				      <h4 class="card-text" th:text = ${bundle.grade.gradeName}></h4>
+				      <h4 class="card-text" th:text = ${bundle.publisher.name}></h4>
+				      <p class="card-text"></p>
+				      <p style="text-align:right;" th:text="${bundle.paperCount} + 'X Papers Available'"></p>
+				    </div>
+				    <div class="card-footer rounded-pill">
+				      	<small class="text-muted" >
+				      		<a th:href="@{/purchase(paperId=0,bundleId=${bundle.bundleId})}" type="button" class="btn btn-primary btn-sm rounded-pill">Buy Now</a>
+				      		<a th:onclick="|addToCart('${bundle.bundleId}','bundle')|" type="button" class="btn btn-info btn-sm rounded-pill">Add To Cart</a>
+			      		</small>
+				    </div>
+			    </a>
+			  </div>
+			</div>
+			
+		</main><!-- End #main -->	
+		<script src="js/paper.management.js"></script>
+		<script src="js/services/purchase.management.js"></script>
+  	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

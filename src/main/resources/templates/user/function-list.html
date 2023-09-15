@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>User Function Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>User Function Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item"><a href="">Settings</a></li>
+						<li class="breadcrumb-item"><a href="/listFunctions">Function Management</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+
+			<a type = "button" class="btn btn-primary" th:href="@{/addFunction}">Add New Function</a>
+			
+			<br/><br/>
+			
+			<table class="table datatable">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Function Action</th>
+						<th>Function Control</th>
+						<th>Is Parent</th>
+						<th>Parent ID</th>
+						<th>Status</th>
+						<!-- <th>Create User</th> -->
+						<th>Create Date</th>
+						<!-- <th>Last Update User</th> -->
+						<th>Last Update Date</th>
+					</tr>
+				</thead>	
+				<tbody>
+					<tr th:each="function : ${listFunctions}">
+						<td th:text="${function.functionId}">ID</td>
+						<td th:text="${function.functionName}">Name</td>
+						<td th:text="${function.functionAction}">Function Action</td>
+						<td th:text="${function.functionControl}">Function Control</td>
+						
+						<td th:if="${!(function.isParent)}"> No </td>
+						<td th:if="${function.isParent}">Yes</td>
+						
+						<td th:text="${function.parentId}">Parent ID</td>
+						<td th:if="${!(function.active)}"> <span class="label label-danger">Deactive</span> </td>
+						<td th:if="${function.active}"><span class="label label-success">Active</span></td>
+						<!-- <td th:text="${function.createBy}">Create User</td> -->
+						<td th:text="${function.createDate}">Create Date</td>
+						<!-- <td th:text="${function.updateBy}">Last Update User</td> -->
+						<td th:text="${function.updateDate}">Last Update Date</td>
+						<td colspan=2 style="letter-spacing: 10px;">
+							<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showFunctionUpdate(functionId=${function.functionId})}"></a>
+							<a type = "button" class="bi bi-trash" title="Delete" th:onclick="|deleteFunction('${function.functionId}')|" ></a>
+							<a type = "button" class="bi bi-clipboard-x"  title = "Deactivate" th:href="@{/functionDeactive(functionId=${function.functionId})}" th:if="${function.active}"></a>
+							<a type = "button" class="bi bi-clipboard-check" title = "Activate" th:href="@{/functionActive(functionId=${function.functionId})}" th:if="${!(function.active)}"></a>	
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</main><!-- End #main -->	
+		<script src="js/function.management.js"></script>
+  	</div>
+</body>
+
+</html>

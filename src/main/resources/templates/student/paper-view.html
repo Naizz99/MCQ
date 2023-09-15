@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout2}">
+
+<head>
+  <title>View Paper</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main container" >
+		<section class="section">
+			<div class="row">
+			
+				<div class="col-lg-12" style = "height:80px;">
+					<span id="count">Available Time</span>
+				</div>	
+				
+				<div class="col-lg-8">
+					<div class="card">
+						<div class="card-body">
+							<div class="pagetitle" >
+								<br>
+								<div style= "float:left;"><h1 th:text="${paper.name}">
+									</h1><input type="hidden" th:value="${paper.paperId}" id = "paperId">
+									<input type="hidden" th:value="${paper.paperId}" id = "paperId">
+									<input type="hidden" th:value="${subject.subjectId}" id = "subjectId">
+									<input type="hidden" th:value="${publisher.poId}" id = "publisherId">
+								</div>
+								
+								<div style= "text-align:right;">
+									<button type="button" class="btn btn-outline-secondary" style = "border: none;" data-toggle="modal" data-target="#exampleModalLong">
+									  <i class="bi bi-info-circle"></i>
+									</button>
+									
+								</div>
+								<br>
+								<nav>
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/home">Home</a></li>
+										<li class="breadcrumb-item"><a href="/student/listSubject">Subjects</a></li>
+										<li class="breadcrumb-item"><a th:href="'/student/listPublishersByGrade?subjectId=' + ${subject.subjectId}">Publishers</a></li>
+										<li class="breadcrumb-item"><a th:href="'/student/listPapersByPublisher?subjectId=' + ${subject.subjectId} + '&poId=' + ${paper.publisher.poId}">Papers</a></li>
+										<li class="breadcrumb-item active">Paper View</li>
+									</ol>
+								</nav>
+								
+							</div><!-- End Page Title -->
+							
+							<div id="quizpage" >
+								<div name="quiz" id="quiz">
+									<div style = "max-height: 620px;overflow: auto;" >
+									  <div th:each="question : ${listQuestions}">
+									    <h4 class = "que" th:text="${question.questionId + ') ' + question.question}"></h4>
+									    <p class = "ans" th:each="answer : ${listAnswers}" th:if="*{answer.pqId.pqId == question.pqId}">
+									    	<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}">
+									    	<br>
+											<img th:src = "${answer.image}" th:if = "${answer.image} != null" class = "col-2">
+								    	</p>
+									  </div>
+									</div>
+									
+								</div>								
+							</div>
+								
+							
+						</div>
+					</div>
+				</div>	
+				
+				<div class="col-lg-4" style = "height:80px;">
+					<div class="card">
+						<div class="card-body">
+							
+							<br><br><br><br>
+							<div class="input-group mb-3">
+								<a type="button" class="btn btn-primary w-100" id = "done" th:onclick="|mark('${paper.paperId}')|">Done &nbsp;<i class="bi bi-check"></i></a>
+								<a type="hidden" class="btn btn-primary w-100" id = "try1" onclick="tryagain()">Try Again</a><br><br>
+								<a type="button" class="btn btn-secondary w-100" id = "close" href="/home">Close &nbsp;X</a><br><br>
+								
+								
+						    </div>
+						</div>
+					</div>
+				</div>	
+				
+				<!-- Modal -->
+				<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+				  <div class="modal-dialog" role="document">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				          <span aria-hidden="true"> &nbsp;&nbsp;&nbsp;&nbsp; &times;</span>
+				        </button>
+				      </div>
+				      <div class="modal-body">
+				        <form id = "newReview" th:object="${review}">
+							<table width="100%">
+								<tbody>
+									<tr>
+										<td>
+											<label for="totAtp" class="form-label">Attempts Allowed </label> 
+										</td>
+										<td>
+											<input  type="text" id = "totAtp" value = "3" style = "border: none;" disabled >
+										</td>
+									</tr>
+									
+									<tr>
+										<td>
+											<label for="availableAtp" class="form-label">Available Attempts</label>
+										</td>
+										<td>
+											<input  type="text" id = "availableAtp" style = "border: none;" disabled >
+										</td>
+									</tr>
+									
+									<tr>
+										<td>
+											<label for="questionId" class="form-label">Selected Paper </label> 
+										</td>
+										<td>
+											<input  type="text" id = "paperName" th:value="${paper.name}" style = "border: none;" disabled >
+											<input  type="hidden" id = "paperId" th:field="*{paperID}" style = "width:50%;" disabled >
+										</td>
+									</tr>
+									 
+									<tr>
+										<td>
+											<label for="questionId" class="form-label">Available Time (Minutes)</label>
+										</td>
+										<td>
+											<input  type="text" id = "paperTime" th:value="${paper.time}" style = "border: none;" disabled >
+										</td>
+									</tr>
+									
+									<tr>
+										<td>
+											<label for="questionId" class="form-label">Attempts User</label>
+										</td>
+										<td>
+											<input  type="text" id = "atpUser" style = "border: none;" th:field="*{createBy}" disabled >
+										</td>
+									</tr>
+									
+									<tr>
+										<td>
+											<label for="questionId" class="form-label">Attempts Date</label>	
+										</td>
+										<td>
+											<input  type="text" id = "atpDate" style = "border: none;" th:field="*{seatedDate}" disabled >
+										</td>
+									</tr>
+									
+									<tr>
+										<td>
+											<label for="questionId" class="form-label">Results</label>
+										</td>
+										<td>
+											<input  type="text" id = "atpResults" style = "border: none;" th:field="*{result}" disabled >
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							
+						</form>	
+				      </div>
+				    </div>
+				  </div>
+				</div>
+					
+			</div>
+		</section>			
+			
+		
+		</main><!-- End #main -->	
+  	</div>
+</body>
+</html>
+
+<script src="../js/student.management.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

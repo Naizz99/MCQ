@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Paper Bundle Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Paper Bundle Managements</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Paper Management</li>
+						<li class="breadcrumb-item active"><a href="/listPaperBundle">Bundle Management</a></li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Bundle Details</h5>	
+								<form class="row g-3" id = "newBundle" th:object="${bundle}" >
+									<input type="hidden" th:field="*{bundleId}" id="bundleId" class="form-control" readonly>
+									<input type="hidden" th:field="*{userId}" id="userId" class="form-control" readonly>
+									<input type="hidden" th:field="*{active}" class="form-control" readonly>
+									<input type="hidden" th:field="*{createBy}" class="form-control" readonly>
+									<input type="hidden" th:field="*{createDate}" class="form-control" readonly>
+									
+									<div class="col-md-12" >
+										<label for="name" class="form-label">Name<span class="asterisk_input"></span></label>
+										<input type = "text" id = "bundleName" th:field="*{name}" class="form-control" required>
+									</div>
+									 
+									<div class="col-md-12">
+										<label for="image" class="form-label">Image</label>
+										<input type="file" id="bundleImage" class="form-control" oninput="imageLoad()" required>
+									</div>
+									
+									<div class="col-md-12">
+										<label for="description" class="form-label">Description</label>
+										<textarea th:field="*{description}" class="form-control"></textarea>
+									</div>
+									
+									<div class="col-md-7">
+										<label for="grade" class="form-label">Grade<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{grade}" id="grade" >
+				                            <option value=''>-- SELECT GRADE --</option>
+				                            <option th:each="log:${gradeList}"
+				                                    th:value="${log.gradeId}"
+				                                    th:text="${log.gradeName}">
+				                            </option>
+				                        </select>
+									</div>
+										
+									<div class="col-md-7" th:if="${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'ADMIN')}">
+										<label for="publisher" class="form-label">Publisher<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{publisher}" id="publisher">
+				                            <option value=''>-- SELECT PUBLISHER -- </option>
+				                            <option th:each="log:${listPublishers}"
+				                                    th:value="${log.poId}"
+				                                    th:text="${log.name}">
+				                            </option>
+				                        </select>
+									</div>
+									<div class="col-md-7" th:if="(${#arrays.contains(session.loggedRolesName, 'AUTHOR')} OR ${#arrays.contains(session.loggedRolesName, 'EDITOR')}) AND (!${#arrays.contains(session.loggedRolesName, 'ADMIN')} AND !${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')})">
+										<label for="publisher" class="form-label">Publisher<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{publisher}" id="publisher" Disabled>
+				                            <option value=''>-- SELECT PUBLISHER -- </option>
+				                            <option th:each="log:${listPublishers}"
+				                                    th:value="${log.poId}"
+				                                    th:text="${log.name}">
+				                            </option>
+				                        </select>
+									</div>
+									<div class="col-md-7" th:if="(${#arrays.contains(session.loggedRolesName, 'LECTURER')}) AND (!${#arrays.contains(session.loggedRolesName, 'ADMIN')} AND !${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')})">
+										<label for="publisher" class="form-label">Publisher<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{publisher}" id="publisher" Disabled>
+				                            <option value='0'>INDIVIDUAL PUBLISHER</option>
+				                        </select>
+									</div>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									
+									<div class="col-md-4 form-check form-switch"><br>
+										<input class="form-check-input" type="checkbox" th:field="*{availableForBuy}" id="availableForBuy">
+										<label class="form-check-label" >Add to Market Place</label>
+									</div>
+									
+														                										
+									<div class="col-md-12">
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Active"  class="form-control" th:if="${bundle.active}" readonly>
+										<input type="text" value = "Deactive"  class="form-control" th:if="${!bundle.active}" readonly>
+									</div>
+																
+									<div class="col-md-6">
+										<label for="updateBy" class="form-label">Update By</label> 
+										<input type="text" th:field="*{updateBy}" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="updateDate" class="form-label">Update Date</label> 
+										<input type="text" th:field="*{updateDate}" class="form-control" readonly>
+									</div>
+									
+									<div class="text-center">
+										<button type="button" id = "saveBundle" class="btn btn-primary">Submit</button>
+										<button type="reset" class="btn btn-secondary">Reset</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-lg-6" th:if="(${bundle.bundleId} != null) AND (${bundle.bundleId} != '')">
+						<div class="card">
+							<h5 class="card-title">&nbsp;&nbsp; Papers
+							<a type="button"  data-toggle="modal" data-target="#PaperModal" class = "btn btn-dark btn-sm" style = "width : 10%;float:right;" href=""><i class="bi bi-plus-square"></i> &nbsp;Add </a>	
+							</h5>
+							<div class="card-body scrollit">
+								<div th:each="paper : ${linkedPaperList}" class="card mb-3" style = "background-color:#e6f2ff" >
+				                  <div class="card-body">
+				                    <div class="d-flex justify-content-between">
+				                      <div class="d-flex flex-row align-items-center">
+				                        <div>
+				                        	<!-- <span th:if = "${paper.active}" class="dot"></span> -->
+				                        	<span class="dot"></span>
+				                        </div>
+				                        <div class="ms-3">
+				                        	<input type="hidden" th:value = "${paper.paperId.paperId}">
+				                          	<h4 th:text = "${paper.paperId.name} + ' | ' + ${paper.paperId.grade.grade}">...</h4>
+				                          	<p class="small mb-0" th:text = "${paper.updateDate} + '|' + ${paper.updateBy}">Join Date</p>
+				                        </div>
+				                      </div>
+				                      <div class="d-flex flex-row align-items-center">
+				                        <div style="width: 50px;">
+				                          <i title = "Remove Paper" class="bi bi-trash-fill" th:onClick = "|removePaperLink('${paper.pbLinkId}')|"></i>
+				                        </div>
+				                      </div>
+				                    </div>
+				                  </div>
+				                </div>
+				                
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			
+			<!-- Adding Paper Modal -->
+			<div class="modal fade" id="PaperModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title" id="exampleModalLongTitle">Add new paper</h5>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body row">
+				        <div class="col-md-8"> 
+							<input type="text" id = "paperId" class="form-control" placeholder = "ENTER PAPER ID">
+						</div>
+						<div class="col-md-4">
+							<button type="button" class="btn btn-warning" onClick = "getPaper(document.getElementById('paperId').value)">Search</button>
+						</div>
+			      </div>
+			      <div class="modal-body" id = "paperDetails">
+				        <div class="col-md-10">
+							<label class="form-label">Name</label>
+							<input type="text" id = "paperName" class="form-control">
+						</div>
+						<div class="col-md-10" >
+							<label class="form-label">Grade</label> 
+							<input type="text" id = "paperGrade" class="form-control">
+						</div>
+						<div class="col-md-10">
+							<label class="form-label">Subject</label> 
+							<input type="text" id = "subject" class="form-control">
+						</div>
+						<div class="col-md-10" >
+							<label class="form-label">Publisher</label> 
+							<input type="text" id = "paperPublisher" class="form-control">
+						</div>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			        <button type="button" id="addPaper" class="btn btn-primary" onClick = "addPaper()"> Add</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+	</main>
+	<!-- End #main -->
+	<script src="js/services/paper.bundle.management.js"></script>
+	</div>
+</body>
+
+</html>
+
+

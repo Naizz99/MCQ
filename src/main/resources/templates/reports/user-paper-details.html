@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+	<title>Report Center</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+
+			<div class="pagetitle">
+				<h1 id="rptName">User Paper Creation Report</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Reports</li>
+						<li class="breadcrumb-item active">User Paper Creation Report</li>
+					</ol>
+				</nav>
+			</div>
+
+			<div class="row" id="searchBar">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body row">
+							<div class="col-3">
+								<div class="input-group">
+									<br> <input type="text" class="form-control" id="userId"
+										placeholder="SEARCH BY USER ID">
+								</div>
+							</div>
+
+							<div class="col-9">
+								<button class="btn btn-primary" onclick="searchUserPaperList()"
+									id="search">
+									<i class="bi bi-search"></i> &nbsp; Search
+								</button>
+								<a type="button" class="btn btn-danger"
+									style="background-color: #990000;" id="printButton">Export</a>
+								<a type="button" class="btn btn-secondary" id="cancelButton"
+									onClick="location.reload()">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body" id="rptDiv">
+							<table class="table table-striped" id="rptTable">
+							<caption><h2>User Summery Report</h2></caption>
+								<thead>
+									<tr>
+										<th scope="col">User Id</th>
+										<th scope="col">Name</th>
+										<th scope="col">Total Paper Creation</th>
+										<th scope="col">Active Count</th>
+										<th scope="col">Deactive Count</th>
+										<th scope="col">Total Attended Count</th>
+									</tr>
+								</thead>
+								<tbody id="rptData">
+									<tr th:each="paper : ${userPapers}">
+										<td th:text="${paper.userId}"></td>
+										<td th:text="${paper.userName}"></td>
+										<td th:text="${paper.totalCreateCount}"></td>
+										<td th:text="${paper.onActiveCount}"></td>
+										<td th:text="${paper.onDeactiveCount}"></td>
+										<td th:text="${paper.attendedCount}"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body" id="paperSummeryData">
+							<table class="table table-striped" id="rptTable2">
+							<caption><h2>Paper Summery Report</h2></caption>
+								<thead>
+									<tr>
+										<th scope="col">Paper Id</th>
+										<th scope="col">Name</th>
+										<th scope="col">Subject</th>
+										<th scope="col">Publisher</th>
+										<th scope="col">Grade</th>
+										<th scope="col">Status</th>
+										<th scope="col">Total Attended Count</th>
+										<th scope="col">Average Scores</th>
+									</tr>
+								</thead>
+								<tbody id="rptData2">
+									
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</main>
+	</div>
+</body>
+
+</html>
+
+<script src="js/report.management.js"></script>
+
+

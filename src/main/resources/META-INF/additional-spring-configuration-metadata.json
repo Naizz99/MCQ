@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "file.static.location",
+    "type": "java.lang.String",
+    "description": "A description for 'file.static.location'"
+  },
+  {
+    "name": "file.image.location",
+    "type": "java.lang.String",
+    "description": "A description for 'file.image.location'"
+  }
+]}

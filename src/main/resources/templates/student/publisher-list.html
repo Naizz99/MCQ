@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Student Panel</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main container" >
+			<div class="pagetitle">
+				<h1>Publishers</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item"><a href="/home">Subjects</a></li>
+						<li class="breadcrumb-item active"><a th:href="'/student/listPublishersByGrade?subjectId=' + ${subject.subjectId}">Publishers</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+			
+			<div class="card-deck row" >
+			  <div class="divCard card col-lg-3 col-sm-4" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;"  th:each="paper : ${listPapers}">
+			  	<a th:href="@{/student/listPapersByPublisher(subjectId=${subject.subjectId},poId=${paper.poId})}">
+			    <div class="card-body">
+			    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-box-arrow-up-right"></i></label><br>
+			      	<label style = "font-size:30px;" class="card-title" th:text="${paper.name}"></label><br>
+			    </div>
+			    </a>
+			  </div>
+			  <h5 th:if="${#lists.isEmpty(listPapers)}" class="text-dark card-title">There are no currently activated papers</h5>	
+			</div>
+			
+		</main><!-- End #main -->	
+  	</div>
+</body>
+</html>
+
+<script src="js/paper.management.js"></script>
+
+<script>
+	
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

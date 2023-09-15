@@ -1,0 +1,59 @@
+﻿
+#backicon {
+    animation: heartbeat 1.5s ease-in-out infinite both;
+}
+
+@keyframes heartbeat {
+    from {
+        transform: scale(1);
+        transform-origin: center center;
+        animation-timing-function: ease-out;
+    }
+
+    10% {
+        transform: scale(0.91);
+        animation-timing-function: ease-in;
+    }
+
+    17% {
+        transform: scale(0.98);
+        animation-timing-function: ease-out;
+    }
+
+    33% {
+        transform: scale(0.87);
+        animation-timing-function: ease-in;
+    }
+
+    45% {
+        transform: scale(1);
+        animation-timing-function: ease-out;
+    }
+}
+
+.backLblPos {
+    position: fixed;
+    left: 0%;
+    top: 24%;
+}
+
+.rnb-button {
+    width: 100px;
+    height: 100px;
+    padding: 1rem 1.4rem;
+    font-size: 2.94rem;
+}
+
+.back-to-top {
+    position: fixed;
+    bottom: 2px;
+    right: 10px;
+    padding: 15px;
+    background: #222;
+    color: #ddd;
+}
+
+a#back-to-top {
+    width: 40px;
+    left: 50%;
+}

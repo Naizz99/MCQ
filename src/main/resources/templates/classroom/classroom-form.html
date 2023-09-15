@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+	<head>
+		<title>Student Group Management</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+		<style>
+			.paperCard:hover { 
+		 		transform: scale(0.90);
+		  		box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px;
+			}
+		</style>
+		
+	</head>
+
+	<body th:style="'--bodyBgColor:' + ${classroom.bodyBgColor}
+		+ ';--fontColor:' + ${classroom.fontColor}	
+		+ ';--bodyFontFamily:' + ${classroom.bodyFontFamily}	
+		+ ';--cardBgColor:' + ${classroom.cardBgColor}	
+		+ ';--cardSideColor1:' + ${classroom.cardSideColor}	
+		+ ';--cardSelectedColor:' + ${classroom.cardSelectedColor}">
+		<div layout:fragment="content" th:remove="tag">
+			<main id="main" class="main">
+				<div class = "row">
+					<div class="col-6 pagetitle" style = "float:left;">
+						<h1><span th:if="${classroom.status}" class="label label-success active1">ONLINE</span> &nbsp; Student Group Management </h1> 
+						<nav>
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item"><a href="/home">Home</a></li>
+								<li class="breadcrumb-item">Lecturers & Student Groups</li>
+								<li class="breadcrumb-item active"><a href="/listClassRooms">Groups</a></li>
+							</ol>
+						</nav>
+					</div>
+				</div>
+				<!-- End Page Title -->
+	
+				<section class="section">
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="card">
+								<div class="card-body">
+									<form class="row g-3" id = "newClassRoom" th:object="${classroom}">
+										<input type="hidden" th:field="*{classroomId}" class="form-control" hidden>
+										<input type="hidden" th:field="*{classroomId}" class="form-control" hidden>
+										<input type="hidden" th:field="*{status}" id = "status" class="form-control" readonly>
+										<input type="hidden" th:field="*{active}" id = "active" class="form-control" readonly>
+										<input type="hidden" th:field="*{createBy}" id = "createBy" class="form-control" readonly>
+										<input type="hidden" th:field="*{createDate}" id = "createDate" class="form-control" readonly>
+										<input type="hidden" th:field="*{updateBy}" id = "updateBy" class="form-control" readonly>
+										<input type="hidden" th:field="*{updateDate}" id = "updateDate" class="form-control" readonly>
+										<input type="hidden" th:field="*{bodyBgColor}" id = "a" class="form-control" readonly>
+										<input type="hidden" th:field="*{fontColor}" id = "b" class="form-control" readonly>
+										<input type="hidden" th:field="*{bodyFontFamily}" id = "c" class="form-control" readonly>
+										<input type="hidden" th:field="*{cardBgColor}" id = "d" class="form-control" readonly>
+										<input type="hidden" th:field="*{cardSideColor}" id = "e" class="form-control" readonly>
+										<input type="hidden" th:field="*{cardSelectedColor}" id = "f" class="form-control" readonly>
+										
+										<div style="text-align:right" th:if="${classroom.availableDates} >= 10 AND *{classroomId} != null">
+									    	<span class="label text-success" th:text="'Expire in ' + ${classroom.availableDates} + ' Days'"></span>
+									    </div>
+									    <div style="text-align:right" th:if="${classroom.availableDates} < 10 AND ${classroom.availableDates} > 0 AND *{classroomId} != null">
+									    	<span class="label label-warning" th:text="'Expire in ' + ${classroom.availableDates} + ' Days'"></span>
+									    </div>
+									    <div style="text-align:right" th:if="${classroom.availableDates} == 1 AND *{classroomId} != null">
+									    	<span class="label label-danger">Expire Today</span>
+									    </div>
+										<div style="text-align:right" th:if="${classroom.availableDates} == 0 AND *{classroomId} != null">
+									    	<span class="label label-danger">Expired</span>
+									    </div>
+										<div class="col-md-6">
+											<label for="lecturer" class="form-label">Lecturer<span class="asterisk_input"></span></label>
+											<input th:if="${#arrays.contains(session.loggedRolesName, 'LECTURER')} AND (!${#arrays.contains(session.loggedRolesName, 'ADMIN')} AND ${!#arrays.contains(session.loggedRolesName, 'SUPERADMIN')})" type="text" th:value="${session.user.name}" class="form-control" readonly required>
+											<input th:if="${#arrays.contains(session.loggedRolesName, 'LECTURER')}" type="text" th:field="*{lecturerId}" class="form-control" id = "lecturerId" hidden required>
+											<select th:if="${#arrays.contains(session.loggedRolesName, 'ADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}" class="form-select form-control" aria-label="Default select example" th:field="*{lecturerId}" id="lecturerId">
+					                            <option value=''>-- SELECT LECTURER --</option>
+					                            <option th:each="log:${lecturerList}"
+					                                    th:value="${log.lecturerId}"
+					                                    th:text="${log.userId.name}">
+					                            </option>
+					                        </select>
+										</div>
+										
+										<div class="col-md-6">
+											<label for="name" class="form-label">Group Name<span class="asterisk_input"></span></label>
+											<input type="text" th:field="*{name}" class="form-control" id = "name" required>
+										</div>
+										
+										<div class="col-md-6">
+											<label for="id" class="form-label">Group ID<span class="asterisk_input"></span></label>
+											<input type="text" th:field="*{loginId}" class="form-control" id = "loginId" disabled>
+										</div>
+										
+										<div class="col-md-6">
+											<label for="passcode" class="form-label">Passcode<span class="asterisk_input"></span></label>
+											<input type="text" th:field="*{password}" class="form-control" id = "password" required>
+										</div>
+										
+										<div class="col-md-12">
+											<label for="name" class="form-label">Type of Groups<span class="asterisk_input"></span></label>
+										</div>
+										<div class="col-md-8">
+											<div class="form-check col-sm-6">
+												<input class="form-check-input" type="radio" th:field="*{type}" name="type" id="public" value="PUBLIC" checked>
+												<i class="bi bi-eye"></i> &nbsp; Public
+											</div>
+											<div class="form-check col-sm-6">
+												<input class="form-check-input" type="radio" th:field="*{type}" name="type" id="private" value="PRIVATE">
+												<i class="bi bi-eye-slash"></i> &nbsp; Private 
+											</div>
+										</div>
+										 
+										<div class="col-md-6">
+											<label for="grade" class="form-label">Grade<span class="asterisk_input"></span></label>
+											<select class="form-select form-control" aria-label="Default select example" th:field="*{grade}" id="grade" onChange="update()">
+					                            <option value=''>-- SELECT GRADE --</option>
+					                            <option th:each="log:${gradeList}"
+					                                    th:value="${log.gradeId}"
+					                                    th:text="${log.gradeName}">
+					                            </option>
+					                        </select>
+										</div>
+										
+										<div class="col-md-6">
+											<label for="subject" class="form-label">Subject<span class="asterisk_input"></span></label>
+											<select class="form-select form-control" aria-label="Default select example" th:field="*{subjectId}" id="subject" >
+					                            <option value=''>-- SELECT SUBJECT --</option>
+					                        </select>
+										</div>
+										
+										<div class="col-md-12">
+											<label for="package" class="form-label">Package<span class="asterisk_input"></span></label>
+											<!-- 
+											<select class="form-select form-control" aria-label="Default select example" th:field="*{packageId}" id="package" onChange="selectPackage(this.options[this.selectedIndex])" th:if="*{classroomId} == null">
+					                            <option value=''>-- SELECT PACKAGE --</option>
+					                            <option th:each="log:${packageList}"
+					                                    th:value="${log.packageId}"
+					                                    th:data-duration = "${log.duration}"
+					                                    th:text = "${log.duration} + ' Days for ' + ${log.studentCount} + ' Students    (Rs. ' + ${log.price} + '/=)'" >
+					                            </option>
+					                        </select>
+											 -->
+					                        <input type="hidden" id="packageDuration" th:if="*{classroomId} == null">
+					                        <input type="text" class="form-control" th:value="${classroom.packageId.duration} + ' Days for ' + ${classroom.packageId.studentCount} + ' Students    (Rs. ' + ${classroom.packageId.price} + '/=)'" disabled>
+					                        <input type="hidden" class="form-control" th:field="*{packageId}" id="package" th:if="*{classroomId} != null" >
+					                        <input type="hidden" id="packageDuration" th:value="${classroom.packageId.duration}" th:if="*{classroomId} != null">
+										</div>
+										
+										<div class="col-md-6">
+											<label for="startDate" class="form-label">Start Date</label>
+											<input type="date" class="form-control" id="startDate" name="startDate" th:field="*{startDate}" onchange = "changeDate()" th:if="*{classroomId} == null">
+											<input type="text" class="form-control" id="startDate" name="startDate" th:field="*{startDate}" th:if="*{classroomId} != null" readonly>
+										</div>
+										
+										<div class="col-md-6">
+											<label for="status" class="form-label">End Date</label>
+											<input type="text" class="form-control" id="endDate" readonly>
+										</div>
+										
+										<div class="text-center">
+											<button type="button" id = "saveClassRoom" class="btn btn-primary">Submit</button>
+											<button type="button" th:onclick="|deleteClassRoom('${classroom.classroomId}')|" class="btn btn-danger">Delete</button>
+											<button type="reset" class="btn btn-secondary">Reset</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-lg-3 row" th:if="(${classroom.classroomId} != null) AND (${classroom.classroomId} != '')">
+							<!-- STUDENTS -->
+							<a th:href="@{/listClassromStudents(classroomId=${classroom.classroomId})}">
+								<div class="col-10 rounded ">
+									<div class="card info-card card-1 align-items-center" style="background-color: #a3a3c2;">
+										<div class="card-body align-items-center">
+											<h5 class="card-title "><i class="bi bi-people"></i> &nbsp;STUDENTS</h5>
+										</div>
+									</div>
+								</div>	
+							</a>
+							<!-- REPORTS -->		
+							<a data-toggle="modal" data-target="#reportModalCenter">
+								<div class="col-10 rounded ">
+									<div class="card info-card card-1 align-items-center" style="background-color: #66b3ff;">
+										<div class="card-body align-items-center">
+											<h5 class="card-title "><i class="bi bi-download"></i> &nbsp;REPORTS</h5>
+										</div>
+									</div>
+								</div>
+							</a>
+							<!-- ACTIVE/DEACTIVE -->
+							<a th:if="${classroom.active}" th:onclick="|classRoomDeactive('${classroom.classroomId}')|">
+								<div class="col-10 rounded ">
+									<div class="card info-card card-1 align-items-center" style="background-color: #85e085;">
+										<div class="card-body align-items-center">
+											<h5 class="card-title "><i class="bi bi-activity"></i> &nbsp;ACTIVATED</h5>
+										</div>
+									</div>
+								</div>
+							</a>
+							<a th:if="${!classroom.active}" th:onclick="|classRoomActive('${classroom.classroomId}')|">
+								<div class="col-10 rounded ">
+									<div class="card info-card card-1 align-items-center" style="background-color: #ff9999;">
+										<div class="card-body align-items-center">
+											<h5 class="card-title "><i class="bi bi-exclamation-triangle"></i> &nbsp;DEACTIVATED</h5>
+										</div>
+									</div>
+								</div>
+							</a>
+							<!-- SHARE -->
+							<a data-toggle="modal" data-target="#appearanceModalCenter">
+								<div class="col-10 rounded ">
+									<div class="card info-card card-1 align-items-center" style="background-color: #ff9966;">
+										<div class="card-body align-items-center">
+											<h5 class="card-title "><i class="bi bi-menu-button-wide-fill"></i> &nbsp;Appearance</h5>
+										</div>
+									</div>
+								</div>	
+							</a>
+						</div>
+						
+						<div class="col-lg-3 row" th:if="(${classroom.classroomId} != null) AND (${classroom.classroomId} != '')">
+							<!-- PAPER -->
+							<a th:href="@{/listClassromPapers(classroomId=${classroom.classroomId})}">
+								<div class="col-10 rounded ">
+									<div class="card info-card card-1 align-items-center" style="background-color: #e699ff;">
+										<div class="card-body align-items-center">
+											<h5 class="card-title "><i class="bi bi-journal-text"></i> &nbsp;PAPERS</h5>
+										</div>
+									</div>
+								</div>
+							</a>	
+							<!-- MESSAGE -->
+							<!-- <a th:href = "'/showClassRoomMessages?classroomId=' + ${classroom.classroomId} + '&email=' + ${user.email}"> -->
+							<a style="opacity:0.7">
+								<div class="col-10 rounded ">
+									<div class="card info-card card-1 align-items-center" style="background-color: #ffd966;">
+										<div class="card-body align-items-center">
+											<h5 class="card-title "><i class="bi bi-chat-right-text"></i> &nbsp;MESSAGES</h5>
+										</div>
+									</div>
+								</div>
+							</a>
+							<!-- START/STOP -->
+							<a th:if="${!classroom.status} AND ${!classroom.expired}" th:onclick="|startClassRoom('${classroom.classroomId}')|">
+								<div class="col-10 rounded ">
+									<div class="card info-card card-1 align-items-center" style="background-color: #85e085;">
+										<div class="card-body align-items-center">
+											<h5 class="card-title "><i class="bi bi-play-circle"></i> &nbsp;START</h5>
+										</div>
+									</div>
+								</div>
+							</a>
+							<a th:if="${classroom.status} AND ${!classroom.expired}" th:onclick="|stopClassRoom('${classroom.classroomId}')|">
+								<div class="col-10 rounded ">
+									<div class="card info-card card-1 align-items-center" style="background-color: #ff9999;">
+										<div class="card-body align-items-center">
+											<h5 class="card-title "><i class="bi bi-stop-circle"></i>&nbsp;STOP</h5>
+										</div>
+									</div>
+								</div>
+							</a>
+							<a th:if="${classroom.expired}" th:href="@{/paymentCheckout(type='classroom',id=${classroom.classroomId})}">
+								<div class="col-10 rounded">
+									<div class="card info-card card-1 align-items-center" style="background-color: #85e085;">
+										<div class="card-body align-items-center">
+											<h5 class="card-title "><i class="bi bi-play-circle"></i> &nbsp;Renew</h5>
+										</div>
+									</div>
+								</div>
+							</a>
+							<!-- NEWS -->
+							<a style="opacity:0.7">
+								<div class="col-10 rounded ">
+									<div class="card info-card card-1 align-items-center" style="background-color: #d98cb3;">
+										<div class="card-body align-items-center">
+											<h5 class="card-title "><i class="bi bi-newspaper"></i> &nbsp;NEWS</h5>
+										</div>
+									</div>
+								</div>
+							</a>	
+						</div>
+						
+						<div class="col-lg-12 row" th:if="(${classroom.classroomId} != null) AND (${classroom.classroomId} != '')">
+							<div class="col-lg-5">
+								<div class="card">
+									<div class="card-body">
+										<h5 class="card-title">Summery of Results</h5>
+										<div id="trafficChart" style="min-height: 400px;" class="echart"></div>
+										<input type="hidden" id="countCategory1" th:value="${resultSummery.countCategory1}">
+										<input type="hidden" id="countCategory2" th:value="${resultSummery.countCategory2}">
+										<input type="hidden" id="countCategory3" th:value="${resultSummery.countCategory3}">
+										<input type="hidden" id="countCategory4" th:value="${resultSummery.countCategory4}">
+										<input type="hidden" id="countCategory5" th:value="${resultSummery.countCategory5}">
+										<script>
+										var v1 = document.getElementById("countCategory1").value;
+										var v2 = document.getElementById("countCategory2").value;
+										var v3 = document.getElementById("countCategory3").value;
+										var v4 = document.getElementById("countCategory4").value;
+										var v5 = document.getElementById("countCategory5").value;
+										document.addEventListener("DOMContentLoaded", () => {
+											echarts.init(document.querySelector("#trafficChart")).setOption({
+												tooltip: {
+													trigger: 'item'
+												},
+												legend: {
+													top: '5%',
+													left: 'center'
+												},
+												series: [{
+													name: 'Papers',
+													type: 'pie',
+													radius: ['40%', '70%'],
+													avoidLabelOverlap: false,
+													label: {
+														show: false,
+														position: 'center'
+													},
+													emphasis: {
+														label: {
+															show: true,
+															fontSize: '16',
+															fontWeight: 'bold'
+														}
+													},
+													labelLine: {
+														show: false
+													},
+													data: [{
+														value: v1,
+														name: '0%-20%',
+														color: '#ffdb4d'
+													},
+													{
+														value: v2,
+														name: '21%-35%',
+														color: '#80ccff'
+													},
+													{
+														value: v3,
+														name: '36%-55%',
+														color: '#85e085'
+													},
+													{
+														value: v4,
+														name: '56%-75%',
+														color: '#ff8080'
+													},{
+														value: v5,
+														name: '76%-100%',
+														color: '#b380ff'
+													}
+													]	 		
+												}]
+											});
+										});
+										</script>
+									</div>
+								</div>
+							</div>
+						
+							<div class="col-lg-7">
+								<div class="card">
+									<div class="card-body">
+										<h5 class="card-title">Monthly Paper Attend Count</h5>
+										<input type="hidden" id="completedPaperCount1" th:value="${resultSummery.completedPaperCount1}">
+										<input type="hidden" id="completedPaperCount2" th:value="${resultSummery.completedPaperCount2}">
+										<input type="hidden" id="completedPaperCount3" th:value="${resultSummery.completedPaperCount3}">
+										<input type="hidden" id="completedPaperCount4" th:value="${resultSummery.completedPaperCount4}">
+										<input type="hidden" id="completedPaperCount5" th:value="${resultSummery.completedPaperCount5}">
+										<input type="hidden" id="completedPaperCount6" th:value="${resultSummery.completedPaperCount6}">
+										<input type="hidden" id="completedPaperCount7" th:value="${resultSummery.completedPaperCount7}">
+										<input type="hidden" id="completedPaperCount8" th:value="${resultSummery.completedPaperCount8}">
+										<input type="hidden" id="completedPaperCount9" th:value="${resultSummery.completedPaperCount9}">
+										<input type="hidden" id="completedPaperCount10" th:value="${resultSummery.completedPaperCount10}">
+										<input type="hidden" id="completedPaperCount11" th:value="${resultSummery.completedPaperCount11}">
+										<input type="hidden" id="completedPaperCount12" th:value="${resultSummery.completedPaperCount12}">
+										<canvas id="barChart" style="max-height: 400px;"></canvas>
+										<script>
+										var completedPaperCount1 = document.getElementById("completedPaperCount1").value;
+										var completedPaperCount2 = document.getElementById("completedPaperCount2").value;
+										var completedPaperCount3 = document.getElementById("completedPaperCount3").value;
+										var completedPaperCount4 = document.getElementById("completedPaperCount4").value;
+										var completedPaperCount5 = document.getElementById("completedPaperCount5").value;
+										var completedPaperCount6 = document.getElementById("completedPaperCount6").value;
+										var completedPaperCount7 = document.getElementById("completedPaperCount7").value;
+										var completedPaperCount8 = document.getElementById("completedPaperCount8").value;
+										var completedPaperCount9 = document.getElementById("completedPaperCount9").value;
+										var completedPaperCount10 = document.getElementById("completedPaperCount10").value;
+										var completedPaperCount11 = document.getElementById("completedPaperCount11").value;
+										var completedPaperCount12 = document.getElementById("completedPaperCount12").value;
+											document.addEventListener("DOMContentLoaded", () => {
+											  new Chart(document.querySelector('#barChart'), {
+												type: 'bar',
+												data: {
+												  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+												  datasets: [{
+													label: 'Bar Chart',
+													data: [completedPaperCount1, completedPaperCount2, completedPaperCount3, completedPaperCount4, completedPaperCount5, completedPaperCount6, completedPaperCount7, completedPaperCount8, completedPaperCount9, completedPaperCount10, completedPaperCount11, completedPaperCount12],
+													//data: [1,2,3,4,5,6,7,8,9,10,11,12],
+													backgroundColor: [
+													  'rgba(255, 99, 132, 0.2)',
+													  'rgba(255, 159, 64, 0.2)',
+													  'rgba(255, 205, 86, 0.2)',
+													  'rgba(75, 192, 192, 0.2)',
+													  'rgba(54, 162, 235, 0.2)',
+													  'rgba(153, 102, 255, 0.2)',
+													  'rgba(255, 99, 132, 0.2)',
+													  'rgba(255, 159, 64, 0.2)',
+													  'rgba(255, 205, 86, 0.2)',
+													  'rgba(75, 192, 192, 0.2)',
+													  'rgba(54, 162, 235, 0.2)',
+													  'rgba(153, 102, 255, 0.2)'
+													],
+													borderColor: [
+													  'rgb(255, 99, 132)',
+													  'rgb(255, 159, 64)',
+													  'rgb(255, 205, 86)',
+													  'rgb(75, 192, 192)',
+													  'rgb(54, 162, 235)',
+													  'rgb(153, 102, 255)',
+													  'rgb(255, 99, 132)',
+													  'rgb(255, 159, 64)',
+													  'rgb(255, 205, 86)',
+													  'rgb(75, 192, 192)',
+													  'rgb(54, 162, 235)',
+													  'rgb(153, 102, 255)'
+													],
+													borderWidth: 1
+												  }]
+												},
+												options: {
+												  scales: {
+													y: {
+													  beginAtZero: true
+													}
+												  }
+												}
+											  });
+											});
+										</script>
+									</div>
+								</div>
+							</div>
+							
+							
+							<div class="col-lg-12">
+								<div class="card">
+									<div class="card-body">
+										<h5 class="card-title">Student Registration</h5>
+										<input type="hidden" id="studentCount1" th:value="${resultSummery.studentCount1}">
+										<input type="hidden" id="studentCount2" th:value="${resultSummery.studentCount2}">
+										<input type="hidden" id="studentCount3" th:value="${resultSummery.studentCount3}">
+										<input type="hidden" id="studentCount4" th:value="${resultSummery.studentCount4}">
+										<input type="hidden" id="studentCount5" th:value="${resultSummery.studentCount5}">
+										<input type="hidden" id="studentCount6" th:value="${resultSummery.studentCount6}">
+										<input type="hidden" id="studentCount7" th:value="${resultSummery.studentCount7}">
+										<input type="hidden" id="studentCount8" th:value="${resultSummery.studentCount8}">
+										<input type="hidden" id="studentCount9" th:value="${resultSummery.studentCount9}">
+										<input type="hidden" id="studentCount10" th:value="${resultSummery.studentCount10}">
+										<input type="hidden" id="studentCount11" th:value="${resultSummery.studentCount11}">
+										<input type="hidden" id="studentCount12" th:value="${resultSummery.studentCount12}">
+										<div id="lineChart"></div>
+										<script>
+										var studentCount1 = document.getElementById("studentCount1").value;
+										var studentCount2 = document.getElementById("studentCount2").value;
+										var studentCount3 = document.getElementById("studentCount3").value;
+										var studentCount4 = document.getElementById("studentCount4").value;
+										var studentCount5 = document.getElementById("studentCount5").value;
+										var studentCount6 = document.getElementById("studentCount6").value;
+										var studentCount7 = document.getElementById("studentCount7").value;
+										var studentCount8 = document.getElementById("studentCount8").value;
+										var studentCount9 = document.getElementById("studentCount9").value;
+										var studentCount10 = document.getElementById("studentCount10").value;
+										var studentCount11 = document.getElementById("studentCount11").value;
+										var studentCount12 = document.getElementById("studentCount12").value;
+											document.addEventListener("DOMContentLoaded", () => {
+											  new ApexCharts(document.querySelector("#lineChart"), {
+												series: [{
+												  name: "Desktops",
+												  data: [studentCount1, studentCount2, studentCount3, studentCount4, studentCount5, studentCount6, studentCount7, studentCount8, studentCount9, studentCount10, studentCount11, studentCount12]
+												}],
+												chart: {
+												  height: 350,
+												  type: 'line',
+												  zoom: {
+													enabled: false
+												  }
+												},
+												dataLabels: {
+												  enabled: false
+												},
+												stroke: {
+												  curve: 'straight'
+												},
+												grid: {
+												  row: {
+													colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+													opacity: 0.5
+												  },
+												},
+												xaxis: {
+												  categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+												}
+											  }).render();
+											});
+										</script>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+				
+				<!-- Report Center Modal -->
+				<div class="modal fade" id="reportModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered" role="document">
+				    	<div class="modal-content">
+				      		<div class="modal-header">
+				        		<h5 class="modal-title" id="exampleModalLongTitle">Report Center</h5>
+			        			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				          			<span aria-hidden="true">&times;</span>
+				        		</button>
+				      		</div>
+				      		<div class="modal-body row">
+			      				<div class="reportCard card col-5" style = "margin:4%;text-align:center;border: 1px solid;padding: 1%;box-shadow: 1px 1px #888888;">
+									<a th:href = "'/classroom/studentReport?classroomId=' + ${classroom.classroomId}">
+							  			<div class="card-body">
+								    		<label style = "font-size:15px;" class="card-title">Student Analysis Report</label><br>
+								    		<label style = "font-size:35px;"><i class="bi bi-download"></i></label>
+								    	</div>
+									</a>
+								</div>
+								<div class="reportCard card col-5" style = "margin:4%;text-align:center;border: 1px solid;padding: 1%;box-shadow: 1px 1px #888888;">
+						  			<a th:href = "'/classroom/activeSessionReport?classroomId=' + ${classroom.classroomId}">
+							  			<div class="card-body">
+							    			<label style = "font-size:15px;" class="card-title">Active Sessions</label><br>
+							    			<label style = "font-size:35px;"><i class="bi bi-download"></i></label>
+							    		</div>
+									</a>
+								</div>
+								<div class="reportCard card col-5" style = "margin:4%;text-align:center;border: 1px solid;padding: 1%;box-shadow: 1px 1px #888888;">
+						  			<a th:href = "'/classroom/monthlySessionReport?classroomId=' + ${classroom.classroomId}">
+							  			<div class="card-body">
+							    			<label style = "font-size:15px;" class="card-title">Monthly Session Analyzer</label><br>
+							    			<label style = "font-size:35px;"><i class="bi bi-download"></i></label>
+							    		</div>
+						    		</a>
+								</div>
+				      		</div>
+				    	</div>
+				  	</div>
+				</div>
+				
+				<!-- Appearance Modal -->
+				<div class="modal fade" id="appearanceModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered" role="document">
+				    	<div class="modal-content">
+				      		<div class="modal-header">
+				        		<h3 class="modal-title" id="exampleModalLongTitle">Appearance</h3>
+			        			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				          			<span aria-hidden="true">&times;</span>
+				        		</button>
+				      		</div>
+				      		<div class="modal-body row">
+								<table border=0 width="100%">
+									<tr>
+										<td>Background Color</td>
+										<td><input type="color" name="bodyBgColor" id="bodyBgColor" th:value="(${classroom.bodyBgColor == null} OR ${classroom.bodyBgColor == ''}) ? '#f6f9ff' : ${classroom.bodyBgColor}"></td>
+									</tr>
+									<tr>
+										<td>Font Type</td>
+										<td>
+											<select name="bodyFontFamily" id="bodyFontFamily" th:value="(${classroom.bodyFontFamily == null} OR ${classroom.bodyFontFamily == ''}) ? 'Nunito, sans-serif' : ${classroom.bodyFontFamily}">
+												<option value="Nunito, sans-serif" style="font-family:Nunito, sans-serif">Nunito</option>
+												<option value="Arial, sans-serif" style="font-family:Arial, sans-serif">Arial</option>
+												<option value="Verdana, sans-serif" style="font-family:Verdana, sans-serif">Verdana</option>
+												<option value="Tahoma, sans-serif" style="font-family:Tahoma, sans-serif">Tahoma</option>
+												<option value="Trebuchet MS, sans-serif" style="font-family:Trebuchet MS, sans-serif">Trebuchet MS</option>
+												<option value="Times New Roman, serif" style="font-family:Times New Roman, serif">Times New Roman</option>
+												<option value="Georgia, serif" style="font-family:Georgia, serif">Georgia</option>
+												<option value="Garamond, serif" style="font-family:Garamond, serif">Garamond</option>
+												<option value="Courier New, monospace" style="font-family:Courier New, monospace">Courier New</option>
+												<option value="Brush Script MT, cursive" style="font-family:Brush Script MT, cursive">Brush Script MT</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>Font Color</td>
+										<td><input type="color" id="fontColor" th:value="(${classroom.fontColor == null} OR ${classroom.fontColor == ''}) ? '#000' : ${classroom.fontColor}"></td>
+									</tr>
+									
+									<tr>
+										<td><u>Cards</u></td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Background Color</td>
+										<td><input type="color" id="cardBgColor" th:value="(${classroom.cardBgColor == null} OR ${classroom.cardBgColor == ''}) ? '#fff' : ${classroom.cardBgColor}"></td>
+									</tr>
+									<tr>
+										<td>Side Color</td>
+										<td><input type="color" id="cardSideColor" th:value="(${classroom.cardSideColor == null} OR ${classroom.cardSideColor == ''}) ? '#e1f0fa' : ${classroom.cardSideColor}"></td>
+									</tr>
+									<tr>
+										<td>Mouseover Color</td>
+										<td><input type="color" id="cardSelectedColor" th:value="(${classroom.cardSelectedColor == null} OR ${classroom.cardSelectedColor == ''}) ? '#e1f0fc' : ${classroom.cardSelectedColor}"></td>
+									</tr>
+								</table>
+								<div>
+									<button type="button" class="btn btn-warning" th:onClick = "|saveTheam(${classroom.classroomId},'new')|" style="width:25%">Save</button>
+									<button type="button" class="btn btn-danger" th:onClick = "|saveTheam(${classroom.classroomId},'default')|" style="width:25%">Set Default</button>
+								</div>
+				      		</div>
+				    	</div>
+				  	</div>
+				</div>
+			</main>
+			<script src="js/classroom.management.js"></script>
+		</div>
+	</body>
+</html>

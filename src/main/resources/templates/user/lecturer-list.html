@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Lecturer Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Lecturer Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Lecturers & Groups</li>
+						<li class="breadcrumb-item active"><a href="/listLecturers">Lecturer Management</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+			
+			<a type = "button" class="btn btn-primary" th:href="@{/addLecturer}">Add New Lecturer</a>
+			
+			<br/><br/>
+			<table class="table datatable">
+				<thead>
+					<tr>
+						<th>Lecturer ID</th>
+						<th>Name</th>
+						<th>Gender</th>
+						<th>Email</th>
+						<th>Mobile</th>
+						<th>Username</th>
+						<th>Status</th>
+						<!-- <th>Create User</th> -->
+						<th>Create Date</th>
+						<!-- <th>Last Update User</th> -->
+						<th>Last Update Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="lecturer : ${listLecturers}" >
+						<td th:text="${lecturer.lecturerId}">Lecturer ID</td>
+						<td th:text="${lecturer.userId.name}">Name</td>
+						<td th:text="${lecturer.userId.gender}">Gender</td>
+						<td th:text="${lecturer.userId.email}">Email</td>
+						<td th:text="${lecturer.userId.mobile}">Mobile</td>
+						<td th:text="${lecturer.userId.username}">Username</td>
+						<td th:if="${!(lecturer.userId.active)}"> <span class="label label-danger">Deactive</span> </td>
+						<td th:if="${lecturer.userId.active}"><span class="label label-success">Active</span></td>
+						<!-- <td th:text="${lecturer.userId.createBy}">Create User</td> -->
+						<td th:text="${lecturer.userId.createDate}">Create Date</td>
+						<!-- <td th:text="${lecturer.userId.updateBy}">Last Update User</td> -->
+						<td th:text="${lecturer.userId.updateDate}">Last Update Date</td>
+						<td colspan=2 style="letter-spacing: 10px;">
+							<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showLecturerUpdate(lecturerId=${lecturer.lecturerId})}" ></a>
+							<a type = "button" class="bi bi-trash" title="Delete" th:onclick="|deleteLecturer('${lecturer.lecturerId}','${lecturer.userId.userId}')|"></a>
+							<a type = "button" class="bi bi-clipboard-x"  title = "Deactivate" th:href="@{/lecturerDeactive(userId=${lecturer.userId.userId})}" th:if="${lecturer.userId.active}"></a>	
+							<a type = "button" class="bi bi-clipboard-check" title = "Activate" th:href="@{/lecturerActive(userId=${lecturer.userId.userId})}" th:if="${!(lecturer.userId.active)}"></a>	
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</main><!-- End #main -->	
+  	</div>
+</body>
+</html>
+
+<script src="js/lecturer.management.js"></script>
+
+<script>
+	
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

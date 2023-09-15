@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+    
+<head>
+	<title>Dashboards</title>
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<section class="section dashboard">
+				<div class="row">
+					<input type="hidden" th:value="${(session.user.active)? ('/css/custom-css/'+session.user.username+'.css') : '/css/profile.css'}">
+					<!-- Left side columns -->
+					<div class="col-lg-8">
+			         <div class="row">
+						<!-- Admins -->
+						<div class="col-xxl-3 col-xl-6" th:if="${#arrays.contains(session.listRoleFunctionsActions, '/listAdmins')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card info-card card-1">
+								<div class="card-body">
+									<h5 class="card-title">Admins</h5>
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-people"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text = ${adminCount} >0</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+			
+			           	<!-- Students -->
+						<div class="col-xxl-3 col-xl-6" th:if="${#arrays.contains(session.listRoleFunctionsActions, '/listStudents')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card info-card card-1">
+								<div class="card-body">
+									<h5 class="card-title">Students</h5>
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-people"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text = ${stdCount} th:if="${!#arrays.contains(session.loggedRolesName, 'LECTURER')}">0</h6>
+											<h6 title="All Students | Groups Students" th:text = "${stdCount + ' | ' + clsStdCount}" th:if="${#arrays.contains(session.loggedRolesName, 'LECTURER')}">0</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+			           
+			           	<!-- Lecturers -->
+						<div class="col-xxl-3 col-xl-6" th:if="${#arrays.contains(session.listRoleFunctionsActions, '/listLecturers')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card info-card card-2">
+								<div class="card-body">
+									<h5 class="card-title">Lecturers</h5>
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-person-video3"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text = ${lecCount}>0</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+			           
+			           	<!-- Joined Publishers -->
+						<div class="col-xxl-3 col-xl-6" th:if="${#arrays.contains(session.listRoleFunctionsActions, '/listPublishers')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card info-card card-3">
+								<div class="card-body">
+									<h5 class="card-title"> Publishers </h5>
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-person-lines-fill"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text = ${publisherCount}>0</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+			           
+			           	<!-- Authors -->
+						<div class="col-xxl-3 col-xl-6" th:if="${#arrays.contains(session.listRoleFunctionsActions, '/listAuthors')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card info-card card-4">
+								<div class="card-body">
+									<h5 class="card-title"> Authors </h5>
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-vector-pen"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text = ${auCount}>0</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+							           
+			           	<!-- Added Papers -->
+						<div class="col-xxl-3 col-xl-6" th:if="${#arrays.contains(session.listRoleFunctionsActions, '/listPapers')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card info-card card-5">
+								<div class="card-body">
+									<h5 class="card-title"> Added Papers </h5>
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-receipt"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text = ${paperCount} th:if="${!#arrays.contains(session.loggedRolesName, 'LECTURER')}">0</h6>
+											<h6 th:text = ${activeClassRoomCountForLecture} th:if="${#arrays.contains(session.loggedRolesName, 'LECTURER')}">0</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+			
+						<!-- Currently Active Sessions -->
+						<div class="col-xxl-3 col-xl-6" th:if="${#arrays.contains(session.listRoleFunctionsActions, '/listActiveSessions')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card info-card card-6">
+								<div class="card-body">
+									<h5 class="card-title"> Active Sessions</h5>
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-activity"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text = ${activeCount}>0</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+			           
+						<!-- Attended Sessions -->
+						<div class="col-xxl-3 col-xl-6" th:if="${#arrays.contains(session.listRoleFunctionsActions, '/listPapers')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card info-card card-7">
+								<div class="card-body">
+									<h5 class="card-title">Paper Reviews </h5>
+								
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-clock-history"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text = ${sessionCount}>0</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Classrooms -->
+						<div class="col-xxl-3 col-xl-6"  title = "Active | All " th:if="${#arrays.contains(session.listRoleFunctionsActions, '/listClassRooms')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card info-card card-8">
+								<div class="card-body">
+									<h5 class="card-title">Groups </h5>
+								
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-house"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text = "${activeClassRoomCount} + ' | ' + ${classRoomCount}">0</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+			            
+			            <!-- Parent Panel -->
+			            
+			            <!-- Added Papers -->
+						<div class="col-xxl-4 col-xl-6" th:if="${#arrays.contains(session.loggedRolesName, 'PARENT')}">
+							<div class="card info-card card-1">
+								<div class="card-body">
+									<h5 class="card-title"> My Children </h5>
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-receipt"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text = "${childrenCount}" >0</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+			
+						<!-- Groups -->
+						<div class="col-xxl-4 col-xl-6" th:if="${#arrays.contains(session.loggedRolesName, 'PARENT')}">
+							<div class="card info-card card-2">
+								<div class="card-body">
+									<h5 class="card-title">Completed Papers</h5>
+								
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-house"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text = "${completedCount}">0</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<!--Currently Active Groups-->
+						<div class="col-xxl-4 col-xl-6" th:if="${#arrays.contains(session.loggedRolesName, 'PARENT')}">
+							<div class="card info-card card-3">
+								<div class="card-body">
+									<h5 class="card-title">Total Time Spent</h5>
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-activity"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text="${timeCount}">0</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+			            
+						<!-- Highest Mark -->
+						<div class="col-xxl-4 col-xl-6" th:if="${#arrays.contains(session.loggedRolesName, 'PARENT')}">
+							<div class="card info-card card-4">
+								<div class="card-body">
+									<h5 class="card-title">Highest Mark</h5>
+									<div class="d-flex align-items-center">
+										<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+											<i class="bi bi-clock-history"></i>
+										</div>
+										<div class="ps-3">
+											<h6 th:text="${highestMark}">0</h6>
+											<h5 th:text="'Student Id : ' + ${highestMarkStd}">0</h5>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+			           	<!-- ADMIN | SUPERADMIN Reports -->
+						<!-- 
+						<div class="col-12" th:if="${#arrays.contains(session.loggedRolesName, 'ADMIN')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card">
+								<div class="card-body">
+									<input type="hidden" id = "stdCount" th:value="${stdCount}">
+									<input type="hidden" id = "pblCount" th:value="${publisherCount}">
+									<input type="hidden" id = "lecCount" th:value="${lecCount}">
+									<input type="hidden" id = "clsCount" th:value="${classRoomCount}">
+									<input type="hidden" id = "aClsCount" th:value="${activeClassRoomCount}">
+									<input type="hidden" id = "paperCount" th:value="${paperCount}">
+									<input type="hidden" id = "sessionCount" th:value="${sessionCount}">
+									<canvas id="barChart" style="max-height: 400px;"></canvas>
+									<script>
+										var stdCount = document.getElementById("stdCount").value;
+										var pblCount = document.getElementById("pblCount").value;
+										var lecCount = document.getElementById("lecCount").value;
+										var clsCount = document.getElementById("clsCount").value;
+										var aClsCount = document.getElementById("aClsCount").value;
+										var paperCount = document.getElementById("paperCount").value;
+										var sessionCount = document.getElementById("sessionCount").value;
+									
+										document.addEventListener("DOMContentLoaded", () => {
+											new Chart(document.querySelector('#barChart'), {
+												type: 'bar',
+												data: {
+													labels: ['Registered Students', 'Publishers', 'Registered Lecturers', 'Groups', 'Active Groups', 'Papers', 'All Sessions'],
+													datasets: [{
+														label: 'Bar Chart',
+														data: [stdCount, pblCount, lecCount, clsCount, aClsCount, paperCount, sessionCount],
+														backgroundColor: [
+															  'rgba(255, 99, 132, 0.2)',
+									                          'rgba(255, 159, 64, 0.2)',
+									                          'rgba(255, 205, 86, 0.2)',
+									                          'rgba(75, 192, 192, 0.2)',
+									                          'rgba(54, 162, 235, 0.2)',
+									                          'rgba(153, 102, 255, 0.2)',
+									                          'rgba(201, 203, 207, 0.2)'
+														],
+														borderColor: [
+															  'rgb(255, 99, 132)',
+									                          'rgb(255, 159, 64)',
+									                          'rgb(255, 205, 86)',
+									                          'rgb(75, 192, 192)',
+									                          'rgb(54, 162, 235)',
+									                          'rgb(153, 102, 255)',
+									                          'rgb(201, 203, 207)'
+														],
+														borderWidth: 1
+													}]
+												},
+												options: {
+													scales: {
+														y: {
+															beginAtZero: true
+														}
+													}
+												}
+											});
+										});
+									</script>
+								</div>
+							</div>
+						</div>
+						 -->
+			
+						<!--AUTHOR Reports -->
+						<div  class="col-12" th:if="${#arrays.contains(session.loggedRolesName, 'AUTHOR')} OR ${#arrays.contains(session.loggedRolesName, 'EDITOR')}">
+							<div class="card">
+								<div class="card-body">
+									<input type="hidden" id = "stdCount" th:value="${stdCount}">
+									<input type="hidden" id = "paperCount" th:value="${paperCount}">
+									<input type="hidden" id = "sessionCount" th:value="${sessionCount}">
+									<!-- Line Chart -->
+									<canvas id="barChart" style="max-height: 400px;"></canvas>
+									<script>
+										var stdCount = document.getElementById("stdCount").value;
+										var paperCount = document.getElementById("paperCount").value;
+										var sessionCount = document.getElementById("sessionCount").value;
+									
+										document.addEventListener("DOMContentLoaded", () => {
+											new Chart(document.querySelector('#barChart'), {
+												type: 'bar',
+												data: {
+													labels: ['Registered Students', 'Papers', 'All Sessions'],
+													datasets: [{
+														label: 'Bar Chart',
+														data: [stdCount, paperCount, sessionCount],
+														backgroundColor: [
+															'rgba(255, 99, 132, 0.2)',
+									                          'rgba(255, 159, 64, 0.2)',
+									                          'rgba(255, 205, 86, 0.2)'
+														],
+														borderColor: [
+															'rgb(255, 99, 132)',
+									                          'rgb(255, 159, 64)',
+									                          'rgb(255, 205, 86)'
+														],
+														borderWidth: 1
+													}]
+												},
+												options: {
+													scales: {
+														y: {
+															beginAtZero: true
+														}
+													}
+												}
+											});
+										});
+									</script>
+									<!-- End Line Chart -->
+								</div>
+							</div>
+						</div><!-- End Reports -->
+			           
+			            <!--LECTURER Reports -->
+						<div class="col-12" th:if="${#arrays.contains(session.loggedRolesName, 'LECTURER')}">
+							<div class="card">
+								<div class="card-body">
+									<input type="hidden" id = "boughtPaperCount" th:value="${boughtPaperCount}">
+									<input type="hidden" id = "clsCount" th:value="${classRoomCount}">
+									<input type="hidden" id = "aClsCount" th:value="${activeClassRoomCount}">
+									<input type="hidden" id = "clsStdCount" th:value="${clsStdCount}">
+									<!-- Line Chart -->
+									<canvas id="barChart" style="max-height: 400px;"></canvas>
+									<script>
+										var boughtPaperCount = document.getElementById("boughtPaperCount").value;
+										var clsCount 		 = document.getElementById("clsCount").value;
+										var aClsCount 		 = document.getElementById("aClsCount").value;
+										var clsStdCount 	 = document.getElementById("clsStdCount").value;
+										
+										document.addEventListener("DOMContentLoaded", () => {
+											new Chart(document.querySelector('#barChart'), {
+												type: 'bar',
+												data: {
+													labels: ['Bought Papers', 'Classrooms', 'Active Classrooms', 'Classroom Students'],
+													datasets: [{
+														label: 'Bar Chart',
+														data: [boughtPaperCount, clsCount, aClsCount, clsStdCount],
+														backgroundColor: [
+															  'rgba(255, 99, 132, 0.2)',
+										                         'rgba(255, 159, 64, 0.2)',
+										                         'rgba(255, 205, 86, 0.2)',
+										                         'rgba(75, 192, 192, 0.2)'
+														],
+														borderColor: [
+															  'rgb(255, 99, 132)',
+										                         'rgb(255, 159, 64)',
+										                         'rgb(255, 205, 86)',
+										                         'rgb(75, 192, 192)'
+														],
+														borderWidth: 1
+													}]
+												},
+												options: {
+													scales: {
+														y: {
+															beginAtZero: true
+														}
+													}
+												}
+											});
+										});
+									</script>
+								<!-- End Line Chart -->
+								</div>
+							</div>
+							<!-- 
+							<div class="card" th:if="${#arrays.contains(session.loggedRolesName, 'LECTURER')}">
+								<div class="card-body">
+									<h5 class="card card-title">Active Students in Group</h5>
+									<div class="card activity">
+										<div class="activity-item d-flex" th:each="student : ${listStudents}">
+											<i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+											<div class="activity-content"> 
+												<p th:text = "${student.studentEmail} + ' | ' + ${student.classRoomId.name}"></p>
+											</div>
+										</div>
+									</div>
+									<h5 th:if="${#lists.isEmpty(listStudents)}" class="text-dark card-title">There are no students currently active in the system.</h5>	
+								</div>
+							</div>
+							 -->
+						</div>
+						
+						<div class="col-12 card-deck row" th:if="${#arrays.contains(session.loggedRolesName, 'PARENT')}">
+							<div>
+								<img class="card" src="/img/myChildren.png" width="100%" height="160px">
+							</div>
+							<a type = "button" class="btn btn-success" th:href="@{/addStudent}">Create new Student Profile</a>
+						  	<div class="card col-lg-3 col-sm-4" style = "margin:0.5%;padding:1%;text-align:center;border: 1px solid;box-shadow: 2px 4px #555555;" th:each="student : ${listStudents}">
+							  	<a th:href="@{/showStudentUpdate(studentId=${student.studentId.userId})}" >
+								    <div>
+								    	<label class="card-title"><h1><i class="bi bi-person-circle"></i></h1></label><br>
+								    	<table style = "width: 100%;height:100%;color:black" >
+											<tr>
+											    <b><td th:text="${student.studentId.name}"></td></b>
+											</tr>
+											<tr>
+											    <td th:text="${student.studentId.email}"></td>
+											</tr>
+											<tr>
+												<td>
+													<i class="bi bi-award-fill" style = "color:#d31c51"></i>
+													<i class="bi bi-award-fill" style = "color:#d31c51"></i>
+													<i class="bi bi-award-fill" style = "color:#d31c51"></i>
+													<i class="bi bi-award-fill" style = "color:#d31c51"></i>
+													<i class="bi bi-award-fill" style = "color:#d31c51"></i>
+													<i class="bi bi-award-fill" style = "color:#d31c51"></i>
+												</td>	    
+											</tr>
+										</table>
+								    </div>
+							    </a>
+						  	</div>
+						  	<h5 th:if="${#lists.isEmpty(listStudents)}" class="text-dark card-title">No Children Available</h5>						  	
+						</div>
+			         </div>
+					</div><!-- End Left side columns -->
+			
+			       	<!-- Right side columns -->
+					<div class="col-lg-4">
+						<div class="card" th:if="${#arrays.contains(session.loggedRolesName, 'AUTHOR')}">
+							<div class="card-body">
+								<div class="activite-label"><h5 class="card-title">Authors</h5></div>
+								<!-- <div class="activite-label"><h5 class="card-title" th:text = "${user.poId.name} + ' | Authors'">Authors</h5></div> -->
+								
+								<div class="activity">
+									<div class="activity-item d-flex" th:each="author : ${listAuthors}">
+										<i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+										<div class="activity-content"> 
+											<p th:text = "${author.userId.name}"></p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="card" th:if="${#arrays.contains(session.loggedRolesName, 'AUTHOR')}">
+							<div class="card-body">
+								<!-- <div class="activite-label"><h5 class="card-title" th:text = "${user.poId.name} + ' | Editors'">Editors</h5></div> -->
+								<div class="activite-label"><h5 class="card-title">Editors</h5></div>
+								
+								<div class="activity">
+									<div class="activity-item d-flex" th:each="editors : ${listEditors}">
+										<i class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
+										<div class="activity-content"> 
+											<p th:text = "${editors.userId.name}"></p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					
+						<div class="card" th:if="${#arrays.contains(session.loggedRolesName, 'PARENT')}">
+							<div class="card-body">
+								<div>
+									<img class="card" src="/img/classrooms.jpg" width="100%" height="150px">
+								</div>
+								<div class="activity card">
+									<div class="activity-item d-flex" th:each="class : ${listClasses}">
+										<i th:if = "${class.status}" class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+										<i th:if = "${!class.status}" class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
+										<div class="activity-content"> 
+											<p th:text = "${class.name}"></p>
+										</div>
+									</div>
+								</div>
+								<h5 th:if="${#lists.isEmpty(listClasses)}" class="text-dark card-title">No Groups Available</h5>			
+							</div>
+						</div>
+						<div class="card" th:if="${#arrays.contains(session.listRoleFunctionsActions, '/listPapers')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card-body">
+								<h5 class="card-title">Content Adding Flow</h5>
+								<div class="activity">
+									<div class="activity-item d-flex">
+										<div class="activite-label">2 sec</div>
+											<i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
+										<div class="activity-content"> Go to Content Management </div>
+									</div>
+									<div class="activity-item d-flex">
+										<div class="activite-label">10 min</div>
+										<i class='bi bi-circle-fill activity-badge text-secondary align-self-start'></i>
+										<div class="activity-content">
+											Add 
+											<a href="#" class="fw-bold text-dark"> Subjects , Grades & Modules </a>
+										you want
+										</div>
+									</div>
+									<div class="activity-item d-flex">
+										<div class="activite-label">2 sec</div>
+										<i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
+										<div class="activity-content">Go to Matirial Management</div>
+									</div>
+									<div class="activity-item d-flex">
+										<div class="activite-label">30 min</div>
+										<i class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
+										<div class="activity-content">
+											Create 
+											<a href="#" class="fw-bold text-dark"> Papers </a> and add the  <a href="#" class="fw-bold text-dark"> Questions & answers </a>.
+										</div>
+									</div>
+									<div class="activity-item d-flex">
+										<div class="activite-label">5 min</div>
+										<i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>
+										<div class="activity-content">
+											If want you can manage the <a href="#" class="fw-bold text-dark"> Users </a> in the system.
+										</div>
+									</div>
+									<div class="activity-item d-flex">
+										<div class="activite-label">2 min</div>
+										<i class='bi bi-circle-fill activity-badge text-dark align-self-start'></i>
+										<div class="activity-content">
+											Get any report you want using <a href="#" class="fw-bold text-dark"> Reports </a> center.
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="card" th:if="${#arrays.contains(session.listRoleFunctionsActions, '/listClassRooms')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card-body">
+								<h5 class="card-title">Group Creation Flow</h5>
+								<div class="activity">
+									<div class="activity-item d-flex">
+										<div class="activite-label">2 sec</div>
+											<i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
+										<div class="activity-content"> Go to Group tab </div>
+									</div>
+									<div class="activity-item d-flex">
+										<div class="activite-label">1 sec</div>
+										<i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+										<div class="activity-content">
+											Click on 
+											<a href="#" class="fw-bold text-dark"> Add New Groups </a>
+											button
+										</div>
+									</div>
+									<div class="activity-item d-flex">
+										<div class="activite-label">10 min</div>
+										<i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
+										<div class="activity-content">Fill the form with relevant data</div>
+									</div>
+									<div class="activity-item d-flex">
+										<div class="activite-label">1 sec</div>
+										<i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>
+										<div class="activity-content">
+											Click on 
+											<a href="#" class="fw-bold text-dark"> Submit </a> 
+											button
+										</div>
+									</div>
+									<div class="activity-item d-flex">
+										<div class="activite-label">5 min</div>
+										<i class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
+										<div class="activity-content">
+											Click on <a href="#" class="fw-bold text-dark"> Add </a> button in student tab to add new students to Group
+										</div>
+									</div>
+									<div class="activity-item d-flex">
+										<div class="activite-label">2 min</div>
+										<i class='bi bi-circle-fill activity-badge text-dark align-self-start'></i>
+										<div class="activity-content">
+											Click on <a href="#" class="fw-bold text-dark"> Add </a> button in paper tab to add new papers to Groups
+										</div>
+									</div>
+									<div class="activity-item d-flex">
+										<div class="activite-label">2 sec</div>
+										<i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
+										<div class="activity-content">
+											Go to <a href="#" class="fw-bold text-dark"> Report </a> button to get new reports
+										</div>
+									</div>
+									<div class="activity-item d-flex">
+										<div class="activite-label">2 min</div>
+										<i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
+										<div class="activity-content">
+											Go to <a href="#" class="fw-bold text-dark"> Message </a> button to get new messages and show chats
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					 
+						<!-- 
+						<div class="card" th:if="${#arrays.contains(session.listRoleFunctionsActions, '/listPapers')} OR ${#arrays.contains(session.loggedRolesName, 'SUPERADMIN')}">
+							<div class="card-body pb-0">
+								<h5 class="card-title">Papers</h5>
+								<div id="trafficChart" style="min-height: 400px;" class="echart"></div>
+								<input type="text" th:value = "${activePapers}" id = "activePapers" hidden>
+								<input type="text" th:value = "${deactivePapers}" id = "deactivePapers" hidden>
+								<script>
+									document.addEventListener("DOMContentLoaded", () => {
+										echarts.init(document.querySelector("#trafficChart")).setOption({
+											tooltip: {
+												trigger: 'item'
+											},
+											legend: {
+												top: '5%',
+												left: 'center'
+											},
+											series: [{
+												name: 'Papers',
+												type: 'pie',
+												radius: ['40%', '70%'],
+												avoidLabelOverlap: false,
+												label: {
+													show: false,
+													position: 'center'
+												},
+												emphasis: {
+													label: {
+														show: true,
+														fontSize: '16',
+														fontWeight: 'bold'
+													}
+												},
+												labelLine: {
+													show: false
+												},
+												data: [{
+													value: document.getElementById("activePapers").value,
+													name: 'Active Papers',
+													color: 'red'
+												},
+												{
+													value: document.getElementById("deactivePapers").value,
+													name: 'Deactive Papers',
+													color: 'yellow'
+												}
+												]
+											}]
+										});
+									});
+								</script>
+							</div>
+						</div>
+						 -->
+					</div><!-- End Right side columns -->
+		
+				</div>
+		     
+				<div class="pagetitle" th:if="${#arrays.contains(session.loggedRolesName, 'STUDENT')}">
+					<h1>Subjects</h1>
+					<nav>
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="/home">Home</a></li>
+							<li class="breadcrumb-item active"><a href="/home">Subjects</a></li>
+						</ol>
+					</nav>
+				</div><!-- End Page Title -->
+		   		
+				<div class = "row" th:if="${#arrays.contains(session.loggedRolesName, 'STUDENT')}">
+					<div class="col-lg-8 col-sm-12">
+						<div class="card-deck row" >
+						  <div class="divCard card col-lg-3 col-sm-4" style = "margin:1%;text-align:center;border: 1px solid;padding: 10px;box-shadow: 5px 10px #888888;"  th:each="subject : ${listSubjects}">
+						  	<a th:href="@{/student/listPublishersByGrade(subjectId=${subject.subjectId})}">
+							    <div class="card-body">
+							    	<label style = "font-size:30px;" class="card-title"><i class="bi bi-box-arrow-up-right"></i></label><br>
+							      	<label style = "font-size:20px;" class="card-title" th:text="${subject.SubjectName}"></label><br>
+							    </div>
+						    </a>
+						  </div>
+						</div>	
+						<h5 th:if="${#lists.isEmpty(listSubjects)}" class="text-dark card-title">There are no currently activated papers</h5>	
+					</div>
+										
+					<div class="col-lg-4 col-sm-12">
+						<div class = "card">
+							<div class="card-body">
+					            <div>
+									<img class="card" src="/img/classrooms.jpg" width="100%" height="150px">
+								</div>
+								<ul class="list-group list-group-flush">
+									<li class="list-group-item" th:each="classroom : ${listClassrooms}" th:if = "${classroom.classRoomId.status}">
+										<a data-toggle="modal" data-target="#groupLoginModel" th:data-id="${classroom.classRoomId.classroomId}" th:data-name="${classroom.classRoomId.name}" onclick="setGroupDetails(this)">
+											<div style = "float:left;margin-right:2%;">
+												<span th:if = "${classroom.classRoomId.status}" class="dot"></span>
+											</div>
+											<div style = "float:left;">
+												<p th:text = "${classroom.classRoomId.name}"></p>
+											</div>
+										</a>
+									</li>
+									<li class="list-group-item disabled" th:each="classroom : ${listClassrooms}" th:if = "${!classroom.classRoomId.status}">
+										<div style = "float:left;margin-right:2%;"><span class="dot" style = "background-color:red;"></span></div>
+										<div style = "float:left;"><p th:text = "${classroom.classRoomId.name}"></p></div>
+									</li>
+									<h5 th:if="${#lists.isEmpty(listClassrooms)}" class="text-dark card-title">You are not connected with classrooms</h5>	
+								</ul>	
+				            </div>
+			            </div>
+					</div>
+				</div>
+				
+				<!-- Banner Display -->
+				<div class="row" >
+					<div class="col-md-12">
+						<div id="news-slider">
+							<div th:each="banner : ${bannerList1}" class="card"  style = "margin:1%;text-align:center;border: 1px solid;">
+						  		<div class="card-deck row"  style = "margin:1%;">
+									<div class="col-lg-3 col-sm-4" th:if="${banner.image} != null">
+								  		<img th:src="${banner.image}" alt="Banner Image" style = "width:18rem;height:10rem;">
+								  	</div>
+								  	<div class="col-lg-8 col-sm-7" style="text-align: justify;">
+							  			<h5 class="text-dark card-title" th:text="${banner.header}"></h5>
+										<h4 th:text="${banner.header}"></h4>
+								  		<p class="card-text" th:text="${banner.content}">
+									</div>
+								</div>	
+							</div>
+							
+							<div th:each="banner : ${bannerList2}" class="card"  style = "margin:1%;text-align:center;border: 1px solid;">
+								<div class="card-deck row"  style = "margin:1%;">
+									<div class="col-lg-3 col-sm-4" th:if="${banner.image} != null">
+								  		<img th:src="${banner.image}" alt="Banner Image" style = "width:18rem;height:10rem;">
+								  	</div>
+								  	<div class="col-lg-8 col-sm-7" style="text-align: justify;">
+								  		<h5 class="text-dark card-title" th:text="${banner.header}"></h5>
+										<h4 th:text="${banner.header}"></h4>
+								  		<p class="card-text" th:text="${banner.content}">
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+				</div>
+				 
+			</section>
+		</main>
+		
+		<!-- Adding Paper Modal -->
+		<div class="modal fade" id="groupLoginModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="card-title">Login to Group</h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="text-align:right">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+		      <div class="modal-body row">
+			        <div class="col-12"> 
+						<input type="hidden" id = "groupId" class="form-control"><br>
+						<input type="text" id = "groupName" class="form-control"><br>
+						<input type="password" id = "groupPassword" class="form-control" placeholder="ENTER PASSWORD" required><br>
+					</div>
+					<div class="col-12" style="text-align:right">
+						<button type="button" class="btn btn-primary" onClick = "groupLogin(document.getElementById('groupId').value,document.getElementById('groupPassword').value)">Login</button>
+					</div>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	</div>
+</body>
+</html>

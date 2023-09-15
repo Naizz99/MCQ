@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Publisher Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Publisher Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item active"><a href="/listPublishers">Publisher Management</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+
+			<a type = "button" class="btn btn-primary" th:href="@{/addPublisher}">Add New Publisher</a>
+			<a type = "button" class="btn btn-success" th:href="@{/viewPublisherRequests}">New Requests</a>
+			
+			<br/><br/>
+			
+			<table class="table datatable">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Description</th>
+						<th>Status</th>
+						<!-- <th>Create User</th> -->
+						<th>Create Date</th>
+						<!-- <th>Last Update User</th> -->
+						<th>Last Update Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="publisher : ${listPublishers}" th:if="${publisher.approved}">
+						<td th:text="${publisher.poId}">ID</td>
+						<td th:text="${publisher.name}">Name</td>
+						<td th:text="${publisher.description}" th:if="${#strings.length(publisher.description)} <= 30"></td>
+						<td th:text="${#strings.substring(publisher.description,0,30)} + '.......'" th:if="${#strings.length(publisher.description)} > 30"></td>
+						<td th:if="${!(publisher.active)}"> <span class="label label-danger">Deactive</span> </td>
+						<td th:if="${publisher.active}"><span class="label label-success">Active</span></td>
+						<!-- <td th:text="${publisher.createBy}">Create User</td> -->
+						<td th:text="${publisher.createDate}">Create Date</td>
+						<!-- <td th:text="${publisher.updateBy}">Last Update User</td> -->
+						<td th:text="${publisher.updateDate}">Last Update Date</td>
+						<!-- <td>
+							<a type = "button" class="bi bi-person-lines-fill" title="Authors" th:href="@{/listAuthorsByPublisher(poId=${publisher.poId})}"></a>
+						</td>
+						 -->
+						<td colspan=2 style="letter-spacing: 10px;">
+							<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showPublisherUpdate(poId=${publisher.poId})}"></a>
+							<a type = "button" class="bi bi-trash" title="Delete" th:onclick="|deletePublisher('${publisher.poId}')|"></a>
+							<a type = "button" class="bi bi-clipboard-x"  title = "Deactivate" th:href="@{/publisherDeactive(poId=${publisher.poId})}" th:if="${publisher.active}"></a>	
+							<a type = "button" class="bi bi-clipboard-check" title = "Activate" th:href="@{/publisherActive(poId=${publisher.poId})}" th:if="${!(publisher.active)}"></a>	
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</main><!-- End #main -->	
+  	</div>
+</body>
+
+</html>
+
+<script src="js/publisher.management.js"></script>

@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+</head>
+<body>
+	<th:block th:fragment="header">
+		<!-- ======= Header ======= -->
+		<header id="header" class="header fixed-top d-flex align-items-center">
+
+			<div class="d-flex align-items-center justify-content-between">
+				<a href="" class="logo d-flex align-items-center"> 
+					<img src="/img/logo.png" alt=""> <span class="d-flex d-lg-block" th:text = "${classroomStudent.classRoomId.name}">Group</span>
+				</a>
+			</div>
+			
+			<nav class = "header-nav ms-auto" style = "font-size:35px;color:#880808;font-weight:1000;margin-right : 10%;">
+				<ul class="d-flex align-items-center">
+					<li class="nav-item dropdown">
+						<a class="nav-link nav-icon" th:href = "@{/student/classroomLogout(classroomStudentId=${classroomStudent.classRoomStudentId},activeSessionId=${activeSession.csId})}">
+							<i class="bi bi-power" title = "Leave Group"></i> 
+							<span class = "d-flex d-lg-block"></span>
+						</a>
+						<!-- End Power Icon -->
+					</li>
+				</ul>
+				
+			</nav>
+			<!-- End Icons Navigation -->
+
+		</header>
+		<!-- End Header -->
+
+	</th:block>
+</body>
+</html>

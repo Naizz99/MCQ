@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Answer Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Answer Managements</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Material Management</li>
+						<li class="breadcrumb-item"><a href="/listPapers">Papers</a></li>
+						<li class="breadcrumb-item"><a th:href="'listQuestionsByPaperId?paperId=' + ${paper.paperId}">Questions</a></li>
+						<li class="breadcrumb-item active"><a href="">Answers</a></li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+			<section class="section">
+				<div class="row">
+					
+				<div class="col-lg-6">
+					<div class="card">
+						<h5 class="card-title"> &nbsp; Answers List</h5>
+						
+						<div class="card-body"  th:with="count = 0 ">
+							<div th:each="answer : ${listAnswers}" class="col-md-12" >
+									<input th:value="${answer.paperID.name}" class="form-control" id="paperID" type="hidden">
+									<textarea th:text="${answer.pqId.question}" class="form-control" id="question" rows="3" hidden="hidden"></textarea>
+									<input th:value="${answer.active}" class="form-control" id="active" type="hidden">
+									<input th:value="${answer.createBy}" class="form-control" id="createBy" type="hidden">
+									<input th:value="${answer.createDate}" class="form-control" id="createDate" type="hidden">
+									<input th:value="${answer.updateBy}" class="form-control" id="updateBy" type="hidden">
+									<input th:value="${answer.updateDate}" class="form-control" id="updateDate" type="hidden">
+									<input th:value="${answer.paId}" class="form-control" id="paId" type="hidden">
+									<input th:value="${answer.answer_status}" class="form-control" id="answer_status" type="hidden">
+								
+								<div class="row mb-6">
+									<div class="col-sm-8">
+										<input th:value="${answer.answer}" th:if="${answer.answer_status}" style = "background-color:#47d147;border: none;margin:1%;" type="text" class="form-control" readonly>
+										<input th:value="${answer.answer}" th:if="${!(answer.answer_status)}" type="text" class="form-control" style = "border: none;margin:1%;" readonly>
+									</div>
+									<div class="col-sm-1">
+										<a type = "button" class="bi bi-pencil-square" title = "Update" th:href="@{/updateAnswerByPaId(paId=${answer.paId})}"></a>
+									</div>
+									<div class="col-sm-1">
+										<a th:if="${!(answer.answer_status)}" type = "button" title = "Set as True" class="bi bi-check2-circle" th:onclick="|correctAnswer('${answer.paId}')|"></a>
+										<a th:if="${answer.answer_status}" type = "button" title = "Remove True" class="bi bi-x" th:onclick="|incorrectAnswer('${answer.paId}')|"></a>
+									</div>
+									<div class="col-sm-1">
+										<a type = "button" class="bi bi-trash" title = "Delete" th:onclick="|deleteAnswer('${answer.paId}')|"></a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				
+				<!-- ****************************************************************************************************************************************** -->
+				
+				<div class="col-6">
+					<div class="card">
+						<div class="card-body"  >
+							<div class="col-md-12">
+							<h5 class="card-title"> &nbsp; Details</h5>
+								<div class="row mb-3">
+				                  <label for="inputText" class="col-2 col-form-label">Paper</label>
+				                  <div class="col-10">
+				                   		<input type="text" class="form-control" id = "data1" readonly>
+				                  </div>
+				                </div>
+								
+								<div class="row mb-3">
+									<label for="inputText" class="col-sm-2 col-form-label">Question</label>
+									<div class="col-sm-10">
+										<textarea class="form-control" id = "data2" rows="3" readonly></textarea>
+									</div>
+								</div>
+								
+								<div class="row mb-3">
+									<label for="inputText" class="col-sm-2 col-form-label">Status</label>
+									<div class="col-sm-5">
+										<input type="text" class="form-control" id = "data3" readonly>
+									</div>
+								</div>
+								
+								<div class="row mb-3">
+									<label for="inputText" class="col-sm-2 col-form-label">Create By</label>
+									<div class="col-sm-3">
+										<input type="text" class="form-control" id = "data4" readonly>
+									</div>
+									<label for="inputText" class="col-sm-3 col-form-label">Create Date</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" id = "data5" readonly>
+									</div>
+								</div>
+								
+								<div class="row mb-3">
+									<label for="inputText" class="col-sm-2 col-form-label">Update By</label>
+									<div class="col-sm-3">
+										<input type="text" class="form-control" id = "data6" readonly> 
+									</div>
+									<label for="inputText" class="col-sm-3 col-form-label">Update Date</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" id = "data7" readonly>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</section>
+	</main>
+	<script src="../js/answer.management.js"></script>
+	
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>
+

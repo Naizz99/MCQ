@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+	<style>
+		a.tooltip {
+	        border-bottom: 1px dashed;
+	        text-decoration: none;
+	      }
+	      a.tooltip:hover {
+	        cursor: help;
+	        position: relative;
+	      }
+	      a.tooltip span {
+	        display: none;
+	      }
+	      a.tooltip:hover span {
+	        border: #666 2px dotted;
+	        padding: 5px 20px 5px 5px;
+	        display: block;
+	        z-index: 100;
+	        background: #e3e3e3;
+	        left: 0px;
+	        margin: 15px;
+	        width: 300px;
+	        position: absolute;
+	        top: 15px;
+	        text-decoration: none;
+	      }
+	</style>
+<head>
+<title>Paper Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				
+    			<h1 th:if="${poId.name == null}">Paper Management</h1>
+				<h1 th:if="${poId.name != null}" th:text = " 'Paper Managements - ' + ${poId.name}">Paper Management</h1>
+				
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Paper Management</li>
+						<li class="breadcrumb-item active"><a href="/listPapers">Papers</a></li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+			<section class="section">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">Paper Details</h5>
+								<form class="row g-3" id = "newPaper" th:object="${paper}">
+								
+									<div class="col-md-12">
+										<input type="hidden" th:field="*{paperId}" id = "paperId" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-12" style = "float:left;">
+										<label for="name" class="form-label">Paper Name<span class="asterisk_input"></span></label>
+										<input type="text" th:field="*{name}" id = "name" class="form-control" required>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="grade" class="form-label">Grade<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{grade}" id="grade" onChange="update()">
+				                            <option value=''>-- SELECT GRADE --</option>
+				                            <option th:each="log:${gradeList}"
+				                                    th:value="${log.gradeId}"
+				                                    th:text="${log.gradeName}">
+				                            </option>
+				                        </select>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="subject" class="form-label">Subject<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" id="subject" th:field="*{subjectId}">
+				                            <option th:value="*{subjectId.subjectId}" th:text="*{subjectId.subjectName}"></option>
+				                        </select>
+									</div>
+											
+									<div class="col-md-4">
+										<label for="module" class="form-label">No. of Questions<span class="asterisk_input"></span></label>
+										<input type="number" min="1" max="100" th:field="*{numberOfQuestion}" id = "questionCount" class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required>
+									</div>
+															
+									<div class="col-md-4">
+										<label for="module" class="form-label">Answers per Question<span class="asterisk_input"></span></label>
+										<input type="number" min="2" max="5" th:field="*{answersPerQuestion}" id = "answerCount" class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" required readonly>
+									</div>
+									
+									<div class="col-md-4">
+										<label for="module" class="form-label">Time [minutes]<span class="asterisk_input"></span></label>
+										<input type="text" min="30" th:field="*{time}" class="form-control" id = "time" required> 
+									</div>
+									
+									<div class="col-md-12">
+										<label for="template" class="form-label">Template [Answers per Row]<span class="asterisk_input"></span></label> <br>
+										<div class="col-md-4" th:each="log:${templateList}">
+											<div class="form-check">
+												<input type="radio" name="templateId" th:text="${log.name}" th:value="${log.templateId}" th:field="*{templateId}" th:id="template + ${log.templateId}">
+											</div>
+						                </div>
+									</div>												
+														
+									<div class="col-md-12">
+										<label for="publisher" class="form-label">Publisher<span class="asterisk_input"></span></label>
+										<select class="form-select form-control" aria-label="Default select example" th:field="*{publisher}" id="publisher">
+				                            <option value=''>-- SELECT PUBLISHER -- </option>
+				                            <option th:each="log:${publisherList}"
+				                                    th:value="${log.poId}"
+				                                    th:text="${log.name}">
+				                            </option>
+				                        </select>
+									</div>
+									
+									<div  class="col-md-6" >
+										<label for="status" class="form-label">Status</label>
+										<input type="text" value = "Active" class="form-control" th:if="${paper.active}" readonly>
+										<input type="text" value = "Deactive" class="form-control" th:if="${!paper.active}" readonly>
+									</div>
+									<input type="hidden" th:field="*{active}" class="form-control" readonly>
+									
+									<div class="col-md-1"></div>
+									
+									<div class="col-md-5 form-check form-switch"><br>
+										<input class="form-check-input" type="checkbox" th:field="*{availableForBuy}">
+										<label class="form-check-label" >Add to Market Place</label>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="createBy" class="form-label">Create By</label> 
+										<input type="text" th:field="*{createBy}" id = "createBy" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="createDate" class="form-label">Create Date</label> 
+										<input type="text" th:field="*{createDate}" id = "createDate" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="updateBy" class="form-label">Update By</label> 
+										<input type="text" th:field="*{updateBy}" id = "updateBy" class="form-control" readonly>
+									</div>
+									
+									<div class="col-md-6">
+										<label for="updateDate" class="form-label">Update Date</label> 
+										<input type="text" th:field="*{updateDate}" id = "updateDate" class="form-control" readonly>
+									</div>
+									
+									<div class="text-center">
+										<button type="button" id = "savePaper" class="btn btn-primary">Submit</button>
+										<button type="reset" class="btn btn-secondary">Reset</button>
+									</div>
+									
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-6 scrollit" style = "height:750px;">
+						<div class="card">
+							<div class="card-body">
+								<div class="pagetitle" >
+									<br>
+									<div style= "float:left;"><h1 th:text="${paper.name}"></h1><input type="hidden" th:value="${paper.paperId}" id = "paperId"></div>
+									<br><br><br>
+								</div><!-- End Page Title -->
+								<div id="quizpage" >
+									<div name="quiz" id="quiz">
+										<p>
+										  <div class = "row" th:each="question : ${listQuestions}">
+										  	  
+											  <br><h3 class = "que" th:text="${'(' + question.questionId + ')  '} + ${question.question}"></h3><br>
+											    
+											    <div th:if="*{question.image != null}" class = "col-3">
+											    	<img th:src = "${question.image}" >
+											    </div>
+											    
+											    <div style = "margin-left:10%;" th:if = "${paper.templateId.name == 'Single'}">
+											    	<div class = "col-md-7"  th:each="answer : ${listAnswers}" th:if="*{answer.pqId.pqId == question.pqId}">
+											    		<p class = "ans" >
+												    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}" th:if="${answer.answer_status}" checked disabled>
+												    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}" th:if="${!answer.answer_status}" disabled>
+												    		<br>
+													    	<img th:src = "${answer.image}" th:if = "${answer.image} != null" class = "col-2">
+												    	</p>
+											    	</div>
+											    </div>
+											    
+											    <div style = "margin-left:10%;" th:if = "${paper.templateId.name == 'Multiple'}">
+											    	<div class = "col-md-6"  th:each="answer : ${listAnswers}" th:if="*{answer.pqId.pqId == question.pqId}">
+											    		<p class = "ans" >
+												    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}" th:if="${answer.answer_status}" checked disabled>
+												    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}" th:if="${!answer.answer_status}" disabled>
+												    		<br>
+													    	<img th:src = "${answer.image}" th:if = "${answer.image} != null" class = "col-2">
+												    	</p>
+											    	</div>
+											    </div>
+											    
+											    <div style = "margin-left:10%;" th:if = "${paper.templateId.name == 'All'}">
+											    	<div class = "col-md-3"  th:each="answer : ${listAnswers}" th:if="*{answer.pqId.pqId == question.pqId}">
+											    		<p class = "ans" >
+												    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}" th:if="${answer.answer_status}" checked disabled>
+												    		<input type="radio" th:id="${answer.paId}" th:name="${answer.pqId.pqId}" th:value="${answer.paId}" th:text="' ' + ${answer.answer}" th:if="${!answer.answer_status}" disabled>
+												    		<br>
+													    	<img th:src = "${answer.image}" th:if = "${answer.image} != null" class = "col-2">
+												    	</p>
+											    	</div>
+											    </div>
+											    <!--<hr style="height:2px;border-width:0;color:gray;background-color:gray">-->
+										  </div>
+										</p>
+									</div>								
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+	</main>
+	<script src="../js/paper.management.js"></script>
+	
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>

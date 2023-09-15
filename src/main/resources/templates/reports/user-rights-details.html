@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/layout}">
+
+<head>
+<title>Report Center</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1 id = "rptName">User Rights Details Reports</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Reports</li>
+						<li class="breadcrumb-item active">User Rights Details</li>
+					</ol>
+				</nav>
+			</div>
+			<!-- End Page Title -->
+
+			<div class="row" hidden>
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body">
+							<form class="row g-3">		                            
+			                    <div class="col-3">
+			                      <br>
+									<select class="form-select form-control" aria-label="Default select example" >
+			                            <option value=''></option>
+			                            <!-- <option th:each="log:${gradeList}"
+			                                    th:value="${log.gradeId}"
+			                                    th:text="${log.gradeName}">
+			                            </option> -->
+			                        </select>
+			                    </div>
+			                           
+								<div class="col-3">
+			                      <br>
+			                      <div class="input-group">
+			                        <input type="text" class="form-control">
+			                      </div>
+			                    </div>
+			                    
+								<div class="col-3">
+			                      <br>
+			                      <input type="text" class="form-control">
+			                    </div>	
+			                    <div class="col-3">
+			                      <br>
+			                      <button class="btn btn-primary" onclick="studentSearch()"><i class="bi bi-search"></i> &nbsp; Search</button>
+			                    </div>			                    
+			                  </form>
+						</div>
+					</div>
+				</div>
+				</div>
+				<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body" id="rptDiv">
+							<!-- 
+							<table class="table table-striped" id="rptTable">
+							  <thead>
+							    <tr>
+							      <th scope="col">Id</th>
+							      <th scope="col">Name</th>
+							      <th scope="col">Gender</th>
+							      <th scope="col">Email</th>
+							      <th scope="col">Mobile</th>
+							      <th scope="col">Grade</th>
+							      <th scope="col">GPA</th>
+							      <th scope="col">Attempts Done</th>
+							      <th scope="col">Attempts Available</th>
+							      <th scope="col">Status</th>
+							    </tr>
+							  </thead>
+							  <tbody>
+							  
+							  	<tr th:each="student : ${students}">
+									<td th:text="${student.studentId}">ID</td>
+									<td th:text="${student.name}">Name</td>
+									<td th:text="${student.gender}">Gender</td>
+									<td th:text="${student.Email}">Email</td>
+									<td th:text="${student.Mobile}">Mobile</td>
+									<td th:text="${student.grade}">Grade</td>
+									<td th:text="${student.gpa}">GPA</td>
+									<td text="">Attempts Done</td>
+									<td text="">Attempts Available</td>
+									<td th:if="${!(student.active)}" > <span class="label label-danger">Deactive</span> </td>
+									<td th:if="${student.active}"> <span class="label label-success">Active</span> </td>
+								</tr>							    
+							  </tbody>
+							</table>	
+							 -->	
+						</div>
+					</div>
+				</div>
+	</main>
+	<!-- End #main -->
+	</div>
+</body>
+
+</html>
+
+<script src="js/report.management.js"></script>

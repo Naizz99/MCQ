@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+
+<head>
+  <title>Subject Management</title>
+</head>
+
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<main id="main" class="main">
+			<div class="pagetitle">
+				<h1>Subject Management</h1>
+				<nav>
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/home">Home</a></li>
+						<li class="breadcrumb-item">Content Management</li>
+						<li class="breadcrumb-item active"><a href="/listSubjects">Subjects</a></li>
+					</ol>
+				</nav>
+			</div><!-- End Page Title -->
+
+			<a type = "button" class="btn btn-primary" th:href="@{/addSubject}">Add New Subjects</a>
+			
+			<br/><br/>
+			
+			<table class="table datatable">
+				<thead>
+					<tr>
+						<th>Subject ID</th>
+						<th>Subject Name</th>
+						<th>Grade</th>
+						<th>Status</th>
+						<!-- <th>Create User</th> -->
+						<th>Create Date</th>
+						<!-- <th>Last Update User</th> -->
+						<th>Last Update Date</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					<tr th:each="subject : ${listSubjects}">
+						<td th:text="${subject.subjectId}">Subject</td>
+						<td th:text="${subject.subjectName}">subject Name</td>						
+						<td th:text="${subject.grade.gradeName}">Grade</td>
+						<td th:if="${!(subject.active)}"> <span class="label label-danger">Deactive</span> </td>
+						<td th:if="${subject.active}"><span class="label label-success">Active</span></td>
+						<!-- <td th:text="${subject.createBy}">Create User</td> -->
+						<td th:text="${subject.createDate}">Create Date</td>
+						<!-- <td th:text="${subject.updateBy}">Last Update User</td> -->
+						<td th:text="${subject.updateDate}">Last Update Date</td>
+						<td colspan=2 style="letter-spacing: 10px;">
+							<a type = "button" class="bi bi-pencil-square" title="Update" th:href="@{/showSubjectUpdate(subjectId=${subject.subjectId})}"></a>
+							<a type = "button" class="bi bi-trash" title="Delete" th:onclick="|deleteSubject('${subject.subjectId}')|"></a>		
+							<a type = "button" class="bi bi-clipboard-x"  title = "Deactivate" th:href="@{/subjectDeactive(subjectId=${subject.subjectId})}" th:if="${subject.active}"></a>	
+							<a type = "button" class="bi bi-clipboard-check" title = "Activate" th:href="@{/subjectActive(subjectId=${subject.subjectId})}" th:if="${!(subject.active)}"></a>	
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</main><!-- End #main -->	
+  	</div>
+</body>
+
+</html>
+
+<script src="js/subject.management.js"></script>

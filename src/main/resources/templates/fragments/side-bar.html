@@ -1,0 +1,66 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<body>
+	<th:block th:fragment="sidebar">
+		<!-- ======= Sidebar ======= -->
+		<aside id="sidebar" class="sidebar">
+			<ul class="sidebar-nav" id="sidebar-nav">
+				<!-- Super Admin Side Panel -->
+				<div>
+					<p th:text = "'User has authority ' + ${session.loggedRolesName}"></p>
+					
+					<li class="nav-item" th:if="!${session.user.forcePassword}">
+						<a class="nav-link collapsed" href="/home"> 
+							<i class="bi bi-house-door"></i> 
+							<span>Home</span>
+						</a>
+					</li>
+										
+					<li class="nav-item" th:each="function : ${session.listRoleFunctions}" th:if="${function.functionId.parent} AND !${session.user.forcePassword}">
+						<a class="nav-link collapsed" th:href="${function.functionId.functionAction}" th:if="${function.functionId.linked}">
+								<i class="bi bi-arrows-move"></i>
+								<span th:text = "${function.functionId.functionName}">Not Working</span>
+						</a>
+						<a class="nav-link collapsed" th:data-bs-target="'#function'+${function.functionId.functionId}"  data-bs-toggle="collapse" href="#" th:if="${!(function.functionId.linked)}">
+								<i class="bi bi-arrows-move"></i>
+								<span th:text = "${function.functionId.functionName}">Not Working</span>
+								<i class="bi bi-chevron-down ms-auto"></i>
+						</a>
+						<ul th:id="'function'+${function.functionId.functionId}" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+							<li th:each="subFunction : ${session.listRoleFunctions}" th:if="${subFunction.functionId.parentId == function.functionId.functionId}">
+								<a th:href="${subFunction.functionId.functionAction}"> 
+									<i class="bi bi-circle"></i>
+									<span th:text = "${subFunction.functionId.functionName}">Not Working</span>
+								</a>
+							</li>
+						</ul>
+					</li>
+					
+					<li class="nav-item">
+						<a class="nav-link collapsed" href="/userProfile"> 
+							<i class="bi bi-journal-text"></i> 
+							<span>Profile</span>
+						</a>
+					</li>
+					<!-- 
+					<li class="nav-item">
+						<a class="nav-link collapsed" href=""> 
+							<i class="bi bi-question-circle"></i> 
+							<span>F.A.Q</span>
+						</a>
+					</li>
+
+					<li class="nav-item">
+						<a class="nav-link collapsed" href=""> 
+							<i class="bi bi-envelope"></i> 
+							<span>Contact</span>
+						</a>
+					</li>	
+					 -->
+				</div>
+								
+			</ul>
+		</aside>
+		<!-- End Sidebar-->
+	</th:block>
+</body>
+</html>
